@@ -68,9 +68,11 @@ namespace Tienda_Streaming.Controllers
 
             var permiteRegistroInicial = !await _usuarios.ExistenUsuarios();
             ViewBag.PermiteRegistroInicial = permiteRegistroInicial;
-            ViewBag.LoginMensaje = mensaje == "sesion-expirada"
-                ? "La sesion del formulario expiro o la pagina estaba desactualizada. Intenta nuevamente."
-                : null;
+            ViewBag.LoginMensaje = permiteRegistroInicial
+                ? "Este usuario no se encuentra registrado."
+                : mensaje == "sesion-expirada"
+                    ? "La sesion del formulario expiro o la pagina estaba desactualizada. Intenta nuevamente."
+                    : null;
             return View("VwLogin", new DtoLoginViewModel { ReturnUrl = returnUrl });
         }
 
@@ -151,7 +153,7 @@ namespace Tienda_Streaming.Controllers
 
             if (!await _usuarios.ExistenUsuarios())
             {
-                ModelState.AddModelError(string.Empty, "No hay usuarios registrados. Crea el primer usuario del sistema para poder iniciar sesion.");
+                ModelState.AddModelError(string.Empty, "Este usuario no se encuentra registrado.");
                 ViewBag.PermiteRegistroInicial = true;
                 return View("VwLogin", model);
             }
@@ -167,7 +169,7 @@ namespace Tienda_Streaming.Controllers
             if (usuario == null || !BCrypt.Net.BCrypt.Verify(model.Password, usuario.Password))
             {
                 _logger.LogWarning("Intento de login fallido para {Usuario}", model.Usuario);
-                ModelState.AddModelError(string.Empty, "Usuario o contrasena incorrectos.");
+                ModelState.AddModelError(string.Empty, "Este usuario no se encuentra registrado.");
                 ViewBag.PermiteRegistroInicial = !await _usuarios.ExistenUsuarios();
                 return View("VwLogin", model);
             }
