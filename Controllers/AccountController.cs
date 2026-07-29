@@ -59,14 +59,18 @@ namespace Tienda_Streaming.Controllers
         // redirige al destino solicitado o al Home.
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Login(string? returnUrl = null)
+        public async Task<IActionResult> Login(string? returnUrl = null, string? mensaje = null)
         {
             if (User.Identity?.IsAuthenticated == true)
             {
                 return RedirectToLocal(returnUrl);
             }
 
-            ViewBag.PermiteRegistroInicial = !await _usuarios.ExistenUsuarios();
+            var permiteRegistroInicial = !await _usuarios.ExistenUsuarios();
+            ViewBag.PermiteRegistroInicial = permiteRegistroInicial;
+            ViewBag.LoginMensaje = mensaje == "sesion-expirada"
+                ? "La sesion del formulario expiro o la pagina estaba desactualizada. Intenta nuevamente."
+                : null;
             return View("VwLogin", new DtoLoginViewModel { ReturnUrl = returnUrl });
         }
 
@@ -142,6 +146,13 @@ namespace Tienda_Streaming.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.PermiteRegistroInicial = !await _usuarios.ExistenUsuarios();
+                return View("VwLogin", model);
+            }
+
+            if (!await _usuarios.ExistenUsuarios())
+            {
+                ModelState.AddModelError(string.Empty, "No hay usuarios registrados. Crea el primer usuario del sistema para poder iniciar sesion.");
+                ViewBag.PermiteRegistroInicial = true;
                 return View("VwLogin", model);
             }
 

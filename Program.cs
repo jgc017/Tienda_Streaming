@@ -287,6 +287,22 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// Evita que un token CSRF vencido o una pagina vieja de login deje al usuario
+// en un HTTP 400 crudo del navegador. Se redirige al login con un mensaje claro.
+app.UseStatusCodePages(async statusContext =>
+{
+    var httpContext = statusContext.HttpContext;
+
+    if (!httpContext.Response.HasStarted &&
+        httpContext.Response.StatusCode == StatusCodes.Status400BadRequest &&
+        httpContext.Request.Path.StartsWithSegments("/Account/Login"))
+    {
+        httpContext.Response.Redirect("/Account/Login?mensaje=sesion-expirada");
+    }
+
+    await Task.CompletedTask;
+});
+
 // Encabezados de seguridad base. Reducen exposicion a clickjacking, sniffing,
 // permisos de navegador innecesarios y ejecucion de recursos externos.
 app.Use(async (context, next) =>
