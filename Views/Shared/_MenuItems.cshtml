@@ -1,0 +1,32 @@
+@model IReadOnlyList<Tienda_Streaming.Models.Dto.General.DtoMenuSistemaItem>
+
+@foreach (var item in Model)
+{
+    var paddingClass = item.Nivel == 0 ? "ps-0" : "ps-4";
+    var hasChildren = item.Hijos.Any();
+    var href = item.TieneRuta ? Url.Action(item.Vista, item.Controlador) : "#";
+
+    if (hasChildren)
+    {
+        <li class="nav-item mb-2 submenu">
+            <a class="nav-link d-flex align-items-center gap-2 text-light @paddingClass submenu-toggle" href="@href">
+                <i class="@item.Icono menu-icon"></i>
+                <span class="menu-text">@item.Descripcion</span>
+                <i class="fa-solid fa-chevron-right submenu-arrow"></i>
+            </a>
+
+            <ul class="submenu-items">
+                @await Html.PartialAsync("_MenuItems", item.Hijos)
+            </ul>
+        </li>
+    }
+    else if (item.TieneRuta)
+    {
+        <li class="nav-item mb-2">
+            <a class="nav-link d-flex align-items-center gap-2 text-light @paddingClass" href="@href">
+                <i class="@item.Icono menu-icon"></i>
+                <span class="menu-text">@item.Descripcion</span>
+            </a>
+        </li>
+    }
+}

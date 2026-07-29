@@ -1,0 +1,236 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "VwUsuarios";
+
+    // Token CSRF que usa wwwroot/js/Administracion/Usuarios.js en POST/PUT/DELETE.
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section scripts {
+    @* Script que consume /api/UsuariosApi con el patron P_InsUsuario, F_GetUsuariosList, F_GetUsuario, P_UdpUsuario y P_DeleteUsuario. *@
+    <script src="~/js/administracion/usuarios.js"></script>
+}
+
+@* Valores ocultos compartidos con JavaScript. *@
+<input type="hidden" id="txtIdUsuario" />
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+
+@* Navegacion visual de la pagina actual dentro del modulo Administracion. *@
+<nav aria-label="breadcrumb" class="breadcrumb-wrapper">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="VwIndex">Inicio</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Usuarios" asp-action="VwUsuarios">Usuarios</a></li>
+    </ol>
+</nav>
+
+@* Formulario de registro. Envia datos a POST /api/UsuariosApi/P_InsUsuario por JavaScript. *@
+<div class="container-fluid">
+    <div class="col-12">
+        <div class="card custom-card border-primary">
+            <div class="card-header d-flex align-items-center custom-card-header">
+                <h4 class="card-title text-white d-flex align-items-center">
+                    <i class="fa-solid fa-id-card text-white me-2"></i>
+                    Registrar Usuarios
+                </h4>
+                <div class="card-actions ms-auto d-flex button-group">
+                    <a class="link text-white d-flex align-items-center" data-action="collapse">
+                        <i class="fa-solid fa-minus"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center" data-action="expand">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center pe-0" data-action="close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body collapse show">
+                <div class="row form-flex">
+                    <div class="col-12 col-md-6 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <input tabindex="1" name="txtNombreCompleto" id="txtNombreCompleto" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                            <label class="floating-label">Nombre completo</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <input tabindex="1" name="txtUsuario" id="txtUsuario" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                            <label class="floating-label">Usuario</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <input tabindex="1" name="txtEmail" id="txtEmail" type="email" class="form-control floating-input input-blue" placeholder=" " />
+                            <label class="floating-label">Email</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 custom-input-group">
+                        <div class="form-group has-float-label position-relative">
+                            <input tabindex="1" name="txtPassword" id="txtPassword"
+                                   type="password" class="form-control floating-input input-blue" placeholder=" " />
+                            <label class="floating-label">Contrasena temporal opcional</label>
+                            <i class="fa-solid fa-eye toggle-password" data-target="txtPassword"></i>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <input tabindex="1" name="txtPassWordConfir" id="txtPassWordConfir" type="password" class="form-control floating-input input-blue" placeholder=" " />
+                            <label class="floating-label">Confirmar contrasena temporal</label>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex justify-content-end mt-3 mb-3">
+                        <button tabindex="1" name="BtnRegistrar" id="BtnRegistrar" class="btn-form-action btn-fixed">
+                            <i class="fa-solid fa-save me-2"></i> Registrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Tabla llenada dinamicamente desde GET /api/UsuariosApi/F_GetUsuariosList. *@
+<div class="container-fluid">
+    <div class="col-12">
+        <div class="card custom-card border-primary">
+            <div class="card-header d-flex align-items-center custom-card-header">
+                <h4 class="card-title text-white d-flex align-items-center">
+                    <i class="fa-solid fa-id-card text-white me-2"></i>
+                    Lista Usuarios
+                </h4>
+                <div class="card-actions ms-auto d-flex button-group">
+                    <a class="link text-white d-flex align-items-center" data-action="collapse">
+                        <i class="fa-solid fa-minus"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center" data-action="expand">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center pe-0" data-action="close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body collapse show">
+                @* PlantillaTable crea encabezados, cuerpo, columnas, acciones y controles desde Usuarios.js. *@
+                <div class="table-responsive m-t-40" style="margin-top: 0 !important;"><table class="table-custom align-middle" id="tablaUsuarios"></table></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Modal de actualizacion. Carga datos con GET /api/UsuariosApi/F_GetUsuario/{id}
+   y guarda cambios con PUT /api/UsuariosApi/P_UdpUsuario/{id}. *@
+<div id="modalEditar" class="modal-custom">
+    <div class="modal-content-custom">
+        <div class="modal-header-custom">
+            <h5 class="modal-title">Actualizar Usuario</h5>
+            <button class="btn-close-custom">x</button>
+        </div>
+
+        <div class="modal-body-custom">
+            <input type="hidden" id="Id_Usuario">
+
+            <div class="mb-3">
+                <label class="form-label">Nombre completo</label>
+                <input type="text" id="Nombre" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Usuario</label>
+                <input type="text" id="Usuario" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" id="E_Mail" class="form-control">
+            </div>
+
+            @* Toggle que modifica Usuarios.Vigente: 1 activo, 0 inactivo. *@
+            <div class="user-status-editor">
+                <div class="form-horizontal">
+                    <div class="form-group row form-group-toggle align-items-center">
+                        <label class="col-form-label Labels label-toggle">Estado del usuario</label>
+                        <div class="toggle-container">
+                            <input type="checkbox"
+                                   id="chkVigente"
+                                   data-toggle="toggle"
+                                   data-on="Activo"
+                                   data-off="Inactivo"
+                                   data-onstyle="primary"
+                                   data-offstyle="danger"
+                                   data-size="small"
+                                   data-width="92"
+                                   data-height="30">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer-custom">
+            <button class="btn btn-secondary" id="btnCancelarModal">Cancelar</button>
+            <button class="btn btn-primary" id="btnGuardarCambios">
+                <i class="fa-solid fa-pen-to-square me-2"></i> Actualizar
+            </button>
+        </div>
+    </div>
+</div>
+
+@* Modal con datos temporales del usuario recien creado. *@
+<div id="modalCredencialesUsuario" class="modal-custom">
+    <div class="modal-content-custom">
+        <div class="modal-header-custom">
+            <h5 class="modal-title">Usuario Registrado</h5>
+            <button class="btn-close-custom" id="btnCerrarCredencialesUsuario">x</button>
+        </div>
+
+        <div class="modal-body-custom">
+            <textarea id="txtCredencialesUsuario" class="form-control credentials-copy-box" readonly rows="9"></textarea>
+        </div>
+
+        <div class="modal-footer-custom">
+            <button class="btn btn-secondary" id="btnCerrarCredencialesUsuarioFooter">Cerrar</button>
+            <button class="btn btn-primary" id="btnCopiarCredencialesUsuario">
+                <i class="fa-solid fa-copy me-2"></i> Copiar
+            </button>
+        </div>
+    </div>
+</div>
+
+@*MODAL ASIGNAR ROLES*@
+<div id="modalAsigRoles" class="modal-custom">
+    <div class="modal-content-custom modal-roles-content">
+        <div class="modal-header-custom">
+            <h5 class="modal-title">Asignar Roles</h5>
+            <button class="btn-close-custom">x</button>
+        </div>
+
+        <div class="modal-body-custom">
+            <input type="hidden" id="Id_Usuario_Rol">
+
+            <div class="mb-3">
+                <label class="form-label">Nombre completo</label>
+                <input type="text" id="NombreRoles" class="form-control" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" id="E_Mail_Roles" class="form-control" readonly>
+            </div>
+
+            @* Los checkboxes se llenan desde GET /api/RolesUserApi/GetIdUserRoles/{id}. *@
+            <div class="mb-3">
+                <label class="form-label">Roles disponibles</label>
+                <div id="rolesAsignables" class="roles-assignment-list"></div>
+            </div>
+        </div>
+
+        <div class="modal-footer-custom">
+            <button class="btn btn-secondary" id="btnCancelarModalRol">Cancelar</button>
+            <button class="btn btn-primary" id="btnGuardarCambiosRol">
+                <i class="fa-solid fa-user-check me-2"></i> Actualizar roles
+            </button>
+        </div>
+    </div>
+</div>

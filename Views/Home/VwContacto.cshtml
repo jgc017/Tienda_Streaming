@@ -1,0 +1,57 @@
+@model List<Tienda_Streaming.Models.Dto.Administracion.RegistrarPublicaciones.DtoInicioContenidoItem>
+
+@{
+    ViewData["Title"] = "Contacto";
+}
+
+<section class="public-home public-page-shell">
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <partial name="_StoreHorizontalNav" />
+    }
+    else
+    {
+        <partial name="_PublicHomeNav" />
+    }
+
+    <header class="public-page-header">
+        <span class="public-home-kicker">Soporte</span>
+        <h1>Contacto</h1>
+        <p>Canales publicados por el administrador para soporte, solicitudes y novedades.</p>
+    </header>
+
+    <div class="public-card-list">
+        @if (Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <article class="public-content-card">
+                    <div class="public-content-body">
+                        <h2>@item.Titulo</h2>
+                        <p class="public-preline">@(item.Contenido ?? item.Resumen)</p>
+                        @if (!string.IsNullOrWhiteSpace(item.EnlaceUrl))
+                        {
+                            <a href="@item.EnlaceUrl">@(item.TextoBoton ?? "Abrir enlace")</a>
+                        }
+                    </div>
+                </article>
+            }
+        }
+        else
+        {
+            <article class="public-content-card">
+                <div class="public-content-body">
+                    <h2>Contacto pendiente</h2>
+                    <p>El administrador podra publicar aqui los canales oficiales de contacto.</p>
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/public-store.js" asp-append-version="true"></script>
+    <script type="module" src="~/js/cart-3d.js" asp-append-version="true"></script>
+}
+
+

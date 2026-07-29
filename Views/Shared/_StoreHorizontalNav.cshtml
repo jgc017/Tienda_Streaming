@@ -1,0 +1,55 @@
+@inject Tienda_Streaming.Business.Interfaces.SistemaConfig.ISistemaConfig SistemaConfigService
+
+@{
+    var sistemaConfig = await SistemaConfigService.F_GetSistemaVisualConfig();
+    var logoSistema = Url.Content(sistemaConfig.LogoUrl);
+    var autenticado = User.Identity?.IsAuthenticated == true;
+    var controlador = autenticado ? "Tiendas" : "Home";
+    var accionPantallas = autenticado ? "VwTiendas" : "VwIndex";
+    var accionContacto = autenticado ? "VwContacto" : "VwContacto";
+    var actionActual = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
+}
+
+<nav class="store-horizontal-nav" aria-label="Menu horizontal de tienda">
+    <a class="store-horizontal-brand" asp-controller="@controlador" asp-action="@accionPantallas">
+        <img src="@logoSistema" alt="Logo Tienda Streaming" />
+        <span>Tienda Streaming</span>
+    </a>
+
+    <div class="store-horizontal-menu">
+        <a class="@(actionActual == accionPantallas ? "is-active" : "")" asp-controller="@controlador" asp-action="@accionPantallas">Pantallas</a>
+        @if (!autenticado)
+        {
+            <a class="@(actionActual == "VwCombos" ? "is-active" : "")" asp-controller="Home" asp-action="VwCombos">Combos</a>
+        }
+        <a class="@(actionActual == accionContacto ? "is-active" : "")" asp-controller="@controlador" asp-action="@accionContacto">Contacto</a>
+    </div>
+
+    @if (autenticado)
+    {
+        <div class="public-home-actions">
+            <span class="public-wallet-badge" id="sellerWalletBalance">Saldo: $0</span>
+            <div class="public-cart-wrapper">
+                <button type="button" class="public-cart-button" id="publicCartToggle" aria-label="Ver carrito">
+                    <canvas class="cart-3d-canvas" width="96" height="72" aria-hidden="true"></canvas>
+                    <i class="fa-solid fa-cart-shopping cart-fallback-icon"></i>
+                    <span id="publicCartCount">0</span>
+                </button>
+                <aside class="public-cart-panel" id="publicCartPanel" aria-label="Carrito de compras">
+                    <div class="public-cart-header">
+                        <strong>Carrito</strong>
+                        <button type="button" id="publicCartClose" aria-label="Cerrar carrito">x</button>
+                    </div>
+                    <div class="public-cart-items" id="publicCartItems">
+                        <p class="public-cart-empty">No hay productos agregados.</p>
+                    </div>
+                    <div class="public-cart-total">
+                        <span>Total</span>
+                        <strong id="publicCartTotal">$0</strong>
+                    </div>
+                    <button type="button" class="btn btn-primary public-cart-checkout" id="publicCartCheckout">Comprar</button>
+                </aside>
+            </div>
+        </div>
+    }
+</nav>

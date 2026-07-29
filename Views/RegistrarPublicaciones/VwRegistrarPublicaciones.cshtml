@@ -1,0 +1,234 @@
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "Registrar Publicaciones";
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section Scripts {
+    <script src="~/js/administracion/registrarpublicaciones.js" asp-append-version="true"></script>
+}
+
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+
+<nav aria-label="breadcrumb" class="breadcrumb-wrapper">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="VwIndex">Inicio</a></li>
+        <li class="breadcrumb-item"><a asp-controller="RegistrarPublicaciones" asp-action="VwRegistrarPublicaciones">Registrar publicaciones</a></li>
+    </ol>
+</nav>
+
+<div class="container-fluid">
+    <div class="col-12">
+        <div class="card custom-card border-primary">
+            <div class="card-header d-flex align-items-center custom-card-header">
+                <h4 class="card-title text-white d-flex align-items-center">
+                    <i class="fa-solid fa-house-chimney-window text-white me-2"></i>
+                    Registrar Publicaciones
+                </h4>
+                <div class="card-actions ms-auto d-flex button-group">
+                    <a class="link text-white d-flex align-items-center" data-action="collapse"><i class="fa-solid fa-minus"></i></a>
+                    <a class="link text-white d-flex align-items-center" data-action="expand"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></a>
+                    <a class="link text-white d-flex align-items-center pe-0" data-action="close"><i class="fa-solid fa-xmark"></i></a>
+                </div>
+            </div>
+
+            <div class="card-body collapse show">
+                <div class="row form-flex">
+                    <div class="col-12 col-md-4 custom-input-group">
+                        <div class="form-group has-float-label select-float-label">
+                            @Html.DropDownList("ddlTipoContenido", ViewBag.ddlTiposContenido as IEnumerable<SelectListItem>, "Seleccione una opcion", htmlAttributes: new { id = "ddlTipoContenido", @class = "form-control floating-select select2" })
+                            <label class="floating-label">Tipo contenido</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <input id="txtTituloInicio" type="text" class="form-control floating-input input-blue" placeholder="Titulo de la Publicación" />
+                            <label class="floating-label">Titulo</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <input id="txtOrdenInicio" type="number" min="0" class="form-control floating-input input-blue" placeholder="Orden en el que se vera la públicación " value="0" />
+                            <label class="floating-label">Orden</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 custom-input-group">
+                        <div class="form-status-editor">
+                            <label class="form-status-label">Mostrar</label>
+                            <div class="form-toggle-container">
+                                <input type="checkbox"
+                                       id="chkMostrarInicio"
+                                       data-toggle="toggle"
+                                       data-on="Si"
+                                       data-off="No"
+                                       data-onstyle="primary"
+                                       data-offstyle="danger"
+                                       data-size="small"
+                                       data-width="92"
+                                       data-height="30">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-4 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <input id="txtResumenInicio" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                            <label class="floating-label">Resumen</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <input id="txtImagenInicio" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                            <label class="floating-label">Ruta imagen /img/archivo.png</label>
+                        </div>
+                        <img id="previewImagenInicio" class="form-image-preview d-none" alt="Vista previa imagen" />
+                    </div>
+                    <div class="col-12 col-md-4 custom-input-group">
+                        <div class="form-group has-float-label file-upload-float-label">
+                            <div class="file-upload-row">
+                                <input id="fileImagenInicio" type="file" class="form-control floating-input file-upload-input" accept="image/jpeg,image/png,image/webp,image/gif" />
+                                <button type="button" id="btnSubirImagenInicio" class="btn btn-primary file-upload-button">
+                                    <i class="fa-solid fa-upload"></i>
+                                </button>
+                            </div>
+                            <label class="floating-label">Agregar imagen</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <input id="txtEnlaceInicio" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                            <label class="floating-label">Enlace opcional</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <input id="txtTextoBotonInicio" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                            <label class="floating-label">Texto boton opcional</label>
+                        </div>
+                    </div>
+                    <div class="col-12 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <textarea id="txtContenidoInicio" class="form-control floating-input input-blue inicio-admin-textarea" placeholder=" "></textarea>
+                            <label class="floating-label">Contenido</label>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex justify-content-end gap-2 mt-3 mb-3">
+                        <button type="button" id="BtnNuevoInicioContenido" class="btn btn-success btn-fixed">
+                            <i class="fa-solid fa-file-circle-plus me-2"></i> Nuevo
+                        </button>
+                        <button type="button" id="BtnRegistrarInicioContenido" class="btn-form-action btn-fixed">
+                            <i class="fa-solid fa-save me-2"></i> Guardar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="col-12">
+        <div class="card custom-card border-primary">
+            <div class="card-header d-flex align-items-center custom-card-header">
+                <h4 class="card-title text-white d-flex align-items-center">
+                    <i class="fa-solid fa-list text-white me-2"></i>
+                    Lista Publicaciones
+                </h4>
+                <div class="card-actions ms-auto d-flex button-group">
+                    <a class="link text-white d-flex align-items-center" data-action="collapse"><i class="fa-solid fa-minus"></i></a>
+                    <a class="link text-white d-flex align-items-center" data-action="expand"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></a>
+                    <a class="link text-white d-flex align-items-center pe-0" data-action="close"><i class="fa-solid fa-xmark"></i></a>
+                </div>
+            </div>
+            <div class="card-body collapse show">
+                <div class="table-responsive m-t-40" style="margin-top: 0 !important;">
+                    <table class="table-custom align-middle" id="tablaInicioContenidos"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalEditarInicioContenido" class="modal-custom">
+    <div class="modal-content-custom modal-content-wide">
+        <div class="modal-header-custom">
+            <h5 class="modal-title">Actualizar Contenido</h5>
+            <button class="btn-close-custom">x</button>
+        </div>
+
+        <div class="modal-body-custom">
+            <input type="hidden" id="Id_InicioContenido">
+
+            <div class="row">
+                <div class="col-12 col-md-6 mb-3 form-group has-float-label select-float-label">
+                    @Html.DropDownList("ddlTipoContenidoModal", ViewBag.ddlTiposContenido as IEnumerable<SelectListItem>, "Seleccione una opcion", htmlAttributes: new { id = "ddlTipoContenidoModal", @class = "form-control floating-select select2" })
+                    <label class="floating-label">Tipo contenido</label>
+                </div>
+                <div class="col-12 col-md-6 mb-3">
+                    <label class="form-label">Titulo</label>
+                    <input type="text" id="TituloInicioModal" class="form-control">
+                </div>
+                <div class="col-12 col-md-4 mb-3">
+                    <label class="form-label">Orden</label>
+                    <input type="number" min="0" id="OrdenInicioModal" class="form-control">
+                </div>
+                <div class="col-12 col-md-4 mb-3">
+                    <div class="user-status-editor">
+                        <div class="form-group row form-group-toggle align-items-center">
+                            <label class="col-form-label Labels label-toggle">Mostrar en inicio</label>
+                            <div class="toggle-container"><input type="checkbox" id="chkMostrarInicioModal"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 mb-3">
+                    <div class="user-status-editor">
+                        <div class="form-group row form-group-toggle align-items-center">
+                            <label class="col-form-label Labels label-toggle">Estado</label>
+                            <div class="toggle-container"><input type="checkbox" id="chkInicioContenidoVigente"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 mb-3">
+                    <label class="form-label">Resumen</label>
+                    <input type="text" id="ResumenInicioModal" class="form-control">
+                </div>
+                <div class="col-12 col-md-6 mb-3">
+                    <label class="form-label">Imagen URL</label>
+                    <input type="text" id="ImagenInicioModal" class="form-control">
+                    <img id="previewImagenInicioModal" class="form-image-preview d-none" alt="Vista previa imagen" />
+                </div>
+                <div class="col-12 col-md-6 mb-3">
+                    <label class="form-label">Cambiar imagen</label>
+                    <div class="file-upload-row">
+                        <input id="fileImagenInicioModal" type="file" class="form-control file-upload-input" accept="image/jpeg,image/png,image/webp,image/gif" />
+                        <button type="button" id="btnSubirImagenInicioModal" class="btn btn-primary file-upload-button">
+                            <i class="fa-solid fa-upload"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mb-3">
+                    <label class="form-label">Enlace</label>
+                    <input type="text" id="EnlaceInicioModal" class="form-control">
+                </div>
+                <div class="col-12 mb-3">
+                    <label class="form-label">Texto boton</label>
+                    <input type="text" id="TextoBotonInicioModal" class="form-control">
+                </div>
+                <div class="col-12 mb-3">
+                    <label class="form-label">Contenido</label>
+                    <textarea id="ContenidoInicioModal" class="form-control inicio-admin-textarea"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer-custom">
+            <button class="btn btn-secondary" id="btnCancelarInicioContenidoModal">Cancelar</button>
+            <button class="btn btn-primary" id="btnGuardarInicioContenidoCambios">
+                <i class="fa-solid fa-pen-to-square me-2"></i> Actualizar
+            </button>
+        </div>
+    </div>
+</div>
+
+

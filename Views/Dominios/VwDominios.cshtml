@@ -1,0 +1,142 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Dominios";
+
+    // Token CSRF que usa wwwroot/js/Administracion/Dominios.js en POST/PUT/DELETE.
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section Scripts {
+    @* Script que consume /api/DominiosApi con el patron P_InsDominio, F_GetDominiosList, F_GetDominio, P_UdpDominio y P_DeleteDominio. *@
+    <script src="~/js/administracion/dominios.js" asp-append-version="true"></script>
+}
+
+@* Valores ocultos compartidos con JavaScript. *@
+<input type="hidden" id="txtIdDominio" />
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+
+@* Navegacion visual de la pagina actual dentro del modulo Administracion. *@
+<nav aria-label="breadcrumb" class="breadcrumb-wrapper">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="VwIndex">Inicio</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Dominios" asp-action="VwDominios">Dominios</a></li>
+    </ol>
+</nav>
+
+@* Formulario principal. Guarda nuevos dominios hijos o actualiza el dominio seleccionado en la tabla. *@
+<div class="container-fluid">
+    <div class="col-12">
+        <div class="card custom-card border-primary">
+            <div class="card-header d-flex align-items-center custom-card-header">
+                <h4 class="card-title text-white d-flex align-items-center">
+                    <i class="fa-solid fa-sitemap text-white me-2"></i>
+                    Registrar Dominios
+                </h4>
+                <div class="card-actions ms-auto d-flex button-group">
+                    <a class="link text-white d-flex align-items-center" data-action="collapse">
+                        <i class="fa-solid fa-minus"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center" data-action="expand">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center pe-0" data-action="close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body collapse show">
+                <div class="row form-flex align-items-end">
+                    <div class="col-12 col-md-6 col-xl-3 custom-input-group">
+                        <div class="form-group has-float-label select-float-label">
+                            @Html.DropDownList("ddlDominio", ViewBag.ddlDominio as IEnumerable<SelectListItem>, "Seleccione una opcion", htmlAttributes: new { @tabindex = 1, id = "ddlDominio", @class = "form-control floating-select select2" })
+                            <label class="floating-label">Dominio</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-xl-3 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <input tabindex="1" name="txtDescripcion" id="txtDescripcion" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                            <label class="floating-label">Descripcion</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-3 custom-input-group">
+                        <div class="form-status-editor">
+                            <label class="form-status-label">DominioPadre?</label>
+                            <div class="form-toggle-container">
+                                <input type="checkbox"
+                                       id="chkDominioPadre"
+                                       data-toggle="toggle"
+                                       data-on="Si"
+                                       data-off="No"
+                                       data-onstyle="primary"
+                                       data-offstyle="danger"
+                                       data-size="small"
+                                       data-width="92"
+                                       data-height="30">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-3 custom-input-group">
+                        <div class="form-status-editor">
+                            <label class="form-status-label">Activo</label>
+                            <div class="form-toggle-container">
+                                <input type="checkbox"
+                                       id="chkDominioVigente"
+                                       data-toggle="toggle"
+                                       data-on="Activo"
+                                       data-off="Inactivo"
+                                       data-onstyle="primary"
+                                       data-offstyle="danger"
+                                       data-size="small"
+                                       data-width="92"
+                                       data-height="30">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 d-flex justify-content-end mt-3 mb-3 gap-2 form-action-row">
+                        <button tabindex="1" name="BtnNuevoDominio" id="BtnNuevoDominio" class="btn-form-new btn-fixed">
+                            <i class="fa-solid fa-file-circle-plus me-2"></i> Nuevo
+                        </button>
+                        <button tabindex="1" name="BtnGuardarDominio" id="BtnGuardarDominio" class="btn-form-action btn-fixed">
+                            <i class="fa-solid fa-save me-2"></i> Guardar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Tabla llenada dinamicamente desde GET /api/DominiosApi/F_GetDominiosList/{id_dominio}. *@
+<div class="container-fluid">
+    <div class="col-12">
+        <div class="card custom-card border-primary">
+            <div class="card-header d-flex align-items-center custom-card-header">
+                <h4 class="card-title text-white d-flex align-items-center">
+                    <i class="fa-solid fa-list-check text-white me-2"></i>
+                    Lista Dominios
+                </h4>
+                <div class="card-actions ms-auto d-flex button-group">
+                    <a class="link text-white d-flex align-items-center" data-action="collapse">
+                        <i class="fa-solid fa-minus"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center" data-action="expand">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center pe-0" data-action="close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body collapse show">
+                @* Grilla crea encabezados, cuerpo, columnas, acciones y controles desde Dominios.js. *@
+                <div class="table-responsive m-t-40" style="margin-top: 0 !important;"><table class="table-custom align-middle" id="tablaDominios"></table></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,141 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "Roles";
+
+    // Token CSRF que usa wwwroot/js/Administracion/Roles.js en POST/PUT/DELETE.
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section Scripts {
+    @* Script que consume /api/RolesApi con el patron P_InsRol, F_GetRolesList, F_GetRol, P_UdpRol y P_DeleteRol. *@
+    <script src="~/js/administracion/roles.js" asp-append-version="true"></script>
+}
+
+@* Valores ocultos compartidos con JavaScript. *@
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+
+@* Navegacion visual de la pagina actual dentro del modulo Administracion. *@
+<nav aria-label="breadcrumb" class="breadcrumb-wrapper">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="VwIndex">Inicio</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Roles" asp-action="VwRoles">Roles</a></li>
+    </ol>
+</nav>
+
+@* Formulario de registro. Envia datos a POST /api/RolesApi/P_InsRol por JavaScript. *@
+<div class="container-fluid">
+    <div class="col-12">
+        <div class="card custom-card border-primary">
+            <div class="card-header d-flex align-items-center custom-card-header">
+                <h4 class="card-title text-white d-flex align-items-center">
+                    <i class="fa-solid fa-user-shield text-white me-2"></i>
+                    Registrar Roles
+                </h4>
+                <div class="card-actions ms-auto d-flex button-group">
+                    <a class="link text-white d-flex align-items-center" data-action="collapse">
+                        <i class="fa-solid fa-minus"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center" data-action="expand">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center pe-0" data-action="close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body collapse show">
+                <div class="row form-flex align-items-end">
+                    <div class="col-12 col-md-6 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <input tabindex="1" name="txtRol" id="txtRol" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                            <label class="floating-label">Nombre del rol</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 d-flex justify-content-end mt-3 mb-3">
+                        <button tabindex="1" name="BtnRegistrarRol" id="BtnRegistrarRol" class="btn-form-action btn-fixed">
+                            <i class="fa-solid fa-save me-2"></i> Registrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Tabla llenada dinamicamente desde GET /api/RolesApi/F_GetRolesList. *@
+<div class="container-fluid">
+    <div class="col-12">
+        <div class="card custom-card border-primary">
+            <div class="card-header d-flex align-items-center custom-card-header">
+                <h4 class="card-title text-white d-flex align-items-center">
+                    <i class="fa-solid fa-list-check text-white me-2"></i>
+                    Lista Roles
+                </h4>
+                <div class="card-actions ms-auto d-flex button-group">
+                    <a class="link text-white d-flex align-items-center" data-action="collapse">
+                        <i class="fa-solid fa-minus"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center" data-action="expand">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center pe-0" data-action="close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body collapse show">
+                @* PlantillaTable crea encabezados, cuerpo, columnas, acciones y controles desde Roles.js. *@
+                <div class="table-responsive m-t-40" style="margin-top: 0 !important;"><table class="table-custom align-middle" id="tablaRoles"></table></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Modal de actualizacion. Carga datos con GET /api/RolesApi/F_GetRol/{id}
+   y guarda cambios con PUT /api/RolesApi/P_UdpRol/{id}. *@
+<div id="modalEditarRol" class="modal-custom">
+    <div class="modal-content-custom">
+        <div class="modal-header-custom">
+            <h5 class="modal-title">Actualizar Rol</h5>
+            <button class="btn-close-custom">x</button>
+        </div>
+
+        <div class="modal-body-custom">
+            <input type="hidden" id="Id_Rol">
+
+            <div class="mb-3">
+                <label class="form-label">Nombre del rol</label>
+                <input type="text" id="Rol" class="form-control">
+            </div>
+
+            @* Toggle que modifica Roles.Vigente: 1 activo, 0 inactivo. *@
+            <div class="user-status-editor">
+                <div class="form-horizontal">
+                    <div class="form-group row form-group-toggle align-items-center">
+                        <label class="col-form-label Labels label-toggle">Estado del rol</label>
+                        <div class="toggle-container">
+                            <input type="checkbox"
+                                   id="chkRolVigente"
+                                   data-toggle="toggle"
+                                   data-on="Activo"
+                                   data-off="Inactivo"
+                                   data-onstyle="primary"
+                                   data-offstyle="danger"
+                                   data-size="small"
+                                   data-width="92"
+                                   data-height="30">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer-custom">
+            <button class="btn btn-secondary" id="btnCancelarRolModal">Cancelar</button>
+            <button class="btn btn-primary" id="btnGuardarRolCambios">
+                <i class="fa-solid fa-pen-to-square me-2"></i> Actualizar
+            </button>
+        </div>
+    </div>
+</div>

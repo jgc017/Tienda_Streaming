@@ -1,0 +1,281 @@
+@model Tienda_Streaming.Models.Dto.Administracion.RegistrarPublicaciones.DtoInicioPublico
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "Pantallas";
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+
+    var slider = Model?.Slider ?? new();
+    var productosTienda = ViewBag.Productos as List<Tienda_Streaming.Models.Dto.Administracion.RegistrarProductos.DtoProductoTiendaItem> ?? new();
+    var videoUrl = ViewBag.VideoUrl as string;
+    var youtubeEmbedUrl = ObtenerYoutubeEmbedAutoplay(videoUrl);
+    var esVideoLocal = EsArchivoVideo(videoUrl);
+
+    var productos = new[]
+    {
+        new
+        {
+            Id = "pantalla-premium",
+            Nombre = "Pantalla Premium",
+            Descripcion = "Acceso mensual para entretenimiento en alta calidad, ideal para uso personal.",
+            Imagen = Url.Content("~/img/inicio/inicio_20260719214523_241e71ef03004eb59d695c987351e10b.jpeg")
+        },
+        new
+        {
+            Id = "pantalla-familiar",
+            Nombre = "Pantalla Familiar",
+            Descripcion = "Opcion balanceada para quienes buscan estabilidad, soporte y renovacion sencilla.",
+            Imagen = Url.Content("~/img/inicio/inicio_20260719213942_f7e1eab3e63e415a8f2826683e882311.jpeg")
+        },
+        new
+        {
+            Id = "pantalla-plus",
+            Nombre = "Pantalla Plus",
+            Descripcion = "Plan visual para usuarios frecuentes con mayor disponibilidad y atencion prioritaria.",
+            Imagen = Url.Content("~/img/inicio/inicio_20260719205317_547a647b5efb4cbb8fd00774f1bb39cf.jpg")
+        }
+    };
+}
+
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+
+<section class="public-home public-store-shell" data-tipo-usuario="@ViewBag.IdTipoUsuarioTienda" data-cart-context="@(User.Identity?.IsAuthenticated == true ? "interna" : "publica")" data-compra-habilitada="@(User.Identity?.IsAuthenticated == true ? "true" : "false")">
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <partial name="_StoreHorizontalNav" />
+    }
+    else
+    {
+        <partial name="_PublicHomeNav" />
+    }
+
+    <main class="public-store-layout">
+        <section id="pantallasCarousel" class="carousel slide public-home-carousel public-store-carousel" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                @if (slider.Any())
+                {
+                    for (var i = 0; i < slider.Count; i++)
+                    {
+                        <button type="button" data-bs-target="#pantallasCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : null)" aria-label="Pantalla @(i + 1)"></button>
+                    }
+                }
+                else
+                {
+                    <button type="button" data-bs-target="#pantallasCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Pantallas"></button>
+                }
+            </div>
+            <div class="carousel-inner">
+                @if (slider.Any())
+                {
+                    for (var i = 0; i < slider.Count; i++)
+                    {
+                        var item = slider[i];
+                        var imagen = !string.IsNullOrWhiteSpace(item.ImagenUrl) ? Url.Content(item.ImagenUrl) : productos[i % productos.Length].Imagen;
+                        <div class="carousel-item @(i == 0 ? "active" : "")">
+                            <article class="public-carousel-slide">
+                                <img class="public-carousel-image" src="@imagen" alt="@item.Titulo" />
+                                <div class="public-carousel-copy">
+                                    <span class="public-home-kicker">Pantallas</span>
+                                    <h1>@item.Titulo</h1>
+                                    <p>@(item.Resumen ?? "Selecciona tus productos, ajusta la cantidad y revisa el carrito antes de continuar.")</p>
+                                </div>
+                            </article>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="carousel-item active">
+                        <article class="public-carousel-slide">
+                            <img class="public-carousel-image" src="@productos[0].Imagen" alt="Pantallas" />
+                            <div class="public-carousel-copy">
+                                <span class="public-home-kicker">Tienda</span>
+                                @* <h1>Pantallas</h1>
+                                <p>Selecciona tus productos, ajusta la cantidad y revisa el carrito antes de continuar.</p> *@
+                            </div>
+                        </article>
+                    </div>
+                }
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#pantallasCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#pantallasCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </section>
+
+        <section class="public-store-video" aria-label="Video destacado de pantallas">
+            @if (!string.IsNullOrWhiteSpace(youtubeEmbedUrl))
+            {
+                <iframe class="public-video-frame" src="@youtubeEmbedUrl" title="Video de pantallas" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            }
+            else if (esVideoLocal)
+            {
+                <video class="public-video-frame" src="@Url.Content(videoUrl!)" autoplay muted playsinline controls loop></video>
+            }
+            else
+            {
+                <div class="public-video-placeholder">
+                    <i class="fa-solid fa-play"></i>
+                    <span>Video destacado</span>
+                </div>
+            }
+        </section>
+
+        <section class="public-product-grid" aria-label="Productos de pantallas">
+            @if (productosTienda.Any())
+            {
+                foreach (var producto in productosTienda)
+                {
+                    var imagenProducto = !string.IsNullOrWhiteSpace(producto.ImagenUrl) ? Url.Content(producto.ImagenUrl) : productos[0].Imagen;
+                    <article class="public-product-card">
+                        <div class="public-product-media">
+                            <div class="public-product-heading">
+                                <h2>@producto.Plataforma</h2>
+                            </div>
+                            <img class="public-product-photo" src="@imagenProducto" alt="@producto.Plataforma" />
+                            <div class="public-product-options">
+                                @if (producto.OpcionesDuracion.Any())
+                                {
+                                    foreach (var opcion in producto.OpcionesDuracion)
+                                    {
+                                        var opcionAgotada = opcion.CantidadDisponible <= 0;
+                                        var precioData = opcion.Precio.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                                        <div class="public-product-option">
+                                            <div class="public-product-option-row">
+                                                <div class="public-product-option-summary">
+                                                    <strong>@opcion.Tiempo_Pantalla dias</strong>
+                                                    <span class="public-product-option-price">$@opcion.Precio.ToString("N0")</span>
+                                                </div>
+                                                <label class="public-product-qty-label">
+                                                    Cantidad
+                                                    <input type="number" min="1" max="@opcion.CantidadDisponible" value="1" class="public-product-qty" aria-label="Cantidad para @producto.Plataforma por @opcion.Tiempo_Pantalla dias" disabled="@opcionAgotada" />
+                                                </label>
+                                            </div>
+                                            <span class="@(opcionAgotada ? "table-status table-status-inactive" : "table-status table-status-active")">Disponibles: @opcion.CantidadDisponible</span>
+                                            <button type="button" class="btn btn-primary public-add-cart" data-product-type="Pantalla" data-platform-id="@producto.Id_Plataforma" data-name="@producto.Plataforma" data-price="@precioData" data-stock="@opcion.CantidadDisponible" data-duration="@opcion.Tiempo_Pantalla" disabled="@opcionAgotada">
+                                                <i class="fa-solid fa-cart-plus me-2"></i> Agregar
+                                            </button>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="table-status table-status-inactive">Disponibles: 0</span>
+                                }
+                            </div>
+                        </div>
+                    </article>
+                }
+            }
+            else
+            {
+                <div class="public-store-empty">No hay productos disponibles por ahora.</div>
+            }
+        </section>
+
+        <section class="public-store-contact" id="contacto">
+            <div class="section-title-row">
+                <h2>Contacto</h2>
+                <span>Atencion</span>
+            </div>
+            <p>@(Model?.Contacto?.Resumen ?? Model?.Contacto?.Contenido ?? "Para confirmar disponibilidad, tiempos de entrega o resolver dudas, comunicate con el administrador de la tienda.")</p>
+            <a asp-controller="Home" asp-action="VwContacto">Ver canales de contacto</a>
+        </section>
+    </main>
+</section>
+
+<div id="purchaseResultModal" class="modal-overlay">
+    <div class="modal-card purchase-result-card">
+        <div class="modal-header">
+            <i class="fa-solid fa-circle-check modal-icon"></i>
+            <h4 class="modal-title">Compra Confirmada</h4>
+        </div>
+        <div class="modal-body">
+            <div id="purchaseResultBody"></div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" id="purchaseResultCopyAll" class="btn btn-secondary">Copiar todo</button>
+            <button type="button" id="purchaseResultClose" class="btn btn-primary">Aceptar</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/public-store.js" asp-append-version="true"></script>
+    <script type="module" src="~/js/cart-3d.js" asp-append-version="true"></script>
+}
+
+@functions {
+    private static string? ObtenerYoutubeEmbedAutoplay(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url) || !Uri.TryCreate(url.Trim(), UriKind.Absolute, out var uri))
+        {
+            return null;
+        }
+
+        var host = uri.Host.ToLowerInvariant();
+        string? videoId = null;
+
+        if (host.Contains("youtu.be"))
+        {
+            videoId = LimpiarYoutubeId(uri.AbsolutePath.Trim('/'));
+        }
+        else if (host.Contains("youtube.com") || host.Contains("youtube-nocookie.com"))
+        {
+            var segmentos = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+            if (segmentos.Length >= 2
+                && (segmentos[0].Equals("embed", StringComparison.OrdinalIgnoreCase)
+                    || segmentos[0].Equals("shorts", StringComparison.OrdinalIgnoreCase)
+                    || segmentos[0].Equals("live", StringComparison.OrdinalIgnoreCase)
+                    || segmentos[0].Equals("v", StringComparison.OrdinalIgnoreCase)))
+            {
+                videoId = LimpiarYoutubeId(segmentos[1]);
+            }
+            else if (uri.AbsolutePath.Equals("/watch", StringComparison.OrdinalIgnoreCase))
+            {
+                videoId = uri.Query.TrimStart('?')
+                    .Split('&', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(p => p.Split('=', 2))
+                    .Where(p => p.Length == 2 && p[0].Equals("v", StringComparison.OrdinalIgnoreCase))
+                    .Select(p => LimpiarYoutubeId(Uri.UnescapeDataString(p[1])))
+                    .FirstOrDefault();
+            }
+        }
+
+        return string.IsNullOrWhiteSpace(videoId)
+            ? null
+            : $"https://www.youtube.com/embed/{videoId}?autoplay=1&mute=1&playsinline=1&rel=0";
+    }
+
+    private static string? LimpiarYoutubeId(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        var id = value.Split('/', '?', '&').FirstOrDefault() ?? string.Empty;
+        return new string(id.Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '-').ToArray());
+    }
+
+    private static bool EsArchivoVideo(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            return false;
+        }
+
+        var limpio = url.Split('?', '#')[0];
+        return limpio.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase)
+            || limpio.EndsWith(".webm", StringComparison.OrdinalIgnoreCase)
+            || limpio.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase);
+    }
+}
+
+
+

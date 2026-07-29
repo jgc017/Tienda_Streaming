@@ -1,0 +1,71 @@
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "Historial";
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+
+<section class="public-home public-store-shell" data-tipo-usuario="23" data-cart-context="publica">
+    <partial name="_PublicHomeNav" />
+
+    <main class="public-store-layout">
+        <section class="public-history-panel">
+            <div class="public-history-header">
+                <h1>Historial de compras</h1>
+            </div>
+
+            <div class="public-history-form">
+                <input id="txtHistorialCodigo" type="text" class="form-control input-blue" placeholder="Codigo de compra" autocomplete="off" />
+                <input id="txtHistorialCorreo" type="email" class="form-control input-blue" placeholder="Correo asociado" autocomplete="email" />
+                <button type="button" class="btn btn-primary" id="btnConsultarHistorialCliente">
+                    <i class="fa-solid fa-magnifying-glass me-2"></i> Consultar
+                </button>
+            </div>
+
+            <div class="table-responsive m-t-40" style="margin-top: 0 !important;">
+                <table class="table-custom align-middle" id="tablaHistorialCliente"></table>
+            </div>
+        </section>
+    </main>
+</section>
+
+<div id="publicHistoryDetailModal" class="modal-overlay">
+    <div class="modal-card purchase-result-card">
+        <div class="modal-header">
+            <i class="fa-solid fa-receipt modal-icon"></i>
+            <h4 class="modal-title">Detalle de compra</h4>
+        </div>
+        <div class="modal-body" id="publicHistoryDetailBody"></div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="publicHistoryDetailCopyAll">
+                <i class="fa-solid fa-copy me-2"></i> Copiar todo
+            </button>
+            <button type="button" class="btn btn-primary" id="publicHistoryDetailClose">Aceptar</button>
+        </div>
+    </div>
+</div>
+
+<div id="purchaseResultModal" class="modal-overlay">
+    <div class="modal-card purchase-result-card">
+        <div class="modal-header">
+            <i class="fa-solid fa-circle-check modal-icon"></i>
+            <h4 class="modal-title">Compra confirmada</h4>
+        </div>
+        <div class="modal-body" id="purchaseResultBody"></div>
+        <div class="modal-footer">
+            <button type="button" id="purchaseResultCopyAll" class="btn btn-secondary">
+                <i class="fa-solid fa-copy me-2"></i> Copiar todo
+            </button>
+            <button type="button" id="purchaseResultClose" class="btn btn-primary">Aceptar</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/cart-3d.js" type="module" asp-append-version="true"></script>
+    <script src="~/js/public-store.js" asp-append-version="true"></script>
+    <script src="~/js/public-history.js" asp-append-version="true"></script>
+}
+

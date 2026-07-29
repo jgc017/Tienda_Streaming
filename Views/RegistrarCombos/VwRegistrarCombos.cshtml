@@ -1,0 +1,152 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Registrar Combos";
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section Scripts {
+    <script src="~/js/administracion/registrarcombos.js" asp-append-version="true"></script>
+}
+
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+<input type="hidden" id="txtIdCombo" />
+<input type="hidden" id="txtComboImagenUrl" />
+
+<nav aria-label="breadcrumb" class="breadcrumb-wrapper">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="VwIndex">Inicio</a></li>
+        <li class="breadcrumb-item">Registrar Combos</li>
+    </ol>
+</nav>
+
+<div class="container-fluid">
+    <div class="card custom-card border-primary">
+        <div class="card-header d-flex align-items-center custom-card-header">
+            <h4 class="card-title text-white d-flex align-items-center">
+                <i class="fa-solid fa-layer-group text-white me-2"></i>
+                Registrar Combos
+            </h4>
+        </div>
+        <div class="card-body collapse show">
+            <fieldset class="sistema-config-section sistema-config-fieldset">
+                <legend class="sistema-config-legend">Datos del combo</legend>
+                <div class="row g-3 align-items-stretch">
+                    <div class="col-12 col-xl-9">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6 custom-input-group">
+                                <div class="form-group has-float-label">
+                                    <input id="txtComboNombre" type="text" class="form-control floating-input input-blue" placeholder=" Describa el Nombre del Combo" />
+                                    <label class="floating-label">Nombre</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 custom-input-group">
+                                <div class="form-group has-float-label select-float-label">
+                                    @Html.DropDownList("ddlComboTipoUsuario", ViewBag.ddlTiposUsuario as IEnumerable<SelectListItem>, "Tipo de Usuario pra el que Estará Disponible el Combo", new { id = "ddlComboTipoUsuario", @class = "form-control floating-select select2" })
+                                    <label class="floating-label">Tipo usuario</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4 custom-input-group">
+                                <div class="form-group has-float-label">
+                                    <input id="txtComboTiempoPantalla" type="number" min="1" step="1" class="form-control floating-input input-blue" placeholder=" Vigencia en Días del Combo" />
+                                    <label class="floating-label">Dias</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4 custom-input-group">
+                                <div class="form-group has-float-label">
+                                    <input id="txtComboPrecio" type="number" min="1" step="0.01" class="form-control floating-input input-blue" placeholder=" Precio del Combo" />
+                                    <label class="floating-label">Precio</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4 custom-input-group">
+                                <div class="form-group has-float-label">
+                                    <input id="txtComboOrden" type="number" min="1" step="1" class="form-control floating-input input-blue" placeholder=" Orden Visualización del Combo" />
+                                    <label class="floating-label">Orden</label>
+                                </div>
+                            </div>
+                            <div class="col-12 custom-input-group">
+                                <div class="form-group has-float-label file-upload-float-label">
+                                    <div class="file-upload-row">
+                                        <input id="fileImagenCombo" type="file" class="form-control floating-input file-upload-input" accept="image/jpeg,image/png,image/webp" />
+                                        <button type="button" id="btnSubirImagenCombo" class="btn btn-primary file-upload-button">
+                                            <i class="fa-solid fa-upload"></i>
+                                        </button>
+                                    </div>
+                                    <label class="floating-label">Imagen del combo</label>
+                                </div>
+                            </div>
+                            <div class="col-12 custom-input-group">
+                                <div class="visual-config-help">
+                                    <strong>Dimensiones recomendadas:</strong> 900 X 1200 px, relacion 3:4 vertical, en JPG, PNG o WebP.
+                                </div>
+                            </div>
+                            <div class="col-12 custom-input-group">
+                                <div class="form-group has-float-label">
+                                    <textarea id="txtComboDescripcion" class="form-control floating-input input-blue" rows="3" placeholder=" Descripción del Combo (Plataformas que Contiene)"></textarea>
+                                    <label class="floating-label">Descripcion</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-3 text-center">
+                        <div class="form-image-preview-group combo-imagen-preview-group">
+                            <img id="previewImagenCombo" class="form-image-preview producto-imagen-preview d-none" alt="Vista previa combo" />
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset class="sistema-config-section sistema-config-fieldset mt-3">
+                <legend class="sistema-config-legend">Plataformas incluidas</legend>
+                <div class="row form-flex align-items-end">
+                    <div class="col-12 col-md-7 custom-input-group">
+                        <div class="form-group has-float-label select-float-label">
+                            @Html.DropDownList("ddlComboPlataforma", ViewBag.ddlPlataformas as IEnumerable<SelectListItem>, "Seleccione una opcion", new { id = "ddlComboPlataforma", @class = "form-control floating-select select2" })
+                            <label class="floating-label">Plataforma</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <input id="txtComboPlataformaCantidad" type="number" min="1" step="1" class="form-control floating-input input-blue" placeholder=" " />
+                            <label class="floating-label">Cantidad</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-2 custom-input-group">
+                        <button type="button" id="BtnAgregarPlataformaCombo" class="btn-form-action btn-fixed w-100">
+                            <i class="fa-solid fa-plus me-2"></i> Agregar
+                        </button>
+                    </div>
+                    <div class="col-12">
+                        <table class="table-custom align-middle" id="tablaComboPlataformas"></table>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="col-12 d-flex justify-content-end gap-2 mt-3 mb-3">
+                <button type="button" id="BtnNuevoCombo" class="btn btn-success btn-fixed">
+                    <i class="fa-solid fa-file-circle-plus me-2"></i> Nuevo
+                </button>
+                <button type="button" id="BtnGuardarCombo" class="btn-form-action btn-fixed">
+                    <i class="fa-solid fa-save me-2"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="card custom-card border-primary">
+        <div class="card-header d-flex align-items-center custom-card-header">
+            <h4 class="card-title text-white d-flex align-items-center">
+                <i class="fa-solid fa-list text-white me-2"></i>
+                Lista Combos
+            </h4>
+        </div>
+        <div class="card-body collapse show">
+            <div class="table-responsive m-t-40" style="margin-top: 0 !important;">
+                <table class="table-custom align-middle" id="tablaCombos"></table>
+            </div>
+        </div>
+    </div>
+</div>

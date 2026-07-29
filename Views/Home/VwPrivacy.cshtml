@@ -1,0 +1,41 @@
+@model List<Tienda_Streaming.Models.Dto.Administracion.RegistrarPublicaciones.DtoInicioContenidoItem>
+
+@{
+    ViewData["Title"] = "Politicas de privacidad";
+}
+
+<section class="public-home public-page-shell">
+    <partial name="_PublicHomeNav" />
+
+    <header class="public-page-header">
+        <span class="public-home-kicker">Legal</span>
+        <h1>Politicas de privacidad</h1>
+        <p>Contenido publico administrado desde el modulo de imagenes y videos.</p>
+    </header>
+
+    <div class="public-card-list">
+        @if (Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <article class="public-content-card">
+                    <div class="public-content-body">
+                        <h2>@item.Titulo</h2>
+                        <p class="public-preline">@(item.Contenido ?? item.Resumen)</p>
+                    </div>
+                </article>
+            }
+        }
+        else
+        {
+            <article class="public-content-card">
+                <div class="public-content-body">
+                    <h2>Politicas pendientes</h2>
+                    <p>El administrador podra publicar aqui las politicas de privacidad del sistema.</p>
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+

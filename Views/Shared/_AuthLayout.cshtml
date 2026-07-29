@@ -1,0 +1,50 @@
+@inject Tienda_Streaming.Business.Interfaces.SistemaConfig.ISistemaConfig SistemaConfigService
+
+@{
+    // Layout usado por login y recuperacion. Cada vista puede cambiar marca,
+    // logo o fondo usando ViewData.
+    var title = ViewData["Title"] as string ?? "Acceso";
+    var sistemaConfig = await SistemaConfigService.F_GetSistemaVisualConfig();
+    var authLogo = sistemaConfig.LogoUrl;
+    var authBackground = sistemaConfig.LoginBackgroundUrl;
+    var faviconSistema = Url.Content(sistemaConfig.FaviconUrl);
+    var authBrand = ViewData["AuthBrand"] as string ?? "Tienda Streaming";
+    var backgroundStyle = string.IsNullOrWhiteSpace(authBackground)
+        ? string.Empty
+        : $"--auth-bg-image: url('{Url.Content(authBackground)}');";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@title - @authBrand</title>
+    <link rel="icon" type="image/png" href="@faviconSistema" />
+    <meta name="app-logo" content="@Url.Content(authLogo)" />
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="auth-body" style="@backgroundStyle">
+    <partial name="_StoreHorizontalNav" />
+
+    <main class="auth-shell">
+        @* Tarjeta central de autenticacion. RenderBody inserta el formulario concreto. *@
+        <section class="auth-card" aria-label="@title">
+            <div class="auth-brand">
+                <h1>@authBrand</h1>
+                <img src="@Url.Content(authLogo)" alt="Logo @authBrand" class="auth-logo" />
+            </div>
+
+            @RenderBody()
+        </section>
+    </main>
+
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

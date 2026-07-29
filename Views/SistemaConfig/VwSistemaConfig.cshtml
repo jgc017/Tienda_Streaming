@@ -1,0 +1,199 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "Imagenes y Videos";
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section Scripts {
+    <script src="~/js/Administracion/SistemaConfig.js" asp-append-version="true"></script>
+}
+
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+
+<nav aria-label="breadcrumb" class="breadcrumb-wrapper">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="VwIndex">Inicio</a></li>
+        <li class="breadcrumb-item"><a asp-controller="SistemaConfig" asp-action="VwSistemaConfig">Imagenes y Videos</a></li>
+    </ol>
+</nav>
+
+<div class="container-fluid">
+    <div class="col-12">
+        <div class="card custom-card border-primary">
+            <div class="card-header d-flex align-items-center custom-card-header">
+                <h4 class="card-title text-white d-flex align-items-center">
+                    <i class="fa-solid fa-image text-white me-2"></i>
+                    Imagenes y Videos del Sistema
+                </h4>
+                <div class="card-actions ms-auto d-flex button-group">
+                    <a class="link text-white d-flex align-items-center" data-action="collapse"><i class="fa-solid fa-minus"></i></a>
+                    <a class="link text-white d-flex align-items-center" data-action="expand"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></a>
+                    <a class="link text-white d-flex align-items-center pe-0" data-action="close"><i class="fa-solid fa-xmark"></i></a>
+                </div>
+            </div>
+
+            <div class="card-body collapse show">
+                <fieldset class="sistema-config-section sistema-config-fieldset">
+                    <legend class="sistema-config-legend">Logo del sistema</legend>
+                    <div class="row g-3 align-items-stretch">
+                        <div class="col-12 col-xl-9">
+                            <div class="row g-3">
+                                <div class="col-12 custom-input-group">
+                                    <div class="form-group has-float-label">
+                                        <input id="txtLogoSistema" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                                        <label class="floating-label">Logo del sistema</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 custom-input-group">
+                                    <div class="form-group has-float-label file-upload-float-label">
+                                        <div class="file-upload-row">
+                                            <input id="fileLogoSistema" type="file" class="form-control floating-input file-upload-input" accept="image/jpeg,image/png,image/webp,image/gif" />
+                                            <button type="button" id="btnSubirLogoSistema" class="btn btn-primary file-upload-button">
+                                                <i class="fa-solid fa-upload"></i>
+                                            </button>
+                                        </div>
+                                        <label class="floating-label">Cargar logo</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 custom-input-group">
+                                    <div class="visual-config-help">
+                                        <strong>Logo:</strong> se usa en login, loader, inicio publico y menu interno. Minimo 160 x 80 px.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 text-center">
+                            <div class="form-image-preview-group sistema-config-preview-group">
+                                <img id="previewLogoSistema" class="form-image-preview sistema-config-preview d-none" alt="Vista previa logo del sistema" />
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="sistema-config-section sistema-config-fieldset">
+                    <legend class="sistema-config-legend">Favicon</legend>
+                    <div class="row g-3 align-items-stretch">
+                        <div class="col-12 col-xl-9">
+                            <div class="row g-3">
+                                <div class="col-12 custom-input-group">
+                                    <div class="form-group has-float-label">
+                                        <input id="txtFaviconSistema" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                                        <label class="floating-label">Favicon</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 custom-input-group">
+                                    <div class="form-group has-float-label file-upload-float-label">
+                                        <div class="file-upload-row">
+                                            <input id="fileFaviconSistema" type="file" class="form-control floating-input file-upload-input" accept="image/x-icon,image/png" />
+                                            <button type="button" id="btnSubirFaviconSistema" class="btn btn-primary file-upload-button">
+                                                <i class="fa-solid fa-upload"></i>
+                                            </button>
+                                        </div>
+                                        <label class="floating-label">Cargar favicon</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 custom-input-group">
+                                    <div class="visual-config-help">
+                                        <strong>Favicon:</strong> icono que aparece en la pestana del navegador. Usa PNG o ICO. Minimo 32 x 32 px.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 text-center">
+                            <div class="form-image-preview-group sistema-config-preview-group">
+                                <img id="previewFaviconSistema" class="form-image-preview sistema-config-favicon d-none" alt="Vista previa favicon" />
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="sistema-config-section sistema-config-fieldset">
+                    <legend class="sistema-config-legend">Fondo del login</legend>
+                    <div class="row g-3 align-items-stretch">
+                        <div class="col-12 col-xl-9">
+                            <div class="row g-3">
+                                <div class="col-12 custom-input-group">
+                                    <div class="form-group has-float-label">
+                                        <input id="txtFondoLoginSistema" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                                        <label class="floating-label">Fondo del login</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 custom-input-group">
+                                    <div class="form-group has-float-label file-upload-float-label">
+                                        <div class="file-upload-row">
+                                            <input id="fileFondoLoginSistema" type="file" class="form-control floating-input file-upload-input" accept="image/jpeg,image/png,image/webp,image/gif" />
+                                            <button type="button" id="btnSubirFondoLoginSistema" class="btn btn-primary file-upload-button">
+                                                <i class="fa-solid fa-upload"></i>
+                                            </button>
+                                        </div>
+                                        <label class="floating-label">Cargar fondo login</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 custom-input-group">
+                                    <div class="visual-config-help">
+                                        <strong>Fondo login:</strong> imagen usada en login, olvido y cambio de contrasena. Minimo 1280 x 720 px.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 text-center">
+                            <div class="form-image-preview-group sistema-config-preview-group">
+                                <img id="previewFondoLoginSistema" class="form-image-preview sistema-config-background d-none" alt="Vista previa fondo login" />
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="sistema-config-section sistema-config-fieldset">
+                    <legend class="sistema-config-legend">Video publico</legend>
+                    <div class="row g-3 align-items-stretch">
+                        <div class="col-12 col-xl-9">
+                            <div class="row g-3">
+                                <div class="col-12 custom-input-group">
+                                    <div class="form-group has-float-label">
+                                        <input id="txtVideoSistema" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                                        <label class="floating-label">Ruta o Link Directo del Video</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 custom-input-group">
+                                    <div class="form-group has-float-label file-upload-float-label">
+                                        <div class="file-upload-row">
+                                            <input id="fileVideoSistema" type="file" class="form-control floating-input file-upload-input" accept="video/mp4,video/webm,video/ogg" />
+                                            <button type="button" id="btnSubirVideoSistema" class="btn btn-primary file-upload-button">
+                                                <i class="fa-solid fa-upload"></i>
+                                            </button>
+                                        </div>
+                                        <label class="floating-label">Cargar video</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 custom-input-group">
+                                    <div class="visual-config-help">
+                                        <strong>Video:</strong> puedes cargar un archivo local o pegar una referencia de YouTube. Si cargas uno nuevo, reemplaza el anterior.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 text-center">
+                            <div class="form-image-preview-group sistema-config-preview-group sistema-config-video-group">
+                                <video id="previewVideoSistema" class="form-image-preview sistema-config-video d-none" muted playsinline controls></video>
+                                <a id="linkPreviewVideoSistema" class="visual-config-video-link d-none" href="#" target="_blank" rel="noopener noreferrer">
+                                    <i class="fa-brands fa-youtube me-1"></i> Ver referencia
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="col-12 d-flex justify-content-end gap-2 mt-3 mb-3">
+                    <button type="button" id="BtnRestaurarSistemaConfig" class="btn btn-success btn-fixed">
+                        <i class="fa-solid fa-rotate-left me-2"></i> Restaurar
+                    </button>
+                    <button type="button" id="BtnGuardarSistemaConfig" class="btn-form-action btn-fixed">
+                        <i class="fa-solid fa-save me-2"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

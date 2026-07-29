@@ -1,0 +1,118 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "Imagenes Producto";
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section Scripts {
+    <script src="~/js/administracion/imagenesproducto.js" asp-append-version="true"></script>
+}
+
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+<input type="hidden" id="txtIdImagenProducto" />
+
+<nav aria-label="breadcrumb" class="breadcrumb-wrapper">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="VwIndex">Inicio</a></li>
+        <li class="breadcrumb-item">Imagenes Producto</li>
+    </ol>
+</nav>
+
+<div class="container-fluid">
+    <div class="card custom-card border-primary">
+        <div class="card-header d-flex align-items-center custom-card-header">
+            <h4 class="card-title text-white d-flex align-items-center">
+                <i class="fa-solid fa-image text-white me-2"></i>
+                Registrar Imagen Producto
+            </h4>
+        </div>
+        <div class="card-body collapse show">
+            <fieldset class="sistema-config-section sistema-config-fieldset">
+                <legend class="sistema-config-legend">Imagen del producto</legend>
+                <div class="row g-3 align-items-stretch">
+                    <div class="col-12 col-xl-9">
+                        <div class="row g-3">
+                            <div class="col-12 col-lg-6 custom-input-group">
+                                <div class="form-group has-float-label select-float-label">
+                                    @Html.DropDownList("ddlPlataformaImagen", ViewBag.ddlPlataformas as IEnumerable<SelectListItem>, "Seleccione una opcion", new { id = "ddlPlataformaImagen", @class = "form-control floating-select select2" })
+                                    <label class="floating-label">Plataforma</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 custom-input-group">
+                                <div class="form-group has-float-label select-float-label">
+                                    @Html.DropDownList("ddlTipoImagenProducto", ViewBag.ddlTiposImagen as IEnumerable<SelectListItem>, "Seleccione una opcion", new { id = "ddlTipoImagenProducto", @class = "form-control floating-select select2" })
+                                    <label class="floating-label">Tipo imagen</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 custom-input-group">
+                                <div class="form-status-editor">
+                                    <label class="form-status-label">Estado</label>
+                                    <div class="form-toggle-container"><input type="checkbox" id="chkImagenProductoVigente"></div>
+                                </div>
+                            </div>
+                            <div class="col-6 custom-input-group">
+                                <div class="form-group has-float-label">
+                                    <input id="txtImagenProducto" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                                    <label class="floating-label">Ruta imagen</label>
+                                </div>
+                            </div>
+                            <div class="col-6 custom-input-group">
+                                <div class="form-group has-float-label file-upload-float-label">
+                                    <div class="file-upload-row">
+                                        <input id="fileImagenProducto" type="file" class="form-control floating-input file-upload-input" accept="image/jpeg,image/png,image/webp" />
+                                        <button type="button" id="btnSubirImagenProducto" class="btn btn-primary file-upload-button">
+                                            <i class="fa-solid fa-upload"></i>
+                                        </button>
+                                    </div>
+                                    <label class="floating-label">Reemplazar imagen</label>
+                                </div>
+                            </div>
+                            <div class="col-6 custom-input-group">
+                                <div class="form-group has-float-label">
+                                    <input id="txtDescripcionImagenProducto" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                                    <label class="floating-label">Descripcion</label>
+                                </div>
+                            </div>
+                            <div class="col-12 custom-input-group">
+                                <div class="visual-config-help">
+                                    <strong>Dimensiones recomendadas:</strong> 900 X 1200  px, (ancho x alto), relacion 3:4 vertical, en JPG, PNG o WebP. Con esa proporcion la imagen ocupa el contenedor completo sin deformarse.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-3 text-center">
+                        <div class="form-image-preview-group producto-imagen-preview-group">
+                            <img id="previewImagenProducto" class="form-image-preview producto-imagen-preview d-none" alt="Vista previa producto" />
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="col-12 d-flex justify-content-end gap-2 mt-3 mb-3">
+                <button type="button" id="BtnNuevoImagenProducto" class="btn btn-success btn-fixed">
+                    <i class="fa-solid fa-file-circle-plus me-2"></i> Nuevo
+                </button>
+                <button type="button" id="BtnGuardarImagenProducto" class="btn-form-action btn-fixed">
+                    <i class="fa-solid fa-save me-2"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="card custom-card border-primary">
+        <div class="card-header d-flex align-items-center custom-card-header">
+            <h4 class="card-title text-white d-flex align-items-center">
+                <i class="fa-solid fa-list text-white me-2"></i>
+                Lista Imagenes Producto
+            </h4>
+        </div>
+        <div class="card-body collapse show">
+            <div class="table-responsive m-t-40" style="margin-top: 0 !important;">
+                <table class="table-custom align-middle" id="tablaImagenesProducto"></table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,342 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Permisos";
+
+    // Token CSRF que usa wwwroot/js/Administracion/Permisos.js en POST/PUT/DELETE.
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section Scripts {
+    @* Script que consume /api/PermisosApi para CRUD de permisos de menu. *@
+    <script src="~/js/administracion/permisos.js" asp-append-version="true"></script>
+    @* Script que consume /api/PermisosMetodosApi para permisos automaticos de metodos. *@
+    <script src="~/js/administracion/permisosmetodos.js" asp-append-version="true"></script>
+}
+
+@* Valores ocultos compartidos con JavaScript. *@
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+
+@* Navegacion visual de la pagina actual dentro del modulo Administracion. *@
+<nav aria-label="breadcrumb" class="breadcrumb-wrapper">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="VwIndex">Inicio</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Permisos" asp-action="VwPermisos">Permisos</a></li>
+    </ol>
+</nav>
+
+@* Formulario de registro de permisos de visualizacion para menus. *@
+<div class="container-fluid">
+    <div class="col-12">
+        <div class="card custom-card border-primary">
+            <div class="card-header d-flex align-items-center custom-card-header">
+                <h4 class="card-title text-white d-flex align-items-center">
+                    <i class="fa-solid fa-key text-white me-2"></i>
+                    Registrar Permisos de Menu
+                </h4>
+                <div class="card-actions ms-auto d-flex button-group">
+                    <a class="link text-white d-flex align-items-center" data-action="collapse">
+                        <i class="fa-solid fa-minus"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center" data-action="expand">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center pe-0" data-action="close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body collapse show">
+                <div class="row form-flex align-items-end">
+                    <div class="col-12 col-md-3 custom-input-group">
+                        <div class="form-group has-float-label select-float-label">
+                            @Html.DropDownList("ddlMenuPermiso", ViewBag.ddlMenus as IEnumerable<SelectListItem>, "Seleccione una opcion", htmlAttributes: new { @tabindex = 1, id = "ddlMenuPermiso", @class = "form-control floating-select select2" })
+                            <label class="floating-label">Menu</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3 custom-input-group">
+                        <div class="form-group has-float-label select-float-label">
+                            @Html.DropDownList("ddlAccionPermiso", ViewBag.ddlAcciones as IEnumerable<SelectListItem>, "Seleccione una opcion", htmlAttributes: new { @tabindex = 1, id = "ddlAccionPermiso", @class = "form-control floating-select select2" })
+                            <label class="floating-label">Accion</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 custom-input-group">
+                        <div class="form-group has-float-label">
+                            <input tabindex="1" name="txtDescripcionPermiso" id="txtDescripcionPermiso" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                            <label class="floating-label">Descripcion</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-2 d-flex justify-content-end mt-3 mb-3">
+                        <button tabindex="1" name="BtnRegistrarPermiso" id="BtnRegistrarPermiso" class="btn-form-action btn-fixed">
+                            <i class="fa-solid fa-save me-2"></i> Registrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Tabla llenada dinamicamente desde GET /api/PermisosApi/F_GetPermisosList. *@
+<div class="container-fluid">
+    <div class="col-12">
+        <div class="card custom-card border-primary">
+            <div class="card-header d-flex align-items-center custom-card-header">
+                <h4 class="card-title text-white d-flex align-items-center">
+                    <i class="fa-solid fa-list-check text-white me-2"></i>
+                    Lista Permisos
+                </h4>
+                <div class="card-actions ms-auto d-flex button-group">
+                    <a class="link text-white d-flex align-items-center" data-action="collapse">
+                        <i class="fa-solid fa-minus"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center" data-action="expand">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center pe-0" data-action="close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body collapse show">
+                @* Grilla crea encabezados, cuerpo, columnas, acciones y controles desde Permisos.js. *@
+                <div class="table-responsive m-t-40" style="margin-top: 0 !important;"><table class="table-custom align-middle" id="tablaPermisos"></table></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Sincronizacion automatica y tabla de permisos de metodos API. *@
+<div class="container-fluid">
+    <div class="col-12">
+        <div class="card custom-card border-primary">
+            <div class="card-header d-flex align-items-center custom-card-header">
+                <h4 class="card-title text-white d-flex align-items-center">
+                    <i class="fa-solid fa-code text-white me-2"></i>
+                    Registrar Permisos de Metodos
+                </h4>
+                <div class="card-actions ms-auto d-flex button-group">
+                    <a class="link text-white d-flex align-items-center" data-action="collapse">
+                        <i class="fa-solid fa-minus"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center" data-action="expand">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center pe-0" data-action="close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body collapse show">
+                <div class="row form-flex align-items-end">
+                    <div class="col-12 col-md-9 custom-input-group">
+                        <div class="restore-request-panel">
+                            La sincronizacion revisa automaticamente los controladores API y crea o actualiza los permisos de metodo detectados.
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3 d-flex justify-content-end mt-3 mb-3">
+                        <button tabindex="1" name="BtnSincronizarPermisosMetodos" id="BtnSincronizarPermisosMetodos" class="btn-form-action btn-fixed">
+                            <i class="fa-solid fa-rotate me-2"></i> Sincronizar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="col-12">
+        <div class="card custom-card border-primary">
+            <div class="card-header d-flex align-items-center custom-card-header">
+                <h4 class="card-title text-white d-flex align-items-center">
+                    <i class="fa-solid fa-list-check text-white me-2"></i>
+                    Lista Permisos Metodos
+                </h4>
+                <div class="card-actions ms-auto d-flex button-group">
+                    <a class="link text-white d-flex align-items-center" data-action="collapse">
+                        <i class="fa-solid fa-minus"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center" data-action="expand">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                    </a>
+                    <a class="link text-white d-flex align-items-center pe-0" data-action="close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body collapse show">
+                @* Grilla creada desde PermisosMetodos.js. *@
+                <div class="table-responsive m-t-40" style="margin-top: 0 !important;"><table class="table-custom align-middle" id="tablaPermisosMetodos"></table></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Modal de actualizacion de permisos. *@
+<div id="modalEditarPermiso" class="modal-custom">
+    <div class="modal-content-custom">
+        <div class="modal-header-custom">
+            <h5 class="modal-title">Actualizar Permiso</h5>
+            <button class="btn-close-custom">x</button>
+        </div>
+
+        <div class="modal-body-custom">
+            <input type="hidden" id="Id_Permiso">
+
+            <div class="mb-3 form-group has-float-label select-float-label">
+                @Html.DropDownList("Modulo", ViewBag.ddlMenus as IEnumerable<SelectListItem>, "Seleccione una opcion", htmlAttributes: new { id = "Modulo", @class = "form-control floating-select select2" })
+                <label class="floating-label">Menu</label>
+            </div>
+
+            <div class="mb-3 form-group has-float-label select-float-label">
+                @Html.DropDownList("Accion", ViewBag.ddlAcciones as IEnumerable<SelectListItem>, "Seleccione una opcion", htmlAttributes: new { id = "Accion", @class = "form-control floating-select select2" })
+                <label class="floating-label">Accion</label>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Descripcion</label>
+                <input type="text" id="DescripcionPermiso" class="form-control">
+            </div>
+
+            @* Toggle que modifica Permisos.Vigente: 1 activo, 0 inactivo. *@
+            <div class="user-status-editor">
+                <div class="form-horizontal">
+                    <div class="form-group row form-group-toggle align-items-center">
+                        <label class="col-form-label Labels label-toggle">Estado del permiso</label>
+                        <div class="toggle-container">
+                            <input type="checkbox"
+                                   id="chkPermisoVigente"
+                                   data-toggle="toggle"
+                                   data-on="Activo"
+                                   data-off="Inactivo"
+                                   data-onstyle="primary"
+                                   data-offstyle="danger"
+                                   data-size="small"
+                                   data-width="92"
+                                   data-height="30">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer-custom">
+            <button class="btn btn-secondary" id="btnCancelarPermisoModal">Cancelar</button>
+            <button class="btn btn-primary" id="btnGuardarPermisoCambios">
+                <i class="fa-solid fa-pen-to-square me-2"></i> Actualizar
+            </button>
+        </div>
+    </div>
+</div>
+
+@* Modal de actualizacion de permisos de metodo. *@
+<div id="modalEditarPermisoMetodo" class="modal-custom">
+    <div class="modal-content-custom">
+        <div class="modal-header-custom">
+            <h5 class="modal-title">Actualizar Permiso de Metodo</h5>
+            <button class="btn-close-custom">x</button>
+        </div>
+
+        <div class="modal-body-custom">
+            <input type="hidden" id="Id_Permiso_Metodo">
+
+            <div class="mb-3">
+                <label class="form-label">Vista asociada</label>
+                <input type="text" id="VistaPermisoMetodo" class="form-control" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Controlador</label>
+                <input type="text" id="ControladorMetodo" class="form-control" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Metodo</label>
+                <input type="text" id="MetodoPermiso" class="form-control" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">HTTP</label>
+                <input type="text" id="HttpMetodoPermiso" class="form-control" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Descripcion</label>
+                <input type="text" id="DescripcionPermisoMetodo" class="form-control">
+            </div>
+
+            <div class="user-status-editor">
+                <div class="form-horizontal">
+                    <div class="form-group row form-group-toggle align-items-center">
+                        <label class="col-form-label Labels label-toggle">Estado del permiso</label>
+                        <div class="toggle-container">
+                            <input type="checkbox"
+                                   id="chkPermisoMetodoVigente"
+                                   data-toggle="toggle"
+                                   data-on="Activo"
+                                   data-off="Inactivo"
+                                   data-onstyle="primary"
+                                   data-offstyle="danger"
+                                   data-size="small"
+                                   data-width="92"
+                                   data-height="30">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer-custom">
+            <button class="btn btn-secondary" id="btnCancelarPermisoMetodoModal">Cancelar</button>
+            <button class="btn btn-primary" id="btnGuardarPermisoMetodoCambios">
+                <i class="fa-solid fa-pen-to-square me-2"></i> Actualizar
+            </button>
+        </div>
+    </div>
+</div>
+
+@* Modal para asignar el permiso seleccionado a un rol. *@
+<div id="modalAsignarPermisoRol" class="modal-custom">
+    <div class="modal-content-custom modal-content-wide">
+        <div class="modal-header-custom">
+            <h5 class="modal-title">Asignar Permiso a Roles</h5>
+            <button class="btn-close-custom">x</button>
+        </div>
+
+        <div class="modal-body-custom">
+            <input type="hidden" id="Id_Permiso_Asignar">
+
+            <div class="mb-3">
+                <label class="form-label">Permiso</label>
+                <input type="text" id="NombrePermisoAsignar" class="form-control" readonly>
+            </div>
+
+            <div class="roles-permiso-panel">
+                <div class="roles-permiso-toolbar">
+                    <span class="roles-permiso-title">Roles asignables</span>
+                    <div class="roles-permiso-actions">
+                        <button type="button" class="btn btn-sm btn-success" id="btnActivarTodosRolesPermiso">
+                            <i class="fa-solid fa-check-double me-1"></i> Activar todos
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" id="btnInactivarTodosRolesPermiso">
+                            <i class="fa-solid fa-ban me-1"></i> Inactivar todos
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive roles-permiso-table-wrapper">
+                    <table class="table-custom align-middle roles-permiso-table" id="tablaRolesPermiso"></table>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer-custom">
+            <button class="btn btn-secondary" id="btnCancelarAsignarPermisoRol">Cancelar</button>
+            <button class="btn btn-primary" id="btnGuardarAsignarPermisoRol">
+                <i class="fa-solid fa-save me-2"></i> Guardar
+            </button>
+        </div>
+    </div>
+</div>

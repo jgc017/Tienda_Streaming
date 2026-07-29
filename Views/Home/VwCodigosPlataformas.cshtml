@@ -1,0 +1,49 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "Codigos Plataformas";
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+
+<section class="public-home public-store-shell">
+    <partial name="_PublicHomeNav" />
+
+    <main class="public-store-layout">
+        <section class="public-history-panel public-mail-panel">
+            <div class="public-history-header">
+                <h1>Codigos de plataformas</h1>
+            </div>
+
+            <div class="public-history-form">
+                <input id="txtCorreoCodigoPlataforma" type="email" class="form-control input-blue" placeholder="Correo de la cuenta" autocomplete="email" />
+                <button type="button" class="btn btn-primary" id="btnBuscarCodigosPlataformas">
+                    <i class="fa-solid fa-magnifying-glass me-2"></i> Buscar
+                </button>
+            </div>
+
+            <div class="table-responsive m-t-40" style="margin-top: 0 !important;">
+                <table class="table-custom align-middle" id="tablaCodigosPlataformasPublica"></table>
+            </div>
+        </section>
+    </main>
+</section>
+
+<div id="modalDetalleCorreoPublico" class="modal-overlay">
+    <div class="modal-card purchase-result-card mail-public-modal">
+        <div class="modal-card-header">
+            <h5 id="tituloDetalleCorreoPublico">Detalle correo</h5>
+            <button type="button" id="btnCerrarDetalleCorreoPublico" aria-label="Cerrar">x</button>
+        </div>
+        <div class="modal-card-body">
+            <div class="mail-detail-meta" id="detalleCorreoPublicoMeta"></div>
+            <div class="mail-link-list" id="detalleCorreoPublicoLinks"></div>
+            <iframe id="detalleCorreoPublicoFrame" class="mail-detail-frame" sandbox="allow-popups allow-popups-to-escape-sandbox"></iframe>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/codigos-plataformas-public.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,33 @@
+@model Tienda_Streaming.Models.Dto.Administracion.RegistrarPublicaciones.DtoInicioContenidoItem
+
+@{
+    ViewData["Title"] = Model.Titulo;
+}
+
+<section class="public-home public-page-shell">
+    <partial name="_PublicHomeNav" />
+
+    <article class="public-detail">
+        <span class="public-home-kicker">@Model.TipoContenido</span>
+        <h1>@Model.Titulo</h1>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+        {
+            <img class="public-detail-image" src="@Url.Content(Model.ImagenUrl)" alt="@Model.Titulo" />
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Resumen))
+        {
+            <p class="public-detail-summary">@Model.Resumen</p>
+        }
+
+        <div class="public-preline">@Model.Contenido</div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.EnlaceUrl))
+        {
+            <a class="btn btn-primary mt-4" href="@Model.EnlaceUrl">@(Model.TextoBoton ?? "Abrir enlace")</a>
+        }
+    </article>
+</section>
+
+

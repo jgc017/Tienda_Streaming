@@ -1,0 +1,47 @@
+@model List<Tienda_Streaming.Models.Dto.Administracion.RegistrarPublicaciones.DtoInicioContenidoItem>
+
+@{
+    var titulo = ViewData["Title"]?.ToString() ?? "Contenido";
+}
+
+<section class="public-home public-page-shell">
+    <partial name="_PublicHomeNav" />
+
+    <header class="public-page-header">
+        <span class="public-home-kicker">Publico</span>
+        <h1>@titulo</h1>
+        <p>Consulta el contenido publicado por el administrador.</p>
+    </header>
+
+    <div class="public-card-list">
+        @if (Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <article class="public-content-card">
+                    @if (!string.IsNullOrWhiteSpace(item.ImagenUrl))
+                    {
+                        <img class="public-content-image" src="@Url.Content(item.ImagenUrl)" alt="@item.Titulo" />
+                    }
+                    <div class="public-content-body">
+                        <small>@item.TipoContenido</small>
+                        <h2>@item.Titulo</h2>
+                        <p>@(item.Resumen ?? "")</p>
+                        <a asp-controller="Home" asp-action="VwContenidoDetalle" asp-route-id="@item.Id_InicioContenido">Leer publicacion</a>
+                    </div>
+                </article>
+            }
+        }
+        else
+        {
+            <article class="public-content-card">
+                <div class="public-content-body">
+                    <h2>Sin publicaciones</h2>
+                    <p>Aun no hay contenido activo para esta seccion.</p>
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+

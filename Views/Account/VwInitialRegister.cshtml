@@ -1,0 +1,61 @@
+@model Tienda_Streaming.Models.Dto.Account.DtoInitialRegisterViewModel
+
+@{
+    // Pantalla publica disponible solo cuando no existe ningun usuario.
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Registro inicial";
+    ViewData["AuthBrand"] = "Tienda Streaming";
+    ViewData["AuthLogo"] = "~/img/IMAGENIA.png";
+}
+
+<form asp-action="RegistroInicial" method="post" class="auth-form">
+    <h2 class="auth-form-title">Primer usuario</h2>
+    <p class="auth-form-copy">
+        Crea el usuario inicial para administrar la plantilla. Despues de este registro, nuevos usuarios solo podran ser creados por el administrador.
+    </p>
+
+    <div asp-validation-summary="ModelOnly" class="auth-validation mb-3"></div>
+
+    <div class="auth-input-group">
+        <i class="fa-solid fa-id-card auth-input-icon"></i>
+        <input asp-for="Nombre" class="auth-input" autocomplete="name" placeholder="Nombre completo" aria-label="Nombre completo" />
+    </div>
+    <span asp-validation-for="Nombre" class="auth-field-error"></span>
+
+    <div class="auth-input-group">
+        <i class="fa-solid fa-user auth-input-icon"></i>
+        <input asp-for="Usuario" class="auth-input" autocomplete="username" placeholder="Usuario" aria-label="Usuario" />
+    </div>
+    <span asp-validation-for="Usuario" class="auth-field-error"></span>
+
+    <div class="auth-input-group">
+        <i class="fa-solid fa-envelope auth-input-icon"></i>
+        <input asp-for="E_Mail" class="auth-input" autocomplete="email" placeholder="Correo electronico" aria-label="Correo electronico" />
+    </div>
+    <span asp-validation-for="E_Mail" class="auth-field-error"></span>
+
+    <div class="auth-input-group">
+        <i class="fa-solid fa-lock auth-input-icon"></i>
+        <input asp-for="Password" class="auth-input" autocomplete="new-password" placeholder="Contrasena" aria-label="Contrasena" />
+    </div>
+    <span asp-validation-for="Password" class="auth-field-error"></span>
+
+    <div class="auth-input-group">
+        <i class="fa-solid fa-shield-halved auth-input-icon"></i>
+        <input asp-for="ConfirmPassword" class="auth-input" autocomplete="new-password" placeholder="Confirmar contrasena" aria-label="Confirmar contrasena" />
+    </div>
+    <span asp-validation-for="ConfirmPassword" class="auth-field-error"></span>
+
+    <button type="submit" class="auth-submit">
+        <span>Crear primer usuario</span>
+        <i class="fa-solid fa-user-plus"></i>
+    </button>
+
+    <div class="text-center mt-3">
+        <a asp-action="Login" class="auth-link">Volver al login</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,109 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "Codigos Compra";
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section Scripts {
+    <script src="~/js/administracion/codigoscompra.js" asp-append-version="true"></script>
+}
+
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+<input type="hidden" id="txtIdCodigoCompra" />
+
+<nav aria-label="breadcrumb" class="breadcrumb-wrapper">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="VwIndex">Inicio</a></li>
+        <li class="breadcrumb-item">Codigos Compra</li>
+    </ol>
+</nav>
+
+<div class="container-fluid">
+    <div class="card custom-card border-primary">
+        <div class="card-header d-flex align-items-center custom-card-header">
+            <h4 class="card-title text-white d-flex align-items-center">
+                <i class="fa-solid fa-ticket text-white me-2"></i>
+                Generar Codigo Compra
+            </h4>
+        </div>
+        <div class="card-body collapse show">
+            <div class="row form-flex">
+                <div class="col-12 col-md-4 custom-input-group">
+                    <div class="form-group has-float-label">
+                        <input id="txtCodigoNombreCliente" type="text" class="form-control floating-input input-blue" placeholder="Nombre del cliente" autocomplete="name" />
+                        <label class="floating-label">Nombre cliente</label>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 custom-input-group">
+                    <div class="form-group has-float-label">
+                        <input id="txtCodigoCorreoCliente" type="email" class="form-control floating-input input-blue" placeholder="Correo del cliente" autocomplete="email" />
+                        <label class="floating-label">Correo cliente</label>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 custom-input-group">
+                    <div class="form-group has-float-label">
+                        <input id="txtCodigoValor" type="number" min="0" step="0.01" class="form-control floating-input input-blue" placeholder=" " />
+                        <label class="floating-label">Valor</label>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 custom-input-group">
+                    <div class="form-group has-float-label">
+                        <input id="txtCodigoExpiracion" type="date" class="form-control floating-input input-blue" placeholder=" " />
+                        <label class="floating-label">Fecha expiracion</label>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 custom-input-group">
+                    <div class="form-status-editor">
+                        <label class="form-status-label">Estado</label>
+                        <div class="form-toggle-container"><input type="checkbox" id="chkCodigoVigente"></div>
+                    </div>
+                </div>
+                <div class="col-12 d-flex justify-content-end gap-2 mt-3 mb-3">
+                    <button type="button" id="BtnNuevoCodigo" class="btn btn-success btn-fixed">
+                        <i class="fa-solid fa-file-circle-plus me-2"></i> Nuevo
+                    </button>
+                    <button type="button" id="BtnGenerarCodigo" class="btn-form-action btn-fixed">
+                        <i class="fa-solid fa-save me-2"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="codigoCompraModal" class="modal-custom">
+    <div class="modal-content-custom">
+        <div class="modal-header-custom">
+            <h5 class="modal-title">Codigo de compra</h5>
+            <button type="button" class="btn-close-custom" id="codigoCompraModalClose" aria-label="Cerrar">x</button>
+        </div>
+
+        <div class="modal-body-custom">
+            <textarea id="codigoCompraTexto" class="form-control credentials-copy-box" readonly rows="5"></textarea>
+        </div>
+
+        <div class="modal-footer-custom">
+            <button type="button" class="btn btn-secondary" id="codigoCompraModalCloseFooter">Cerrar</button>
+            <button type="button" class="btn btn-primary" id="codigoCompraCopy">
+                <i class="fa-solid fa-copy me-2"></i> Copiar informacion
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="card custom-card border-primary">
+        <div class="card-header d-flex align-items-center custom-card-header">
+            <h4 class="card-title text-white d-flex align-items-center">
+                <i class="fa-solid fa-list text-white me-2"></i>
+                Lista Codigos
+            </h4>
+        </div>
+        <div class="card-body collapse show">
+            <div class="table-responsive m-t-40" style="margin-top: 0 !important;">
+                <table class="table-custom align-middle" id="tablaCodigos"></table>
+            </div>
+        </div>
+    </div>
+</div>

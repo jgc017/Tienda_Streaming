@@ -1,0 +1,64 @@
+@model Tienda_Streaming.Models.Dto.Account.DtoLoginViewModel
+
+@{
+    // Usa layout limpio sin menu/header/footer para pantallas publicas.
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Iniciar sesion";
+    ViewData["AuthBrand"] = "Tienda Streaming";
+    ViewData["AuthLogo"] = "~/img/IMAGENIA.png";
+}
+
+@* Envia credenciales a POST /Account/Login. *@
+<form asp-action="Login" method="post" class="auth-form">
+    <input type="hidden" asp-for="ReturnUrl" />
+
+    <div asp-validation-summary="ModelOnly" class="auth-validation mb-3"></div>
+
+    <div class="auth-input-group">
+        <i class="fa-solid fa-user auth-input-icon"></i>
+        <input asp-for="Usuario"
+               class="auth-input"
+               autocomplete="username"
+               placeholder="Usuario empresarial"
+               aria-label="Usuario empresarial" />
+    </div>
+    <span asp-validation-for="Usuario" class="auth-field-error"></span>
+
+    <div class="auth-input-group">
+        <i class="fa-solid fa-lock auth-input-icon"></i>
+        <input asp-for="Password"
+               class="auth-input"
+               autocomplete="current-password"
+               placeholder="Contrasena"
+               aria-label="Contrasena" />
+    </div>
+    <span asp-validation-for="Password" class="auth-field-error"></span>
+
+    <div class="text-center">
+        @* Navega a GET /Account/ForgotPassword. *@
+        <a asp-action="ForgotPassword" class="auth-link">Olvido su contrasena?</a>
+    </div>
+
+    @if (ViewBag.PermiteRegistroInicial == true)
+    {
+        <div class="text-center mt-2">
+            <a asp-action="RegistroInicial" class="auth-link">Crear primer usuario del sistema</a>
+        </div>
+    }
+
+    <p class="auth-disclaimer">
+        Esta ingresando a un sistema de informacion privado. Su uso no autorizado puede generar bloqueo de acceso,
+        seguimiento de auditoria y las acciones administrativas o legales aplicables. Ayudenos a proteger la
+        informacion.
+        Si no tienes usuario registrado, solicita tu creacion al administrador.
+    </p>
+
+    <button type="submit" class="auth-submit">
+        <span>Iniciar sesion</span>
+        <i class="fa-solid fa-key"></i>
+    </button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

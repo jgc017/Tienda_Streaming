@@ -1,0 +1,113 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "Registrar Productos";
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section Scripts {
+    <script src="~/js/administracion/registrarproductos.js" asp-append-version="true"></script>
+}
+
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+<input type="hidden" id="txtIdCuenta" />
+
+<nav aria-label="breadcrumb" class="breadcrumb-wrapper">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="VwIndex">Inicio</a></li>
+        <li class="breadcrumb-item">Registrar Productos</li>
+    </ol>
+</nav>
+
+<div class="container-fluid">
+    <div class="card custom-card border-primary">
+        <div class="card-header d-flex align-items-center custom-card-header">
+            <h4 class="card-title text-white d-flex align-items-center">
+                <i class="fa-solid fa-boxes-stacked text-white me-2"></i>
+                Registrar Productos
+            </h4>
+            <div class="card-actions ms-auto d-flex button-group">
+                <a class="link text-white d-flex align-items-center" data-action="collapse"><i class="fa-solid fa-minus"></i></a>
+                <a class="link text-white d-flex align-items-center" data-action="expand"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></a>
+                <a class="link text-white d-flex align-items-center pe-0" data-action="close"><i class="fa-solid fa-xmark"></i></a>
+            </div>
+        </div>
+
+        <div class="card-body collapse show">
+            <div class="row form-flex">
+                <div class="col-12 col-md-3 custom-input-group">
+                    <div class="form-group has-float-label select-float-label">
+                        @Html.DropDownList("ddlPlataforma", ViewBag.ddlPlataformas as IEnumerable<SelectListItem>, "Seleccione una opcion", new { id = "ddlPlataforma", @class = "form-control floating-select select2" })
+                        <label class="floating-label">Plataforma</label>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 custom-input-group">
+                    <div class="form-group has-float-label select-float-label">
+                        @Html.DropDownList("ddlTipoUsuario", ViewBag.ddlTiposUsuario as IEnumerable<SelectListItem>, "Seleccione una opcion", new { id = "ddlTipoUsuario", @class = "form-control floating-select select2" })
+                        <label class="floating-label">Tipo usuario</label>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 custom-input-group">
+                    <div class="form-group has-float-label">
+                        <input id="txtTiempoPantalla" type="number" min="1" step="1" class="form-control floating-input input-blue" placeholder=" " />
+                        <label class="floating-label">Dias pantalla</label>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 custom-input-group">
+                    <div class="form-status-editor">
+                        <label class="form-status-label">Estado</label>
+                        <div class="form-toggle-container"><input type="checkbox" id="chkCuentaVigente"></div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 custom-input-group">
+                    <div class="form-group has-float-label">
+                        <input id="txtCorreoCuenta" type="email" class="form-control floating-input input-blue" placeholder=" " />
+                        <label class="floating-label">Correo cuenta</label>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 custom-input-group">
+                    <div class="form-group has-float-label">
+                        <input id="txtContrasenaCuenta" type="password" autocomplete="off" class="form-control floating-input input-blue" placeholder=" " />
+                        <label class="floating-label">Contrasena cuenta</label>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 custom-input-group">
+                    <div class="form-group has-float-label">
+                        <input id="txtPerfilCuenta" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                        <label class="floating-label">Perfil</label>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 custom-input-group">
+                    <div class="form-group has-float-label">
+                        <input id="txtPinCuenta" type="text" class="form-control floating-input input-blue" placeholder=" " />
+                        <label class="floating-label">PIN</label>
+                    </div>
+                </div>
+                <div class="col-12 d-flex justify-content-end gap-2 mt-3 mb-3">
+                    <button type="button" id="BtnNuevoCuenta" class="btn btn-success btn-fixed">
+                        <i class="fa-solid fa-file-circle-plus me-2"></i> Nuevo
+                    </button>
+                    <button type="button" id="BtnGuardarCuenta" class="btn-form-action btn-fixed">
+                        <i class="fa-solid fa-save me-2"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="card custom-card border-primary">
+        <div class="card-header d-flex align-items-center custom-card-header">
+            <h4 class="card-title text-white d-flex align-items-center">
+                <i class="fa-solid fa-list text-white me-2"></i>
+                Lista Productos
+            </h4>
+        </div>
+        <div class="card-body collapse show">
+            <div class="table-responsive m-t-40" style="margin-top: 0 !important;">
+                <table class="table-custom align-middle" id="tablaCuentas"></table>
+            </div>
+        </div>
+    </div>
+</div>

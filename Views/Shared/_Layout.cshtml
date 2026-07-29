@@ -1,0 +1,136 @@
+@using Tienda_Streaming.Business.Interfaces.General
+@using Tienda_Streaming.Business.Interfaces.SistemaConfig
+@inject IGeneral GeneralService
+@inject ISistemaConfig SistemaConfigService
+
+@{
+    // Determina si se debe mostrar el marco interno de la app
+    // (header, menu lateral y footer) o solo el contenido publico.
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    var rolesUsuario = User.FindAll("Id_Rol")
+        .Select(c => int.TryParse(c.Value, out var idRol) ? idRol : 0)
+        .Where(idRol => idRol > 0)
+        .ToList();
+    var menuSistema = isAuthenticated
+        ? await GeneralService.F_GetMenu(rolesUsuario)
+        : new List<Tienda_Streaming.Models.Dto.General.DtoMenuSistemaItem>();
+    var sistemaConfig = await SistemaConfigService.F_GetSistemaVisualConfig();
+    var logoSistema = Url.Content(sistemaConfig.LogoUrl);
+    var faviconSistema = Url.Content(sistemaConfig.FaviconUrl);
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Tienda Streaming</title>
+    <link rel="icon" type="image/png" href="@faviconSistema" />
+    <meta name="app-logo" content="@logoSistema" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    @* Librerias visuales y estilos propios del proyecto. *@
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="~/lib/bootstrap4-toggle/css/bootstrap-toggle.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+
+<body class="bg-dark text-light">
+    @* El layout completo solo se muestra despues del login. *@
+    @if (isAuthenticated)
+    {
+        <header class="navbar navbar-dark bg-black border-bottom border-secondary px-3 position-relative">
+            <a class="header-logo-link" asp-controller="Usuarios" asp-action="VwUsuarios" aria-label="Inicio del sistema">
+                <img src="@logoSistema" class="header-logo" alt="Logo">
+            </a>
+
+            @* Boton conectado a wwwroot/js/site.js para colapsar el sidebar. *@
+            <button id="sidebarToggle" class="sidebar-toggle-btn btn btn-outline-light">
+                Menu
+            </button>
+
+            <a class="navbar-brand fw-bold text-light ms-auto" asp-controller="Usuarios" asp-action="VwUsuarios">
+                Tienda Streaming
+            </a>
+
+            @* Cierre de sesion protegido por antiforgery en AccountController.Logout. *@
+            <form asp-controller="Account" asp-action="Logout" method="post" class="ms-3">
+                <button type="submit" class="btn btn-outline-light btn-sm">Salir</button>
+            </form>
+        </header>
+
+        <div class="layout-wrapper">
+            @* Menu lateral principal generado desde la tabla Menus y permisos por rol. *@
+            <nav id="sidebar" class="sidebar bg-black border-end border-secondary p-2">
+                <ul class="nav flex-column sidebar-menu">
+                    @await Html.PartialAsync("_MenuItems", menuSistema)
+                </ul>
+            </nav>
+            <div id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true"></div>
+
+            <main class="flex-grow-1 px-4 pb-4 pt-0">
+                @* Aqui se renderiza la vista interna solicitada. *@
+                @RenderBody()
+            </main>
+        </div>
+
+        <footer class="bg-black text-secondary text-center py-3 border-top border-secondary">
+            <small>&copy; 2026 - Tienda Streaming</small>
+        </footer>
+    }
+    else
+    {
+        @* Para pantallas publicas que accidentalmente usen este layout,
+           se evita mostrar menu/header/footer antes de autenticar. *@
+        <main class="flex-grow-1">
+            @RenderBody()
+        </main>
+    }
+
+    @* Scripts comunes de UI. Las vistas pueden agregar scripts con @section Scripts. *@
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootstrap4-toggle/js/bootstrap-toggle.min.js"></script>
+    <script src="~/js/table-utils.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    @* Modal global usado por mostrarAlerta() en site.js y Usuarios.js. *@
+    <div id="alertaSistema" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <i class="fa-solid fa-circle-info modal-icon" id="alertaIcono"></i>
+                <h4 id="alertaTitulo" class="modal-title"></h4>
+            </div>
+
+            <div class="modal-body">
+                <p id="alertaMensaje"></p>
+            </div>
+
+            <div class="modal-footer">
+                <button id="alertaCerrar" class="btn btn-primary">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    @* Modal global usado por mostrarConfirmacion() para acciones sensibles. *@
+    <div id="confirmacionSistema" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <i class="fa-solid fa-circle-question modal-icon"></i>
+                <h4 id="confirmacionTitulo" class="modal-title"></h4>
+            </div>
+
+            <div class="modal-body">
+                <p id="confirmacionMensaje"></p>
+            </div>
+
+            <div class="modal-footer">
+                <button id="btnCancelar" class="btn btn-secondary">Cancelar</button>
+                <button id="btnConfirmar" class="btn btn-primary">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

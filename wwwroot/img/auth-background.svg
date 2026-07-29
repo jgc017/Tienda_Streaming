@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-label="Fondo de login">
+  <defs>
+    <radialGradient id="core" cx="50%" cy="54%" r="38%">
+      <stop offset="0%" stop-color="#36b8e8" stop-opacity="0.45"/>
+      <stop offset="45%" stop-color="#155482" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#071027" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b3348"/>
+      <stop offset="48%" stop-color="#0b1c36"/>
+      <stop offset="100%" stop-color="#070d23"/>
+    </linearGradient>
+    <filter id="soft">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <rect width="1920" height="1080" fill="url(#core)"/>
+  <g opacity="0.22" transform="translate(960 590)">
+    <circle r="260" fill="none" stroke="#5fd2ff" stroke-width="38"/>
+    <circle r="205" fill="none" stroke="#ffffff" stroke-opacity="0.32" stroke-width="18"/>
+    <g fill="#2aa9df">
+      <rect x="-30" y="-390" width="60" height="130" rx="12"/>
+      <rect x="-30" y="260" width="60" height="130" rx="12"/>
+      <rect x="-390" y="-30" width="130" height="60" rx="12"/>
+      <rect x="260" y="-30" width="130" height="60" rx="12"/>
+    </g>
+    <text x="0" y="62" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="260" font-weight="900" fill="#ffffff" opacity="0.42">PB</text>
+  </g>
+  <g fill="#c5eaff" filter="url(#soft)">
+    <circle cx="205" cy="244" r="3" opacity="0.75"/>
+    <circle cx="312" cy="412" r="2" opacity="0.55"/>
+    <circle cx="620" cy="112" r="3" opacity="0.65"/>
+    <circle cx="855" cy="260" r="2" opacity="0.75"/>
+    <circle cx="1120" cy="138" r="3" opacity="0.55"/>
+    <circle cx="1286" cy="398" r="2" opacity="0.7"/>
+    <circle cx="1502" cy="220" r="3" opacity="0.58"/>
+    <circle cx="1715" cy="340" r="2" opacity="0.72"/>
+    <circle cx="280" cy="780" r="2" opacity="0.68"/>
+    <circle cx="510" cy="930" r="3" opacity="0.58"/>
+    <circle cx="1015" cy="910" r="2" opacity="0.76"/>
+    <circle cx="1420" cy="812" r="3" opacity="0.62"/>
+    <circle cx="1660" cy="930" r="2" opacity="0.72"/>
+  </g>
+</svg>

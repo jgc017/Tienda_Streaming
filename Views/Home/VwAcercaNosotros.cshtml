@@ -1,0 +1,46 @@
+@model List<Tienda_Streaming.Models.Dto.Administracion.RegistrarPublicaciones.DtoInicioContenidoItem>
+
+@{
+    ViewData["Title"] = "Acerca de nosotros";
+}
+
+<section class="public-home public-page-shell">
+    <partial name="_PublicHomeNav" />
+
+    <header class="public-page-header">
+        <span class="public-home-kicker">Institucional</span>
+        <h1>Acerca de nosotros</h1>
+        <p>Informacion publica administrada desde el modulo de imagenes y videos.</p>
+    </header>
+
+    <div class="public-card-list">
+        @if (Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <article class="public-content-card">
+                    @if (!string.IsNullOrWhiteSpace(item.ImagenUrl))
+                    {
+                        <img class="public-content-image" src="@Url.Content(item.ImagenUrl)" alt="@item.Titulo" />
+                    }
+                    <div class="public-content-body">
+                        <h2>@item.Titulo</h2>
+                        <p>@(item.Resumen ?? item.Contenido)</p>
+                        <a asp-controller="Home" asp-action="VwContenidoDetalle" asp-route-id="@item.Id_InicioContenido">Ver detalle</a>
+                    </div>
+                </article>
+            }
+        }
+        else
+        {
+            <article class="public-content-card">
+                <div class="public-content-body">
+                    <h2>Contenido pendiente</h2>
+                    <p>Esta seccion queda preparada para publicar informacion institucional desde Administracion.</p>
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+

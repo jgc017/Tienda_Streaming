@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Preview carrito 3D</title>
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            color: #f8f9fa;
+            background: radial-gradient(circle at center, #12395d 0%, #071827 48%, #020912 100%);
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            width: min(920px, calc(100vw - 32px));
+            display: grid;
+            gap: 14px;
+        }
+
+        canvas {
+            width: 100%;
+            height: min(560px, 68vh);
+            border: 1px solid rgba(154, 215, 255, 0.42);
+            border-radius: 8px;
+            background: linear-gradient(180deg, rgba(14, 31, 48, 0.98), rgba(6, 15, 27, 0.98));
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.42);
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            min-height: 38px;
+            padding: 8px 14px;
+            border: 1px solid rgba(154, 215, 255, 0.52);
+            border-radius: 8px;
+            color: #fff;
+            background: rgba(30, 116, 194, 0.32);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: rgba(30, 116, 194, 0.48);
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="toolbar">
+            <strong>Preview carrito 3D</strong>
+            <button type="button" id="resetCamera">Centrar vista</button>
+        </div>
+        <canvas id="cartPreview"></canvas>
+    </main>
+
+    <script type="module">
+        import * as THREE from "/lib/three/three.module.js";
+        import { GLTFLoader } from "/lib/three/addons/loaders/GLTFLoader.js";
+
+        const canvas = document.getElementById("cartPreview");
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+        const loader = new GLTFLoader();
+
+        let model = null;
+        let angle = 0;
+
+        scene.add(new THREE.HemisphereLight(0xffffff, 0x1d3557, 2.5));
+
+        const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+        keyLight.position.set(4, 5, 4);
+        scene.add(keyLight);
+
+        const fillLight = new THREE.DirectionalLight(0x8cc8ff, 1.4);
+        fillLight.position.set(-4, 2, -3);
+        scene.add(fillLight);
+
+        function centerCamera() {
+            camera.position.set(3.1, 2.2, 4.2);
+            camera.lookAt(0, 0.35, 0);
+        }
+
+        function resize() {
+            const rect = canvas.getBoundingClientRect();
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            renderer.setSize(rect.width, rect.height, false);
+            camera.aspect = rect.width / rect.height;
+            camera.updateProjectionMatrix();
+        }
+
+        loader.load("/models/cart/cart.glb", gltf => {
+            model = gltf.scene;
+            model.scale.setScalar(1.35);
+            scene.add(model);
+            render();
+        });
+
+        function render() {
+            resize();
+            if (model) {
+                angle += 0.008;
+                model.rotation.y = angle;
+            }
+            renderer.render(scene, camera);
+            requestAnimationFrame(render);
+        }
+
+        window.addEventListener("resize", resize);
+        document.getElementById("resetCamera").addEventListener("click", centerCamera);
+        centerCamera();
+    </script>
+</body>
+</html>

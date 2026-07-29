@@ -1,0 +1,60 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "Codigos Plataformas";
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section Scripts {
+    <script src="~/js/administracion/codigosplataformas.js" asp-append-version="true"></script>
+}
+
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+
+<nav aria-label="breadcrumb" class="breadcrumb-wrapper">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="VwIndex">Inicio</a></li>
+        <li class="breadcrumb-item">Administracion Correos</li>
+        <li class="breadcrumb-item">Codigos Plataformas</li>
+    </ol>
+</nav>
+
+<div class="container-fluid">
+    <div class="card custom-card border-primary">
+        <div class="card-header d-flex align-items-center custom-card-header">
+            <h4 class="card-title text-white d-flex align-items-center">
+                <i class="fa-solid fa-envelope-open-text text-white me-2"></i>
+                Correos Recibidos
+            </h4>
+        </div>
+        <div class="card-body collapse show">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                <button type="button" id="BtnSincronizarCorreos" class="btn-form-action btn-fixed">
+                    <i class="fa-solid fa-arrows-rotate me-2"></i> Sincronizar
+                </button>
+            </div>
+            <div class="table-responsive m-t-40" style="margin-top: 0 !important;">
+                <table class="table-custom align-middle" id="tablaCorreosPlataformas"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalDetalleCorreoPlataforma" class="modal-custom">
+    <div class="modal-content-custom modal-content-wide">
+        <div class="modal-header-custom">
+            <h5 class="modal-title" id="tituloDetalleCorreoPlataforma">Detalle correo</h5>
+            <button type="button" class="btn-close-custom" id="btnCerrarDetalleCorreoPlataforma">x</button>
+        </div>
+
+        <div class="modal-body-custom">
+            <div class="mail-detail-meta" id="detalleCorreoPlataformaMeta"></div>
+            <div class="mail-link-list" id="detalleCorreoPlataformaLinks"></div>
+            <iframe id="detalleCorreoPlataformaFrame" class="mail-detail-frame" sandbox="allow-popups allow-popups-to-escape-sandbox"></iframe>
+        </div>
+
+        <div class="modal-footer-custom">
+            <button type="button" class="btn btn-secondary" id="btnCerrarDetalleCorreoPlataformaFooter">Cerrar</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,50 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "Historial Compras";
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+@section Scripts {
+    <script src="~/js/administracion/historialcompras.js" asp-append-version="true"></script>
+}
+
+<input type="hidden" id="csrfToken" value="@csrfToken" />
+
+<nav aria-label="breadcrumb" class="breadcrumb-wrapper">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="VwIndex">Inicio</a></li>
+        <li class="breadcrumb-item">Historial Compras</li>
+    </ol>
+</nav>
+
+<div class="container-fluid">
+    <div class="card custom-card border-primary">
+        <div class="card-header d-flex align-items-center custom-card-header">
+            <h4 class="card-title text-white d-flex align-items-center">
+                <i class="fa-solid fa-clock-rotate-left text-white me-2"></i>
+                Historial Compras
+            </h4>
+        </div>
+        <div class="card-body collapse show">
+            <div class="table-responsive m-t-40" style="margin-top: 0 !important;">
+                <table class="table-custom align-middle" id="tablaHistorialCompras"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="detalleCompraModal" class="modal-overlay">
+    <div class="modal-card purchase-result-card">
+        <div class="modal-card-header">
+            <h5>Detalle de cuenta</h5>
+            <button type="button" id="detalleCompraClose" aria-label="Cerrar">x</button>
+        </div>
+        <div class="modal-card-body" id="detalleCompraBody"></div>
+        <div class="modal-card-footer">
+            <button type="button" class="btn btn-outline-light" id="detalleCompraCopyAll">
+                <i class="fa-solid fa-copy me-2"></i> Copiar todo
+            </button>
+        </div>
+    </div>
+</div>

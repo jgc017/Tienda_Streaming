@@ -1,0 +1,66 @@
+@inject Tienda_Streaming.Business.Interfaces.SistemaConfig.ISistemaConfig SistemaConfigService
+
+@{
+    var sistemaConfig = await SistemaConfigService.F_GetSistemaVisualConfig();
+    var logoSistema = Url.Content(sistemaConfig.LogoUrl);
+    var actionActual = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
+    var mostrarCarrito = actionActual == "VwIndex" || actionActual == "VwCombos";
+}
+
+<nav class="public-home-nav public-page-nav" aria-label="Menu principal publico">
+    <a class="public-home-brand" asp-controller="Home" asp-action="VwIndex">
+        <img src="@logoSistema" alt="Logo Tienda Streaming" />
+        <span>Tienda Streaming</span>
+    </a>
+
+    <div class="public-home-menu">
+        <a class="@(actionActual == "VwIndex" ? "is-active" : "")" asp-controller="Home" asp-action="VwIndex">Pantallas</a>
+        <a class="@(actionActual == "VwCombos" ? "is-active" : "")" asp-controller="Home" asp-action="VwCombos">Combos</a>
+        <a class="@(actionActual == "VwHistorialComprasCliente" ? "is-active" : "")" asp-controller="Home" asp-action="VwHistorialComprasCliente">Historial</a>
+        <a class="@(actionActual == "VwCodigosPlataformas" ? "is-active" : "")" asp-controller="Home" asp-action="VwCodigosPlataformas">Codigos</a>
+        <a class="@(actionActual == "VwContacto" ? "is-active" : "")" asp-controller="Home" asp-action="VwContacto">Contacto</a>
+    </div>
+
+    <div class="public-home-actions">
+        @if (mostrarCarrito)
+        {
+            <div class="public-cart-wrapper">
+                <button type="button" class="public-cart-button" id="publicCartToggle" aria-label="Ver carrito">
+                    <canvas class="cart-3d-canvas" width="96" height="72" aria-hidden="true"></canvas>
+                    <i class="fa-solid fa-cart-shopping cart-fallback-icon"></i>
+                    <span id="publicCartCount">0</span>
+                </button>
+                <aside class="public-cart-panel" id="publicCartPanel" aria-label="Carrito de compras">
+                    <div class="public-cart-header">
+                        <strong>Carrito</strong>
+                        <button type="button" id="publicCartClose" aria-label="Cerrar carrito">x</button>
+                    </div>
+                    <div class="public-cart-items" id="publicCartItems">
+                        <p class="public-cart-empty">No hay productos agregados.</p>
+                    </div>
+                    <div class="public-checkout-fields" data-public-checkout>
+                        <input id="txtCompraNombreCliente" type="text" class="form-control input-blue" placeholder="Nombre cliente" autocomplete="name" readonly />
+                        <input id="txtCompraCorreoCliente" type="email" class="form-control input-blue" placeholder="Correo del codigo" autocomplete="email" />
+                        <div class="public-code-row">
+                            <input id="txtCodigoCompra" type="text" class="form-control input-blue" placeholder="Codigo de compra" autocomplete="off" />
+                            <button type="button" class="btn btn-outline-light" id="btnValidarCodigoCompra">Validar</button>
+                        </div>
+                        <div class="public-code-balance">
+                            <span class="public-wallet-badge" id="publicCodigoSaldo">Saldo codigo: $0</span>
+                        </div>
+                    </div>
+
+                    <div class="public-cart-total">
+                        <span>Total</span>
+                        <strong id="publicCartTotal">$0</strong>
+                    </div>
+                    <button type="button" class="btn btn-primary public-cart-checkout" id="publicCartCheckout">Comprar</button>
+                </aside>
+            </div>
+        }
+        <a class="btn btn-outline-light" asp-controller="Account" asp-action="Login">
+            <i class="fa-solid fa-right-to-bracket me-2"></i> Login
+        </a>
+    </div>
+</nav>
+
