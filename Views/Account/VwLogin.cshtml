@@ -46,8 +46,11 @@
 
     @if (ViewBag.PermiteRegistroInicial == true)
     {
-        <div class="text-center mt-2">
-            <a asp-action="RegistroInicial" class="auth-link">Crear primer usuario del sistema</a>
+        <div class="auth-initial-register">
+            <a asp-action="RegistroInicial" class="auth-initial-register-link">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>Registrar primer usuario</span>
+            </a>
         </div>
     }
 

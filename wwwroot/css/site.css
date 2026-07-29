@@ -2915,6 +2915,33 @@ body.sidebar-collapsed .menu-text {
     color: #ffffff;
 }
 
+.auth-initial-register {
+    margin: 4px 0 2px;
+}
+
+.auth-initial-register-link {
+    width: 100%;
+    min-height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px solid rgba(139, 220, 255, 0.7);
+    border-radius: 999px;
+    background: rgba(45, 183, 217, 0.16);
+    color: #dff8ff;
+    font-weight: 800;
+    text-decoration: none;
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.auth-initial-register-link:hover {
+    background: rgba(45, 183, 217, 0.28);
+    border-color: rgba(255, 255, 255, 0.85);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
 .auth-disclaimer {
     margin: 8px 0 4px;
     color: #f3f7fb;

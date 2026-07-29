@@ -32,6 +32,11 @@ namespace Tienda_Streaming.Controllers
         public const string MustChangePasswordClaimType = "Debe_Cambiar_Password";
         public const string DevelopmentSessionClaimType = "Development_Auth_Session";
 
+        private const string MensajeSinUsuarios = "No hay usuarios registrados, registre el primer usuario.";
+        private const string MensajeUsuarioNoRegistrado = "Este usuario no se encuentra registrado.";
+        private const string MensajePasswordIncorrecta = "Contraseña incorrecta.";
+        private const string MensajeSesionExpirada = "La sesion del formulario expiro o la pagina estaba desactualizada. Intenta nuevamente.";
+
         private readonly AppDbContext _context;
         private readonly IEmailSender _emailSender;
         private readonly IUsuarios _usuarios;
@@ -66,12 +71,13 @@ namespace Tienda_Streaming.Controllers
                 return RedirectToLocal(returnUrl);
             }
 
-            var permiteRegistroInicial = !await _usuarios.ExistenUsuarios();
+            var existenUsuarios = await _usuarios.ExistenUsuarios();
+            var permiteRegistroInicial = !existenUsuarios;
             ViewBag.PermiteRegistroInicial = permiteRegistroInicial;
             ViewBag.LoginMensaje = permiteRegistroInicial
-                ? "Este usuario no se encuentra registrado."
+                ? MensajeSinUsuarios
                 : mensaje == "sesion-expirada"
-                    ? "La sesion del formulario expiro o la pagina estaba desactualizada. Intenta nuevamente."
+                    ? MensajeSesionExpirada
                     : null;
             return View("VwLogin", new DtoLoginViewModel { ReturnUrl = returnUrl });
         }
@@ -145,16 +151,22 @@ namespace Tienda_Streaming.Controllers
         [EnableRateLimiting("auth")]
         public async Task<IActionResult> Login(DtoLoginViewModel model)
         {
+            var existenUsuarios = await _usuarios.ExistenUsuarios();
+            ViewBag.PermiteRegistroInicial = !existenUsuarios;
+
             if (!ModelState.IsValid)
             {
-                ViewBag.PermiteRegistroInicial = !await _usuarios.ExistenUsuarios();
+                if (!existenUsuarios)
+                {
+                    ModelState.AddModelError(string.Empty, MensajeSinUsuarios);
+                }
+
                 return View("VwLogin", model);
             }
 
-            if (!await _usuarios.ExistenUsuarios())
+            if (!existenUsuarios)
             {
-                ModelState.AddModelError(string.Empty, "Este usuario no se encuentra registrado.");
-                ViewBag.PermiteRegistroInicial = true;
+                ModelState.AddModelError(string.Empty, MensajeSinUsuarios);
                 return View("VwLogin", model);
             }
 
@@ -166,11 +178,17 @@ namespace Tienda_Streaming.Controllers
                     u.Vigente == 1 &&
                     (u.Usuario.ToLower() == login || (u.E_Mail != null && u.E_Mail.ToLower() == login)));
 
-            if (usuario == null || !BCrypt.Net.BCrypt.Verify(model.Password, usuario.Password))
+            if (usuario == null)
             {
-                _logger.LogWarning("Intento de login fallido para {Usuario}", model.Usuario);
-                ModelState.AddModelError(string.Empty, "Este usuario no se encuentra registrado.");
-                ViewBag.PermiteRegistroInicial = !await _usuarios.ExistenUsuarios();
+                _logger.LogWarning("Intento de login con usuario no registrado para {Usuario}", model.Usuario);
+                ModelState.AddModelError(string.Empty, MensajeUsuarioNoRegistrado);
+                return View("VwLogin", model);
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(model.Password, usuario.Password))
+            {
+                _logger.LogWarning("Intento de login con contrasena incorrecta para {Usuario}", model.Usuario);
+                ModelState.AddModelError(string.Empty, MensajePasswordIncorrecta);
                 return View("VwLogin", model);
             }
 
