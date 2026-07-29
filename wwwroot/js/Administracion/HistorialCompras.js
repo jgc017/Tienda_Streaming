@@ -1,4 +1,4 @@
-﻿let tablaHistorialCompras;
+let tablaHistorialCompras;
 
 function getCsrfToken() {
     return document.getElementById("csrfToken")?.value || "";
@@ -30,6 +30,7 @@ async function parseJsonResponse(response) {
 
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("detalleCompraClose")?.addEventListener("click", cerrarDetalleCompra);
+    document.getElementById("detalleCompraCloseFooter")?.addEventListener("click", cerrarDetalleCompra);
     document.getElementById("detalleCompraCopyAll")?.addEventListener("click", copiarDetalleCompleto);
     F_GetHistorialCompras();
 });
@@ -114,7 +115,7 @@ function mostrarDetalleCompra(data) {
         body.innerHTML = '<p class="public-cart-empty">No hay cuentas asociadas a este pedido.</p>';
     }
 
-    modal.classList.add("show");
+    modal.style.display = "flex";
 }
 
 function formatearCuentaResultado(cuenta, total, idPedido) {
@@ -140,7 +141,8 @@ function copiarTexto(texto) {
 }
 
 function cerrarDetalleCompra() {
-    document.getElementById("detalleCompraModal")?.classList.remove("show");
+    const modal = document.getElementById("detalleCompraModal");
+    if (modal) modal.style.display = "none";
 }
 
 function valorMoneda(valor) {

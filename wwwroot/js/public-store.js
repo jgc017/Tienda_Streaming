@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     const cart = new Map();
     let storageKey = "tiendaStreamingCart:publica:general";
     let cartContext = "publica";
@@ -23,6 +23,7 @@
         document.getElementById("publicCartCheckout")?.addEventListener("click", confirmPurchase);
         document.getElementById("btnValidarCodigoCompra")?.addEventListener("click", validarCodigoCompra);
         document.getElementById("purchaseResultClose")?.addEventListener("click", cerrarResultadoCompra);
+        document.getElementById("purchaseResultCloseFooter")?.addEventListener("click", cerrarResultadoCompra);
         document.getElementById("purchaseResultCopyAll")?.addEventListener("click", copiarResultadoCompleto);
         renderCart();
     });
@@ -396,7 +397,7 @@
             body.appendChild(detail);
         }
 
-        modal.classList.add("show");
+        modal.style.display = "flex";
     }
 
     function formatearCuentaResultado(cuenta, total, idPedido) {
@@ -431,7 +432,8 @@
     }
 
     function cerrarResultadoCompra() {
-        document.getElementById("purchaseResultModal")?.classList.remove("show");
+        const modal = document.getElementById("purchaseResultModal");
+        if (modal) modal.style.display = "none";
         window.location.reload();
     }
 

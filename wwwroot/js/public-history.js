@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     let tablaHistorialCliente;
     const formatter = new Intl.NumberFormat("es-CO", {
         style: "currency",
@@ -10,6 +10,7 @@
         configurarTabla();
         document.getElementById("btnConsultarHistorialCliente")?.addEventListener("click", consultarHistorial);
         document.getElementById("publicHistoryDetailClose")?.addEventListener("click", cerrarDetalle);
+        document.getElementById("publicHistoryDetailCloseFooter")?.addEventListener("click", cerrarDetalle);
         document.getElementById("publicHistoryDetailCopyAll")?.addEventListener("click", copiarDetalleCompleto);
     });
 
@@ -129,7 +130,7 @@
             body.innerHTML = '<p class="public-cart-empty">No hay cuentas asociadas a este pedido.</p>';
         }
 
-        modal.classList.add("show");
+        modal.style.display = "flex";
     }
 
     function formatearCuenta(cuenta, total, idPedido) {
@@ -144,7 +145,8 @@
     }
 
     function cerrarDetalle() {
-        document.getElementById("publicHistoryDetailModal")?.classList.remove("show");
+        const modal = document.getElementById("publicHistoryDetailModal");
+        if (modal) modal.style.display = "none";
     }
 
     function copiarDetalleCompleto() {

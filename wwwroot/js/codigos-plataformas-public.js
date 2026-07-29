@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     let tablaCodigosPlataformas;
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -99,11 +99,12 @@
         document.getElementById("detalleCorreoPublicoMeta").innerHTML = construirMeta(correo);
         document.getElementById("detalleCorreoPublicoLinks").innerHTML = construirLinks(correo.enlaces || []);
         document.getElementById("detalleCorreoPublicoFrame").srcdoc = construirDocumentoCorreo(correo.cuerpo_Html || correo.cuerpo_Texto || "");
-        document.getElementById("modalDetalleCorreoPublico").classList.add("show");
+        document.getElementById("modalDetalleCorreoPublico").style.display = "flex";
     }
 
     function cerrarDetalle() {
-        document.getElementById("modalDetalleCorreoPublico")?.classList.remove("show");
+        const modal = document.getElementById("modalDetalleCorreoPublico");
+        if (modal) modal.style.display = "none";
         document.getElementById("detalleCorreoPublicoFrame").srcdoc = "";
     }
 

@@ -258,7 +258,7 @@ body.sidebar-collapsed .sidebar-toggle-btn {
     /* Separador personalizado */
     .breadcrumb-item + .breadcrumb-item::before {
         color: #ffffff;
-        content: "â€º";
+        content: "\203A";
         font-size: 0.9rem;
         padding: 0 0.5rem;
     }
@@ -1024,7 +1024,7 @@ body.sidebar-collapsed .menu-text {
 }
 
 .table-sortable::after {
-    content: "â†•";
+    content: "\2195";
     font-weight: 700;
     opacity: 0.45;
     position: absolute;
@@ -1032,12 +1032,12 @@ body.sidebar-collapsed .menu-text {
 }
 
 .table-sortable.sort-asc::after {
-    content: "â†‘";
+    content: "\2191";
     opacity: 1;
 }
 
 .table-sortable.sort-desc::after {
-    content: "â†“";
+    content: "\2193";
     opacity: 1;
 }
 
@@ -2579,7 +2579,8 @@ body.sidebar-collapsed .menu-text {
     max-height: min(820px, calc(100vh - 40px));
 }
 
-.purchase-result-card .modal-body {
+.purchase-result-card .modal-body,
+.purchase-result-card .modal-body-custom {
     max-height: min(620px, calc(100vh - 190px));
     overflow-y: auto;
 }
@@ -3059,7 +3060,8 @@ body.sidebar-collapsed .menu-text {
     max-height: calc(100vh - 24px);
 }
 
-.mail-public-modal .modal-card-body {
+.mail-public-modal .modal-card-body,
+.mail-public-modal .modal-body-custom {
     overflow: auto;
 }
 

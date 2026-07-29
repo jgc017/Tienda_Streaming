@@ -1,4 +1,4 @@
-﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 
 @{
     ViewData["Title"] = "Historial";
@@ -31,38 +31,37 @@
     </main>
 </section>
 
-<div id="publicHistoryDetailModal" class="modal-overlay">
-    <div class="modal-card purchase-result-card">
-        <div class="modal-header">
-            <i class="fa-solid fa-receipt modal-icon"></i>
-            <h4 class="modal-title">Detalle de compra</h4>
+<div id="publicHistoryDetailModal" class="modal-custom">
+    <div class="modal-content-custom modal-content-wide purchase-result-card">
+        <div class="modal-header-custom">
+            <h5 class="modal-title"><i class="fa-solid fa-receipt me-2"></i>Detalle de compra</h5>
+            <button type="button" class="btn-close-custom" id="publicHistoryDetailClose" aria-label="Cerrar">x</button>
         </div>
-        <div class="modal-body" id="publicHistoryDetailBody"></div>
-        <div class="modal-footer">
+        <div class="modal-body-custom" id="publicHistoryDetailBody"></div>
+        <div class="modal-footer-custom">
             <button type="button" class="btn btn-secondary" id="publicHistoryDetailCopyAll">
                 <i class="fa-solid fa-copy me-2"></i> Copiar todo
             </button>
-            <button type="button" class="btn btn-primary" id="publicHistoryDetailClose">Aceptar</button>
+            <button type="button" class="btn btn-primary" id="publicHistoryDetailCloseFooter">Aceptar</button>
         </div>
     </div>
 </div>
 
-<div id="purchaseResultModal" class="modal-overlay">
-    <div class="modal-card purchase-result-card">
-        <div class="modal-header">
-            <i class="fa-solid fa-circle-check modal-icon"></i>
-            <h4 class="modal-title">Compra confirmada</h4>
+<div id="purchaseResultModal" class="modal-custom">
+    <div class="modal-content-custom modal-content-wide purchase-result-card">
+        <div class="modal-header-custom">
+            <h5 class="modal-title"><i class="fa-solid fa-circle-check me-2"></i>Compra confirmada</h5>
+            <button type="button" class="btn-close-custom" id="purchaseResultClose" aria-label="Cerrar">x</button>
         </div>
-        <div class="modal-body" id="purchaseResultBody"></div>
-        <div class="modal-footer">
+        <div class="modal-body-custom" id="purchaseResultBody"></div>
+        <div class="modal-footer-custom">
             <button type="button" id="purchaseResultCopyAll" class="btn btn-secondary">
                 <i class="fa-solid fa-copy me-2"></i> Copiar todo
             </button>
-            <button type="button" id="purchaseResultClose" class="btn btn-primary">Aceptar</button>
+            <button type="button" id="purchaseResultCloseFooter" class="btn btn-primary">Aceptar</button>
         </div>
     </div>
 </div>
-
 @section Scripts {
     <script src="~/js/cart-3d.js" type="module" asp-append-version="true"></script>
     <script src="~/js/public-store.js" asp-append-version="true"></script>

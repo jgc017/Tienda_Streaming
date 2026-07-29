@@ -34,15 +34,16 @@
     </div>
 </div>
 
-<div id="detalleCompraModal" class="modal-overlay">
-    <div class="modal-card purchase-result-card">
-        <div class="modal-card-header">
-            <h5>Detalle de cuenta</h5>
-            <button type="button" id="detalleCompraClose" aria-label="Cerrar">x</button>
+<div id="detalleCompraModal" class="modal-custom">
+    <div class="modal-content-custom modal-content-wide purchase-result-card">
+        <div class="modal-header-custom">
+            <h5 class="modal-title">Detalle de cuenta</h5>
+            <button type="button" class="btn-close-custom" id="detalleCompraClose" aria-label="Cerrar">x</button>
         </div>
-        <div class="modal-card-body" id="detalleCompraBody"></div>
-        <div class="modal-card-footer">
-            <button type="button" class="btn btn-outline-light" id="detalleCompraCopyAll">
+        <div class="modal-body-custom" id="detalleCompraBody"></div>
+        <div class="modal-footer-custom">
+            <button type="button" class="btn btn-secondary" id="detalleCompraCloseFooter">Cerrar</button>
+            <button type="button" class="btn btn-primary" id="detalleCompraCopyAll">
                 <i class="fa-solid fa-copy me-2"></i> Copiar todo
             </button>
         </div>
