@@ -41,6 +41,7 @@ services:
 
       # Seguridad y persistencia criptografica.
       Security__DataProtectionKeysPath: /app/App_Data/DataProtectionKeys
+      Security__RequireSecureCookies: ${REQUIRE_SECURE_COOKIES:-true}
       Security__TrustForwardedHeaders: ${TRUST_FORWARDED_HEADERS:-false}
 
       # SMTP para recuperacion, usuarios, compras y billetera.

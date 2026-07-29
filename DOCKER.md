@@ -39,9 +39,10 @@ Configuracion recomendada en `.env` cuando uses reverse proxy:
 APP_BIND_ADDRESS=127.0.0.1
 APP_HTTP_PORT=8080
 TRUST_FORWARDED_HEADERS=true
+REQUIRE_SECURE_COOKIES=true
 ```
 
-Con eso el contenedor queda accesible solo desde el servidor local y el proxy publica HTTPS hacia internet.
+Con eso el contenedor queda accesible solo desde el servidor local y el proxy publica HTTPS hacia internet. Para pruebas locales directas por HTTP en 127.0.0.1 puedes usar REQUIRE_SECURE_COOKIES=false en tu .env local; no lo uses asi expuesto a internet.
 
 ## Persistencia importante
 

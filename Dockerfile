@@ -26,7 +26,7 @@ RUN dotnet publish "Tienda_Streaming.csproj" \
 # -----------------------------
 # 2. Runtime stage minimo
 # -----------------------------
-FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-bookworm-slim AS final
+FROM mcr.microsoft.com/dotnet/runtime-deps:10.0 AS final
 WORKDIR /app
 
 # UID/GID no privilegiado. No se usa root para ejecutar la aplicacion.

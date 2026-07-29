@@ -49,6 +49,13 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
+// En produccion las cookies deben viajar solo sobre HTTPS. Para pruebas locales
+// en Docker sobre 127.0.0.1 se puede desactivar desde .env sin cambiar codigo.
+var requireSecureCookies = builder.Configuration.GetValue("Security:RequireSecureCookies", true);
+var secureCookiePolicy = requireSecureCookies
+    ? CookieSecurePolicy.Always
+    : CookieSecurePolicy.SameAsRequest;
+
 // Permite ejecutar correctamente la aplicacion detras de un reverse proxy
 // que termine HTTPS y envie X-Forwarded-Proto/X-Forwarded-For al contenedor.
 var trustForwardedHeaders = builder.Configuration.GetValue<bool>("Security:TrustForwardedHeaders");
@@ -127,7 +134,7 @@ builder.Services.AddAntiforgery(options =>
     options.Cookie.Name = "__Host-TiendaStreaming.Csrf";
     options.Cookie.HttpOnly = true;
     options.Cookie.Path = "/";
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SecurePolicy = secureCookiePolicy;
     options.Cookie.SameSite = SameSiteMode.Strict;
 });
 
@@ -144,7 +151,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.Name = "__Host-TiendaStreaming.Auth";
         options.Cookie.HttpOnly = true;
         options.Cookie.Path = "/";
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SecurePolicy = secureCookiePolicy;
         options.Cookie.SameSite = SameSiteMode.Strict;
 
         // En APIs no conviene redireccionar a HTML; se responde 401 para que
