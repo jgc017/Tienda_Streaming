@@ -1,0 +1,75 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tienda_streaming_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-Cuentas_Streaming}
+      POSTGRES_USER: ${POSTGRES_USER:-cuentas_streaming}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configura POSTGRES_PASSWORD en el archivo .env}
+      TZ: ${TZ:-America/Bogota}
+    ports:
+      - "${POSTGRES_BIND_ADDRESS:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  tienda_streaming:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tienda_streaming:latest
+    container_name: tienda_streaming_app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${APP_BIND_ADDRESS:-127.0.0.1}:${APP_HTTP_PORT:-8080}:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      TZ: ${TZ:-America/Bogota}
+
+      # Base de datos. La contrasena se toma desde .env y nunca se versiona.
+      ConnectionStrings__StrCuentasStreaming: Host=postgres;Port=5432;Database=${POSTGRES_DB:-Cuentas_Streaming};Username=${POSTGRES_USER:-cuentas_streaming};Password=${POSTGRES_PASSWORD}
+      Database__ApplyMigrationsOnStartup: ${APPLY_MIGRATIONS_ON_STARTUP:-true}
+
+      # Seguridad y persistencia criptografica.
+      Security__DataProtectionKeysPath: /app/App_Data/DataProtectionKeys
+      Security__TrustForwardedHeaders: ${TRUST_FORWARDED_HEADERS:-false}
+
+      # SMTP para recuperacion, usuarios, compras y billetera.
+      Smtp__Host: ${SMTP_HOST:-}
+      Smtp__Port: ${SMTP_PORT:-587}
+      Smtp__UseSsl: ${SMTP_USE_SSL:-true}
+      Smtp__UserName: ${SMTP_USERNAME:-}
+      Smtp__Password: ${SMTP_PASSWORD:-}
+      Smtp__FromEmail: ${SMTP_FROM_EMAIL:-}
+      Smtp__FromName: ${SMTP_FROM_NAME:-Tienda Streaming}
+
+      # Bandeja IMAP publica de codigos de plataformas.
+      CodigosPlataformas__Enabled: ${CODIGOS_PLATAFORMAS_ENABLED:-false}
+      CodigosPlataformas__Host: ${CODIGOS_PLATAFORMAS_HOST:-}
+      CodigosPlataformas__Port: ${CODIGOS_PLATAFORMAS_PORT:-993}
+      CodigosPlataformas__UseSsl: ${CODIGOS_PLATAFORMAS_USE_SSL:-true}
+      CodigosPlataformas__UserName: ${CODIGOS_PLATAFORMAS_USERNAME:-}
+      CodigosPlataformas__Password: ${CODIGOS_PLATAFORMAS_PASSWORD:-}
+      CodigosPlataformas__Folder: ${CODIGOS_PLATAFORMAS_FOLDER:-INBOX}
+      CodigosPlataformas__PollIntervalSeconds: ${CODIGOS_PLATAFORMAS_POLL_INTERVAL_SECONDS:-60}
+      CodigosPlataformas__MaxMessagesPerSync: ${CODIGOS_PLATAFORMAS_MAX_MESSAGES_PER_SYNC:-80}
+      CodigosPlataformas__RetentionHours: ${CODIGOS_PLATAFORMAS_RETENTION_HOURS:-24}
+      CodigosPlataformas__CleanupHourLocal: ${CODIGOS_PLATAFORMAS_CLEANUP_HOUR_LOCAL:-3}
+      CodigosPlataformas__DeleteFromMailboxAfterImport: ${CODIGOS_PLATAFORMAS_DELETE_FROM_MAILBOX_AFTER_IMPORT:-true}
+    volumes:
+      - app_dataprotection:/app/App_Data/DataProtectionKeys
+      - app_images:/app/wwwroot/img
+
+volumes:
+  postgres_data:
+  app_dataprotection:
+  app_images:

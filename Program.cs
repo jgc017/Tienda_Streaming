@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Tienda_Streaming.Business.Interfaces.Dominios;
@@ -47,6 +48,25 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
+
+// Permite ejecutar correctamente la aplicacion detras de un reverse proxy
+// que termine HTTPS y envie X-Forwarded-Proto/X-Forwarded-For al contenedor.
+var trustForwardedHeaders = builder.Configuration.GetValue<bool>("Security:TrustForwardedHeaders");
+if (trustForwardedHeaders)
+{
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders =
+            ForwardedHeaders.XForwardedFor |
+            ForwardedHeaders.XForwardedProto |
+            ForwardedHeaders.XForwardedHost;
+
+        // En Docker el proxy suele estar en una red interna dinamica. Esta opcion
+        // debe habilitarse solo cuando el contenedor no este expuesto directamente.
+        options.KnownIPNetworks.Clear();
+        options.KnownProxies.Clear();
+    });
+}
 
 // -----------------------------
 // Servicios
@@ -227,9 +247,31 @@ builder.Services.AddRateLimiter(options =>
 // Construye la aplicacion con todos los servicios registrados.
 var app = builder.Build();
 
+// Ejecuta migraciones al iniciar cuando se habilita por configuracion o cuando
+// el contenedor se invoca con --migrate. Esto facilita levantar una base nueva.
+var ejecutarMigraciones = args.Contains("--migrate") ||
+    app.Configuration.GetValue<bool>("Database:ApplyMigrationsOnStartup");
+
+if (ejecutarMigraciones)
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await dbContext.Database.MigrateAsync();
+
+    if (args.Contains("--migrate"))
+    {
+        return;
+    }
+}
+
 // -----------------------------
 // Middleware
 // -----------------------------
+
+if (trustForwardedHeaders)
+{
+    app.UseForwardedHeaders();
+}
 
 // En produccion usa una vista de error controlada y HSTS para forzar HTTPS.
 if (!app.Environment.IsDevelopment())
@@ -335,5 +377,3 @@ app.MapControllerRoute(
 
 // Inicia el servidor web.
 app.Run();
-
-
