@@ -55,6 +55,7 @@ var requireSecureCookies = builder.Configuration.GetValue("Security:RequireSecur
 var secureCookiePolicy = requireSecureCookies
     ? CookieSecurePolicy.Always
     : CookieSecurePolicy.SameAsRequest;
+var cookieNamePrefix = requireSecureCookies ? "__Host-" : string.Empty;
 
 // Permite ejecutar correctamente la aplicacion detras de un reverse proxy
 // que termine HTTPS y envie X-Forwarded-Proto/X-Forwarded-For al contenedor.
@@ -131,7 +132,7 @@ builder.Services.Configure<FormOptions>(options =>
 builder.Services.AddAntiforgery(options =>
 {
     options.HeaderName = "X-CSRF-TOKEN";
-    options.Cookie.Name = "__Host-TiendaStreaming.Csrf";
+    options.Cookie.Name = $"{cookieNamePrefix}TiendaStreaming.Csrf";
     options.Cookie.HttpOnly = true;
     options.Cookie.Path = "/";
     options.Cookie.SecurePolicy = secureCookiePolicy;
@@ -148,7 +149,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/AccessDenied";
         options.SlidingExpiration = true;
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-        options.Cookie.Name = "__Host-TiendaStreaming.Auth";
+        options.Cookie.Name = $"{cookieNamePrefix}TiendaStreaming.Auth";
         options.Cookie.HttpOnly = true;
         options.Cookie.Path = "/";
         options.Cookie.SecurePolicy = secureCookiePolicy;
@@ -294,10 +295,16 @@ app.UseStatusCodePages(async statusContext =>
     var httpContext = statusContext.HttpContext;
 
     if (!httpContext.Response.HasStarted &&
-        httpContext.Response.StatusCode == StatusCodes.Status400BadRequest &&
-        httpContext.Request.Path.StartsWithSegments("/Account/Login"))
+        httpContext.Response.StatusCode == StatusCodes.Status400BadRequest)
     {
-        httpContext.Response.Redirect("/Account/Login?mensaje=sesion-expirada");
+        if (httpContext.Request.Path.StartsWithSegments("/Account/Login"))
+        {
+            httpContext.Response.Redirect("/Account/Login?mensaje=sesion-expirada");
+        }
+        else if (httpContext.Request.Path.StartsWithSegments("/Account/RegistroInicial"))
+        {
+            httpContext.Response.Redirect("/Account/RegistroInicial?mensaje=sesion-expirada");
+        }
     }
 
     await Task.CompletedTask;

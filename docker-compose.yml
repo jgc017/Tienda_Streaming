@@ -70,7 +70,23 @@ services:
       - app_dataprotection:/app/App_Data/DataProtectionKeys
       - app_images:/app/wwwroot/img
 
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: tienda_streaming_pgadmin
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@tiendastreaming.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:?Configura PGADMIN_DEFAULT_PASSWORD en el archivo .env}
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "True"
+    ports:
+      - "${PGADMIN_BIND_ADDRESS:-127.0.0.1}:${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
 volumes:
   postgres_data:
   app_dataprotection:
   app_images:
+  pgadmin_data:

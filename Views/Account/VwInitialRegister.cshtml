@@ -14,6 +14,11 @@
         Crea el usuario inicial para administrar la plantilla. Despues de este registro, nuevos usuarios solo podran ser creados por el administrador.
     </p>
 
+    @if (!string.IsNullOrWhiteSpace(ViewBag.LoginMensaje as string))
+    {
+        <div class="auth-validation mb-3">@ViewBag.LoginMensaje</div>
+    }
+
     <div asp-validation-summary="ModelOnly" class="auth-validation mb-3"></div>
 
     <div class="auth-input-group">

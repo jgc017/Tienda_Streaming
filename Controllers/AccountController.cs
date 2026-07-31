@@ -34,7 +34,7 @@ namespace Tienda_Streaming.Controllers
 
         private const string MensajeSinUsuarios = "No hay usuarios registrados, registre el primer usuario.";
         private const string MensajeUsuarioNoRegistrado = "Este usuario no se encuentra registrado.";
-        private const string MensajePasswordIncorrecta = "Contraseña incorrecta.";
+        private const string MensajePasswordIncorrecta = "Contrase\u00f1a incorrecta.";
         private const string MensajeSesionExpirada = "La sesion del formulario expiro o la pagina estaba desactualizada. Intenta nuevamente.";
 
         private readonly AppDbContext _context;
@@ -86,13 +86,14 @@ namespace Tienda_Streaming.Controllers
         // Permite crear el primer usuario unicamente cuando la tabla Usuarios esta vacia.
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> RegistroInicial()
+        public async Task<IActionResult> RegistroInicial(string? mensaje = null)
         {
             if (await _usuarios.ExistenUsuarios())
             {
                 return RedirectToAction(nameof(Login));
             }
 
+            ViewBag.LoginMensaje = mensaje == "sesion-expirada" ? MensajeSesionExpirada : null;
             return View("VwInitialRegister", new DtoInitialRegisterViewModel());
         }
 
