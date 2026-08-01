@@ -12,7 +12,7 @@ namespace Tienda_Streaming.Business.Services.RegistrarPublicaciones
     // Servicio que administra el contenido visible en el inicio publico y sus paginas.
     public class RegistrarPublicacionesService : IRegistrarPublicaciones
     {
-        private const int DominioTipoContenidoInicio = 26;
+        private const int DominioTipoContenidoInicio = 25;
         private const string TipoContenidoSlider = "Slider";
         private const string TipoContenidoContacto = "Contacto";
         private const string DominioRaiz = "SIN DATOS";

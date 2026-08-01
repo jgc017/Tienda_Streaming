@@ -192,9 +192,9 @@ function formatearCodigoCompra(item) {
     const cliente = obtenerValor(item, "nombre_Cliente", "nombreCliente", "Nombre_Cliente", "NombreCliente") || "";
     const saldo = obtenerValor(item, "saldo_Disponible", "saldoDisponible", "Saldo_Disponible", "SaldoDisponible", "valor_Inicial", "valorInicial", "Valor_Inicial", "ValorInicial") || 0;
 
-    return `**Codigo:** ${codigo}
-**Cliente:** ${cliente}
-**Saldo:** ${valorMoneda(saldo)}`;
+    return `*Codigo:* ${codigo}
+*Cliente:* ${cliente}
+*Saldo:* ${valorMoneda(saldo)}`;
 }
 
 function obtenerValor(item, ...keys) {

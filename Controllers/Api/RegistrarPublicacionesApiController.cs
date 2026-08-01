@@ -24,8 +24,8 @@ namespace Tienda_Streaming.Controllers.Api
         };
 
         private const long ImagenMaximaBytes = 5 * 1024 * 1024;
-        private const int DominioTipoContenidoInicio = 26;
-        private const int TipoContenidoSlider = 27;
+        private const int DominioTipoContenidoInicio = 25;
+        private const int TipoContenidoSlider = 26;
         private const int SliderAnchoMinimo = 1440;
         private const int SliderAltoMinimo = 600;
         private readonly IRegistrarPublicaciones _inicioAdmin;

@@ -12,6 +12,7 @@ using System.Net;
 using System.Data;
 using System.Security.Cryptography;
 using UsuarioEntity = Tienda_Streaming.Models.Administracion.Usuarios;
+using System.Globalization;
 
 namespace Tienda_Streaming.Business.Services.RegistrarProductos
 {
@@ -1215,19 +1216,27 @@ namespace Tienda_Streaming.Business.Services.RegistrarProductos
 
         private static string ConstruirTextoCodigoCompra(CodigosCompra codigo)
         {
+            CultureInfo.CurrentCulture = new CultureInfo("es-CO");
+            CultureInfo.CurrentUICulture = new CultureInfo("es-CO");
+
             return $"""
-                {NombreEmpresa}
-                Se ha generado un codigo para la compra de plataformas
-                **Codigo:** {codigo.Codigo}
-                **Saldo:** {codigo.Saldo_Disponible:C0}
-                **Nombre:** {codigo.Nombre_Cliente}
-                **Correo:** {codigo.Correo_Cliente}
-                Guarde esta informacion mientras tenga saldo vigente para comprar y para consultar su historial de compras
-                """;
+        {NombreEmpresa}
+        Se ha generado un codigo para la compra de plataformas
+        *Codigo:* {codigo.Codigo}
+        *Saldo:* {codigo.Saldo_Disponible:C0}
+        *Nombre:* {codigo.Nombre_Cliente}
+        *Correo:* {codigo.Correo_Cliente}
+        Guarde esta informacion mientras tenga saldo vigente para comprar y para consultar su historial de compras
+        """;
         }
+
 
         private static string ConstruirTextoRecargaBilletera(UsuarioEntity usuario, decimal valorRecargado, decimal saldoAnterior, decimal saldoNuevo, string? descripcion)
         {
+
+            CultureInfo.CurrentCulture = new CultureInfo("es-CO");
+            CultureInfo.CurrentUICulture = new CultureInfo("es-CO");
+
             var lineas = new List<string>
             {
                 NombreEmpresa,
