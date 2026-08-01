@@ -1,56 +1,22 @@
-# syntax=docker/dockerfile:1
-
 # -----------------------------
-# 1. Build stage (.NET SDK)
+# STAGE 1: Build
 # -----------------------------
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Copiar primero el proyecto permite aprovechar cache de restore.
-COPY ["Tienda_Streaming.csproj", "./"]
-RUN dotnet restore "Tienda_Streaming.csproj"
-
-# Copiar el resto del codigo y publicar para Linux.
 COPY . .
-RUN dotnet publish "Tienda_Streaming.csproj" \
-    -c Release \
-    -o /app/publish \
-    --self-contained true \
-    -r linux-x64 \
-    /p:PublishSingleFile=true \
-    /p:DebugType=None \
-    /p:EnableCompressionInSingleFile=true \
-    /p:IncludeNativeLibrariesForSelfExtract=true \
-    /p:PublishTrimmed=false
+RUN dotnet restore
+RUN dotnet publish -c Release -o /app
 
 # -----------------------------
-# 2. Runtime stage minimo
+# STAGE 2: Runtime
 # -----------------------------
-FROM mcr.microsoft.com/dotnet/runtime-deps:10.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-# UID/GID no privilegiado. No se usa root para ejecutar la aplicacion.
-ARG APP_UID=65532
-ARG APP_GID=65532
+COPY --from=build /app .
 
-ENV ASPNETCORE_URLS=http://+:8080 \
-    ASPNETCORE_ENVIRONMENT=Production \
-    DOTNET_EnableDiagnostics=0
-
-# Directorios persistentes. DataProtection protege cookies y contrasenas de cuentas;
-# wwwroot/img contiene imagenes cargadas desde los formularios administrativos.
-RUN mkdir -p /app/App_Data/DataProtectionKeys /app/wwwroot/img \
-    && chown -R ${APP_UID}:${APP_GID} /app
-
-COPY --from=build --chown=${APP_UID}:${APP_GID} /app/publish .
-
-USER ${APP_UID}:${APP_GID}
-
+ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
-VOLUME ["/app/App_Data/DataProtectionKeys", "/app/wwwroot/img"]
 
-# Healthcheck sin curl/wget: ejecuta la ruta liviana del binario.
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD ["./Tienda_Streaming", "--healthcheck"]
-
-ENTRYPOINT ["./Tienda_Streaming"]
+ENTRYPOINT ["dotnet", "Tienda_Streaming.dll"]
