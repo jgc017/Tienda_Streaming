@@ -18,6 +18,11 @@ RUN apt-get update && apt-get install -y libkrb5-3
 
 WORKDIR /app
 
+# ⭐ Desactivar watchers (inotify)
+ENV DOTNET_USE_POLLING_FILE_WATCHER=1
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+
 COPY --from=build /app .
 
 ENV ASPNETCORE_URLS=http://+:8080
