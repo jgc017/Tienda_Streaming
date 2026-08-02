@@ -34,6 +34,7 @@ using Tienda_Streaming.Security;
 using Tienda_Streaming.Services.Email;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
+using System.IO;
 
 // Permite que contenedores o scripts externos validen que la app puede arrancar
 // sin abrir conexiones ni levantar todo el pipeline HTTP.
@@ -336,7 +337,10 @@ app.Use(async (context, next) =>
 });
 
 // Redirige HTTP a HTTPS antes de servir contenido.
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 // Sirve archivos estaticos de wwwroot: CSS, JS, imagenes, modelos 3D y librerias.
 var staticFileContentTypes = new FileExtensionContentTypeProvider();
