@@ -70,14 +70,39 @@
                     for (var i = 0; i < slider.Count; i++)
                     {
                         var item = slider[i];
-                        var imagen = !string.IsNullOrWhiteSpace(item.ImagenUrl) ? Url.Content(item.ImagenUrl) : productos[i % productos.Length].Imagen;
+                        var imagen = !string.IsNullOrWhiteSpace(item.ImagenUrl)
+                            ? Url.Content(item.ImagenUrl)
+                            : productos[i % productos.Length].Imagen;
+
                         <div class="carousel-item @(i == 0 ? "active" : "")">
                             <article class="public-carousel-slide">
                                 <img class="public-carousel-image" src="@imagen" alt="@item.Titulo" />
+
                                 <div class="public-carousel-copy">
-                                    <span class="public-home-kicker">Pantallas</span>
+                                    <span class="public-home-kicker">@item.TipoContenido</span>
+
                                     <h1>@item.Titulo</h1>
+
                                     <p>@(item.Resumen ?? "Selecciona tus productos, ajusta la cantidad y revisa el carrito antes de continuar.")</p>
+
+                                    @* Botón opcional que abre en nueva pestaña *@
+                                    @if (!string.IsNullOrWhiteSpace(item.EnlaceUrl))
+                                    {
+                                        <a href="@item.EnlaceUrl"
+                                           target="_blank"
+                                           rel="noopener noreferrer"
+                                           class="btn btn-primary public-carousel-button">
+                                            @(item.TextoBoton ?? "Ver más")
+                                        </a>
+                                    }
+
+                                    @* Contenido opcional (HTML permitido) *@
+                                    @if (!string.IsNullOrWhiteSpace(item.Contenido))
+                                    {
+                                        <div class="public-carousel-content">
+                                            @Html.Raw(item.Contenido)
+                                        </div>
+                                    }
                                 </div>
                             </article>
                         </div>
@@ -90,8 +115,6 @@
                             <img class="public-carousel-image" src="@productos[0].Imagen" alt="Pantallas" />
                             <div class="public-carousel-copy">
                                 <span class="public-home-kicker">Tienda</span>
-                                @* <h1>Pantallas</h1>
-                                <p>Selecciona tus productos, ajusta la cantidad y revisa el carrito antes de continuar.</p> *@
                             </div>
                         </article>
                     </div>

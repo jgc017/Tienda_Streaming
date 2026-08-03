@@ -1,6 +1,5 @@
 ﻿// Obtiene el token antifalsificacion generado en VwRegistrarPublicaciones.cshtml.
 let tablaInicioContenidos;
-const TipoContenidoSlider = 27;
 
 function getCsrfToken() {
     return document.getElementById("csrfToken")?.value || "";
@@ -338,24 +337,14 @@ function valorCampo(id) {
     return document.getElementById(id).value.trim() || null;
 }
 
-// configurarCamposPorTipoContenido: activa o desactiva campos segun el tipo seleccionado.
-// Para Slider no se usa Contenido; el banner usa Titulo, Resumen, Imagen, Enlace y Texto boton.
+// configurarCamposPorTipoContenido: ahora SIEMPRE permite escribir contenido.
 function configurarCamposPorTipoContenido(idSelect, idContenido) {
-    const select = document.getElementById(idSelect);
     const contenido = document.getElementById(idContenido);
-    const esSlider = Number(select?.value || 0) === TipoContenidoSlider;
-
     if (!contenido) return;
 
-    contenido.disabled = esSlider;
-    contenido.classList.toggle("field-disabled-by-rule", esSlider);
-
-    if (esSlider) {
-        contenido.value = "";
-        contenido.placeholder = "No aplica para contenido tipo Slider";
-    } else {
-        contenido.placeholder = " ";
-    }
+    contenido.disabled = false;
+    contenido.classList.remove("field-disabled-by-rule");
+    contenido.placeholder = " ";
 }
 
 function obtenerTextoSeleccionado(select) {
@@ -455,5 +444,3 @@ function inicializarToggle(selector, activo, textoActivo, textoInactivo) {
         $(selector).bootstrapToggle(activo ? 'on' : 'off');
     }, 50);
 }
-
-
