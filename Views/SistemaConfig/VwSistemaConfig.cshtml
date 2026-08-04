@@ -35,6 +35,31 @@
 
             <div class="card-body collapse show">
                 <fieldset class="sistema-config-section sistema-config-fieldset">
+                    <legend class="sistema-config-legend">Nombre del sistema</legend>
+                    <div class="row g-3 align-items-stretch">
+                        <div class="col-12 col-xl-9">
+                            <div class="row g-3">
+                                <div class="col-12 custom-input-group">
+                                    <div class="form-group has-float-label">
+                                        <input id="txtNombreSistema" type="text" class="form-control floating-input input-blue" placeholder="Nombre visible del sistema" maxlength="120" />
+                                        <label class="floating-label">Nombre del sistema</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 custom-input-group">
+                                    <div class="visual-config-help">
+                                        <strong>Nombre:</strong> se usa en login, header, footer, tiendas y titulos del navegador.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-3 text-center">
+                            <div class="form-image-preview-group sistema-config-preview-group system-name-preview-box">
+                                <span id="previewNombreSistema" class="system-name-preview-text">Tienda Streaming</span>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="sistema-config-section sistema-config-fieldset">
                     <legend class="sistema-config-legend">Logo del sistema</legend>
                     <div class="row g-3 align-items-stretch">
                         <div class="col-12 col-xl-9">
@@ -176,7 +201,8 @@
                         </div>
                         <div class="col-12 col-xl-3 text-center">
                             <div class="form-image-preview-group sistema-config-preview-group sistema-config-video-group">
-                                <video id="previewVideoSistema" class="form-image-preview sistema-config-video d-none" muted playsinline controls></video>
+                                <video id="previewVideoSistema" class="form-image-preview sistema-config-video d-none" autoplay muted playsinline controls loop></video>
+                                <iframe id="previewYoutubeSistema" class="sistema-config-youtube d-none" title="Vista previa video publico" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                                 <a id="linkPreviewVideoSistema" class="visual-config-video-link d-none" href="#" target="_blank" rel="noopener noreferrer">
                                     <i class="fa-brands fa-youtube me-1"></i> Ver referencia
                                 </a>

@@ -5,7 +5,7 @@ function getCsrfToken() {
     return document.getElementById("csrfToken")?.value || "";
 }
 
-// Wrapper de fetch usado por el CRUD de inicio.
+// Wrapper de fetch usado por el CRUD de publicaciones.
 function secureFetch(url, options = {}) {
     const method = (options.method || "GET").toUpperCase();
     const headers = new Headers(options.headers || {});
@@ -44,37 +44,43 @@ async function parseJsonResponse(response) {
 
 document.addEventListener("DOMContentLoaded", () => {
     inicializarToggle("#chkMostrarInicio", true, "Si", "No");
+    inicializarToggle("#chkInicioContenidoVigente", true, "Activo", "Inactivo");
     F_GetInicioContenidosList();
 
-    document.getElementById("BtnRegistrarInicioContenido")?.addEventListener("click", P_InsInicioContenido);
+    document.getElementById("BtnRegistrarInicioContenido")?.addEventListener("click", P_GuardarInicioContenido);
     document.getElementById("BtnNuevoInicioContenido")?.addEventListener("click", limpiarFormularioInicioContenido);
     document.getElementById("ddlTipoContenido")?.addEventListener("change", () => configurarCamposPorTipoContenido("ddlTipoContenido", "txtContenidoInicio"));
-    document.getElementById("ddlTipoContenidoModal")?.addEventListener("change", () => configurarCamposPorTipoContenido("ddlTipoContenidoModal", "ContenidoInicioModal"));
-    document.querySelector("#modalEditarInicioContenido .btn-close-custom")?.addEventListener("click", cerrarModalInicioContenido);
-    document.getElementById("btnCancelarInicioContenidoModal")?.addEventListener("click", cerrarModalInicioContenido);
-    document.getElementById("btnGuardarInicioContenidoCambios")?.addEventListener("click", P_UdpInicioContenido);
     document.getElementById("btnSubirImagenInicio")?.addEventListener("click", () => P_UploadImagenInicio("fileImagenInicio", "txtImagenInicio", "previewImagenInicio", "ddlTipoContenido"));
-    document.getElementById("btnSubirImagenInicioModal")?.addEventListener("click", () => P_UploadImagenInicio("fileImagenInicioModal", "ImagenInicioModal", "previewImagenInicioModal", "ddlTipoContenidoModal"));
     document.getElementById("txtImagenInicio")?.addEventListener("input", () => mostrarPreviewImagen("txtImagenInicio", "previewImagenInicio"));
-    document.getElementById("ImagenInicioModal")?.addEventListener("input", () => mostrarPreviewImagen("ImagenInicioModal", "previewImagenInicioModal"));
     configurarCamposPorTipoContenido("ddlTipoContenido", "txtContenidoInicio");
 });
+
+// P_GuardarInicioContenido: decide entre registrar o actualizar segun el id oculto.
+function P_GuardarInicioContenido() {
+    const idInicioContenido = Number(document.getElementById("Id_InicioContenido")?.value || 0);
+    if (idInicioContenido > 0) {
+        P_UdpInicioContenido(idInicioContenido);
+        return;
+    }
+
+    P_InsInicioContenido();
+}
 
 // P_InsInicioContenido: valida el formulario y registra un contenido publico.
 function P_InsInicioContenido() {
     limpiarErrores();
-    const payload = obtenerPayloadFormulario();
+    const payload = obtenerPayloadFormulario(false);
     if (!payload) return;
 
     mostrarConfirmacion(
         "Registrar contenido?",
-        "El contenido podra mostrarse en la pagina inicio si así lo configuro.",
+        "El contenido podra mostrarse en la tienda si queda activo y visible.",
         (confirmado) => {
             if (!confirmado) return;
 
             subirImagenSiPendiente("fileImagenInicio", "txtImagenInicio", "previewImagenInicio", "ddlTipoContenido")
                 .then(imagenLista => {
-                    if (!imagenLista) return;
+                    if (!imagenLista) return null;
 
                     payload.imagenUrl = valorCampo("txtImagenInicio");
                     return secureFetch("/api/RegistrarPublicacionesApi/P_InsInicioContenido", {
@@ -143,7 +149,7 @@ function F_GetInicioContenidosList() {
         .catch(() => mostrarAlerta("advertencia", "Error inesperado", "No se pudo cargar la lista de contenidos."));
 }
 
-// F_GetInicioContenido: consulta un registro y abre el modal de actualizacion.
+// F_GetInicioContenido: consulta un registro y lo carga en el formulario principal para editar.
 function F_GetInicioContenido(idInicioContenido) {
     document.querySelectorAll(".table-menu").forEach(m => m.style.display = "none");
 
@@ -154,55 +160,64 @@ function F_GetInicioContenido(idInicioContenido) {
 
             const item = data.data;
             document.getElementById("Id_InicioContenido").value = item.id_InicioContenido;
-            seleccionarDropdownPorTexto("ddlTipoContenidoModal", item.tipoContenido || "");
-            document.getElementById("TituloInicioModal").value = item.titulo || "";
-            document.getElementById("ResumenInicioModal").value = item.resumen || "";
-            document.getElementById("ContenidoInicioModal").value = item.contenido || "";
-            document.getElementById("ImagenInicioModal").value = item.imagenUrl || "";
-            document.getElementById("EnlaceInicioModal").value = item.enlaceUrl || "";
-            document.getElementById("TextoBotonInicioModal").value = item.textoBoton || "";
-            document.getElementById("OrdenInicioModal").value = item.orden || 0;
+            seleccionarDropdownPorTexto("ddlTipoContenido", item.tipoContenido || "");
+            document.getElementById("txtTituloInicio").value = item.titulo || "";
+            document.getElementById("txtResumenInicio").value = item.resumen || "";
+            document.getElementById("txtContenidoInicio").value = item.contenido || "";
+            document.getElementById("txtImagenInicio").value = item.imagenUrl || "";
+            document.getElementById("txtEnlaceInicio").value = item.enlaceUrl || "";
+            document.getElementById("txtTextoBotonInicio").value = item.textoBoton || "";
+            document.getElementById("txtOrdenInicio").value = item.orden || 0;
+            document.getElementById("fileImagenInicio").value = "";
 
-            document.getElementById("ddlTipoContenidoModal").dispatchEvent(new Event("change"));
-            configurarCamposPorTipoContenido("ddlTipoContenidoModal", "ContenidoInicioModal");
-            mostrarPreviewImagen("ImagenInicioModal", "previewImagenInicioModal");
-            abrirModalInicioContenido();
-            inicializarToggle("#chkMostrarInicioModal", item.mostrarEnInicio == 1, "Si", "No");
+            configurarCamposPorTipoContenido("ddlTipoContenido", "txtContenidoInicio");
+            mostrarPreviewImagen("txtImagenInicio", "previewImagenInicio");
+            inicializarToggle("#chkMostrarInicio", item.mostrarEnInicio == 1, "Si", "No");
             inicializarToggle("#chkInicioContenidoVigente", item.vigente == 1, "Activo", "Inactivo");
+            setModoFormulario(true);
+            document.getElementById("BtnRegistrarInicioContenido")?.scrollIntoView({ behavior: "smooth", block: "center" });
         })
         .catch(() => mostrarAlerta("advertencia", "Error inesperado", "No se pudo cargar el contenido."));
 }
 
-// P_UdpInicioContenido: actualiza el contenido seleccionado en el modal.
-function P_UdpInicioContenido() {
-    const idInicioContenido = document.getElementById("Id_InicioContenido").value;
-    const payload = obtenerPayloadModal();
+// P_UdpInicioContenido: actualiza el contenido seleccionado desde el formulario principal.
+function P_UdpInicioContenido(idInicioContenido) {
+    limpiarErrores();
+    const payload = obtenerPayloadFormulario(true);
     if (!payload) return;
 
-    subirImagenSiPendiente("fileImagenInicioModal", "ImagenInicioModal", "previewImagenInicioModal", "ddlTipoContenidoModal")
-        .then(imagenLista => {
-            if (!imagenLista) return null;
+    mostrarConfirmacion(
+        "Actualizar contenido?",
+        "Los cambios se aplicaran al registro seleccionado.",
+        (confirmado) => {
+            if (!confirmado) return;
 
-            payload.imagenUrl = valorCampo("ImagenInicioModal");
-            return secureFetch(`/api/RegistrarPublicacionesApi/P_UdpInicioContenido/${idInicioContenido}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-        })
-        .then(response => response ? parseJsonResponse(response) : null)
-        .then(data => {
-            if (!data) return;
+            subirImagenSiPendiente("fileImagenInicio", "txtImagenInicio", "previewImagenInicio", "ddlTipoContenido")
+                .then(imagenLista => {
+                    if (!imagenLista) return null;
 
-            if (data.ok) {
-                cerrarModalInicioContenido();
-                mostrarAlerta("exito", "Actualizado", data.mensaje);
-                F_GetInicioContenidosList();
-            } else {
-                mostrarAlerta("error", "Error", data.mensaje);
-            }
-        })
-        .catch(() => mostrarAlerta("advertencia", "Error inesperado", "No se pudo actualizar el contenido."));
+                    payload.imagenUrl = valorCampo("txtImagenInicio");
+                    return secureFetch(`/api/RegistrarPublicacionesApi/P_UdpInicioContenido/${idInicioContenido}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                })
+                .then(response => response ? parseJsonResponse(response) : null)
+                .then(data => {
+                    if (!data) return;
+
+                    if (data.ok) {
+                        mostrarAlerta("exito", "Actualizado", data.mensaje);
+                        limpiarFormularioInicioContenido();
+                        F_GetInicioContenidosList();
+                    } else {
+                        mostrarAlerta("error", "Error", data.mensaje);
+                    }
+                })
+                .catch(() => mostrarAlerta("advertencia", "Error inesperado", "No se pudo actualizar el contenido."));
+        }
+    );
 }
 
 // P_DeleteInicioContenido: confirma y ejecuta baja logica.
@@ -222,6 +237,7 @@ function P_DeleteInicioContenido(idInicioContenido) {
 
                     if (data.ok) {
                         mostrarAlerta("exito", "Contenido eliminado", data.mensaje);
+                        limpiarFormularioInicioContenido();
                         F_GetInicioContenidosList();
                     } else {
                         mostrarAlerta("error", "Error", data.mensaje);
@@ -284,7 +300,7 @@ function subirImagenSiPendiente(inputArchivoId, inputRutaId, previewId, inputTip
         });
 }
 
-function obtenerPayloadFormulario() {
+function obtenerPayloadFormulario(incluirVigente) {
     const selectTipoContenido = document.getElementById("ddlTipoContenido");
     const idTipoContenido = Number(selectTipoContenido.value || 0);
     const tipoContenido = obtenerTextoSeleccionado(selectTipoContenido);
@@ -293,7 +309,7 @@ function obtenerPayloadFormulario() {
     if (!idTipoContenido) { mostrarError("ddlTipoContenido", "El tipo es obligatorio"); return null; }
     if (!titulo) { mostrarError("txtTituloInicio", "El titulo es obligatorio"); return null; }
 
-    return {
+    const payload = {
         idTipoContenido,
         tipoContenido,
         titulo,
@@ -305,32 +321,12 @@ function obtenerPayloadFormulario() {
         mostrarEnInicio: document.getElementById("chkMostrarInicio").checked ? 1 : 0,
         orden: Number(document.getElementById("txtOrdenInicio").value || 0)
     };
-}
 
-function obtenerPayloadModal() {
-    const selectTipoContenido = document.getElementById("ddlTipoContenidoModal");
-    const idTipoContenido = Number(selectTipoContenido.value || 0);
-    const tipoContenido = obtenerTextoSeleccionado(selectTipoContenido);
-    const titulo = document.getElementById("TituloInicioModal").value.trim();
-
-    if (!idTipoContenido || !titulo) {
-        mostrarAlerta("advertencia", "Datos incompletos", "Tipo de contenido y titulo son obligatorios.");
-        return null;
+    if (incluirVigente) {
+        payload.vigente = document.getElementById("chkInicioContenidoVigente").checked ? 1 : 0;
     }
 
-    return {
-        idTipoContenido,
-        tipoContenido,
-        titulo,
-        resumen: valorCampo("ResumenInicioModal"),
-        contenido: valorCampo("ContenidoInicioModal"),
-        imagenUrl: valorCampo("ImagenInicioModal"),
-        enlaceUrl: valorCampo("EnlaceInicioModal"),
-        textoBoton: valorCampo("TextoBotonInicioModal"),
-        mostrarEnInicio: document.getElementById("chkMostrarInicioModal").checked ? 1 : 0,
-        orden: Number(document.getElementById("OrdenInicioModal").value || 0),
-        vigente: document.getElementById("chkInicioContenidoVigente").checked ? 1 : 0
-    };
+    return payload;
 }
 
 function valorCampo(id) {
@@ -356,6 +352,13 @@ function seleccionarDropdownPorTexto(idSelect, texto) {
     const textoNormalizado = texto.trim().toLowerCase();
     const option = Array.from(select.options).find(item => item.text.trim().toLowerCase() === textoNormalizado);
     select.value = option?.value || "";
+
+    if (window.jQuery && $(select).hasClass("select2")) {
+        $(select).trigger("change");
+        return;
+    }
+
+    select.dispatchEvent(new Event("change"));
 }
 
 function consultarInicioContenido(item) {
@@ -367,7 +370,11 @@ function consultarInicioContenido(item) {
 }
 
 function limpiarFormularioInicioContenido() {
+    document.getElementById("Id_InicioContenido").value = "0";
     document.getElementById("ddlTipoContenido").value = "";
+    if (window.jQuery && $("#ddlTipoContenido").hasClass("select2")) {
+        $("#ddlTipoContenido").trigger("change");
+    }
     document.getElementById("txtTituloInicio").value = "";
     document.getElementById("txtResumenInicio").value = "";
     document.getElementById("txtContenidoInicio").value = "";
@@ -376,19 +383,21 @@ function limpiarFormularioInicioContenido() {
     document.getElementById("txtEnlaceInicio").value = "";
     document.getElementById("txtTextoBotonInicio").value = "";
     document.getElementById("txtOrdenInicio").value = "0";
-    document.getElementById("ddlTipoContenido").dispatchEvent(new Event("change"));
     configurarCamposPorTipoContenido("ddlTipoContenido", "txtContenidoInicio");
     ocultarPreviewImagen("previewImagenInicio");
     inicializarToggle("#chkMostrarInicio", true, "Si", "No");
+    inicializarToggle("#chkInicioContenidoVigente", true, "Activo", "Inactivo");
+    setModoFormulario(false);
 }
 
-function abrirModalInicioContenido() {
-    document.getElementById("modalEditarInicioContenido").style.display = "flex";
-}
+function setModoFormulario(editando) {
+    const textoAccion = document.getElementById("txtAccionInicioContenido");
+    const boton = document.getElementById("BtnRegistrarInicioContenido");
+    const icono = boton?.querySelector("i");
 
-function cerrarModalInicioContenido() {
-    document.getElementById("modalEditarInicioContenido").style.display = "none";
-    document.getElementById("fileImagenInicioModal").value = "";
+    if (textoAccion) textoAccion.textContent = editando ? "Actualizar" : "Guardar";
+    if (icono) icono.className = editando ? "fa-solid fa-pen-to-square me-2" : "fa-solid fa-save me-2";
+    document.querySelector(".estado-inicio-contenido")?.classList.toggle("d-none", !editando);
 }
 
 function mostrarPreviewImagen(inputRutaId, previewId) {

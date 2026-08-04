@@ -3,6 +3,7 @@
 @{
     var sistemaConfig = await SistemaConfigService.F_GetSistemaVisualConfig();
     var logoSistema = Url.Content(sistemaConfig.LogoUrl);
+    var nombreSistema = string.IsNullOrWhiteSpace(sistemaConfig.NombreSistema) ? "Tienda Streaming" : sistemaConfig.NombreSistema;
     var autenticado = User.Identity?.IsAuthenticated == true;
     var controlador = autenticado ? "Tiendas" : "Home";
     var accionPantallas = autenticado ? "VwTiendas" : "VwIndex";
@@ -12,8 +13,8 @@
 
 <nav class="store-horizontal-nav" aria-label="Menu horizontal de tienda">
     <a class="store-horizontal-brand" asp-controller="@controlador" asp-action="@accionPantallas">
-        <img src="@logoSistema" alt="Logo Tienda Streaming" />
-        <span>Tienda Streaming</span>
+        <img src="@logoSistema" alt="Logo @nombreSistema" />
+        <span class="system-name-text">@nombreSistema</span>
     </a>
 
     <div class="store-horizontal-menu">

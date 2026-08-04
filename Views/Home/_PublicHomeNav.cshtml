@@ -3,14 +3,15 @@
 @{
     var sistemaConfig = await SistemaConfigService.F_GetSistemaVisualConfig();
     var logoSistema = Url.Content(sistemaConfig.LogoUrl);
+    var nombreSistema = string.IsNullOrWhiteSpace(sistemaConfig.NombreSistema) ? "Tienda Streaming" : sistemaConfig.NombreSistema;
     var actionActual = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
     var mostrarCarrito = actionActual == "VwIndex" || actionActual == "VwCombos";
 }
 
 <nav class="public-home-nav public-page-nav" aria-label="Menu principal publico">
     <a class="public-home-brand" asp-controller="Home" asp-action="VwIndex">
-        <img src="@logoSistema" alt="Logo Tienda Streaming" />
-        <span>Tienda Streaming</span>
+        <img src="@logoSistema" alt="Logo @nombreSistema" />
+        <span class="system-name-text">@nombreSistema</span>
     </a>
 
     <div class="public-home-menu">

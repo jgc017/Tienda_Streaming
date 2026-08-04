@@ -1,5 +1,6 @@
 // Obtiene el token antifalsificacion generado en VwSistemaConfig.cshtml.
 const defaultsSistemaConfig = {
+    nombreSistema: "Tienda Streaming",
     logoUrl: "/img/IMAGENIA.png",
     faviconUrl: "/favicon.ico",
     loginBackgroundUrl: "/img/auth-background.svg",
@@ -61,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("txtFaviconSistema")?.addEventListener("input", () => mostrarPreviewImagen("txtFaviconSistema", "previewFaviconSistema"));
     document.getElementById("txtFondoLoginSistema")?.addEventListener("input", () => mostrarPreviewImagen("txtFondoLoginSistema", "previewFondoLoginSistema"));
     document.getElementById("txtVideoSistema")?.addEventListener("input", mostrarPreviewVideo);
+    document.getElementById("txtNombreSistema")?.addEventListener("input", mostrarPreviewNombreSistema);
 });
 
 // F_GetSistemaVisualConfig: consulta y pinta las imagenes y videos guardados.
@@ -103,6 +105,7 @@ function P_UdpSistemaVisualConfig() {
                         mostrarAlerta("exito", "Actualizado", data.mensaje);
                         pintarFormulario(data.data);
                         actualizarLogoLoader(data.data.logoUrl);
+                        actualizarNombreSistema(data.data.nombreSistema);
                     } else {
                         mostrarAlerta("error", "Error", data.mensaje);
                     }
@@ -221,19 +224,23 @@ function subirVideoSiPendiente(mostrarExito = false) {
 }
 
 function obtenerPayloadSistemaConfig() {
+    const nombreSistema = valorCampo("txtNombreSistema");
     const logoUrl = valorCampo("txtLogoSistema");
     const faviconUrl = valorCampo("txtFaviconSistema");
     const loginBackgroundUrl = valorCampo("txtFondoLoginSistema");
     const videoUrl = valorCampo("txtVideoSistema");
 
+    if (!nombreSistema) { mostrarError("txtNombreSistema", "El nombre del sistema es obligatorio"); return null; }
+    if (nombreSistema.length < 2 || nombreSistema.length > 120) { mostrarError("txtNombreSistema", "El nombre debe tener entre 2 y 120 caracteres"); return null; }
     if (!logoUrl) { mostrarError("txtLogoSistema", "El logo es obligatorio"); return null; }
     if (!faviconUrl) { mostrarError("txtFaviconSistema", "El favicon es obligatorio"); return null; }
     if (!loginBackgroundUrl) { mostrarError("txtFondoLoginSistema", "El fondo del login es obligatorio"); return null; }
 
-    return { logoUrl, faviconUrl, loginBackgroundUrl, videoUrl };
+    return { nombreSistema, logoUrl, faviconUrl, loginBackgroundUrl, videoUrl };
 }
 
 function pintarFormulario(config) {
+    document.getElementById("txtNombreSistema").value = config.nombreSistema || defaultsSistemaConfig.nombreSistema;
     document.getElementById("txtLogoSistema").value = config.logoUrl || defaultsSistemaConfig.logoUrl;
     document.getElementById("txtFaviconSistema").value = config.faviconUrl || defaultsSistemaConfig.faviconUrl;
     document.getElementById("txtFondoLoginSistema").value = config.loginBackgroundUrl || defaultsSistemaConfig.loginBackgroundUrl;
@@ -243,6 +250,12 @@ function pintarFormulario(config) {
     mostrarPreviewImagen("txtFaviconSistema", "previewFaviconSistema");
     mostrarPreviewImagen("txtFondoLoginSistema", "previewFondoLoginSistema");
     mostrarPreviewVideo();
+}
+
+function mostrarPreviewNombreSistema() {
+    const nombre = valorCampo("txtNombreSistema") || defaultsSistemaConfig.nombreSistema;
+    const preview = document.getElementById("previewNombreSistema");
+    if (preview) preview.textContent = nombre;
 }
 
 function valorCampo(id) {
@@ -266,11 +279,15 @@ function mostrarPreviewImagen(inputRutaId, previewId) {
 function mostrarPreviewVideo() {
     const ruta = valorCampo("txtVideoSistema");
     const preview = document.getElementById("previewVideoSistema");
+    const youtubePreview = document.getElementById("previewYoutubeSistema");
     const link = document.getElementById("linkPreviewVideoSistema");
 
     preview.pause();
     preview.removeAttribute("src");
+    preview.load();
     preview.classList.add("d-none");
+    youtubePreview.removeAttribute("src");
+    youtubePreview.classList.add("d-none");
     link.classList.add("d-none");
     link.removeAttribute("href");
 
@@ -281,14 +298,17 @@ function mostrarPreviewVideo() {
     if (esArchivoVideoLocal(ruta)) {
         preview.src = ruta;
         preview.classList.remove("d-none");
+        preview.load();
+        preview.play().catch(() => {
+            // Algunos navegadores bloquean autoplay si el usuario desactiva reproduccion automatica.
+        });
         return;
     }
 
-    const youtubeWatchUrl = obtenerYoutubeWatchUrl(ruta);
-    if (youtubeWatchUrl) {
-        link.href = youtubeWatchUrl;
-        link.innerHTML = '<i class="fa-brands fa-youtube me-1"></i> Abrir video';
-        link.classList.remove("d-none");
+    const youtubeEmbedUrl = obtenerYoutubeEmbedUrl(ruta);
+    if (youtubeEmbedUrl) {
+        youtubePreview.src = youtubeEmbedUrl;
+        youtubePreview.classList.remove("d-none");
         return;
     }
 
@@ -342,6 +362,16 @@ function limpiarYoutubeId(value) {
 function esArchivoVideoLocal(ruta) {
     const limpia = ruta.split("?")[0].split("#")[0].toLowerCase();
     return limpia.startsWith("/video/") && (limpia.endsWith(".mp4") || limpia.endsWith(".webm") || limpia.endsWith(".ogg"));
+}
+
+function actualizarNombreSistema(nombreSistema) {
+    const nombre = (nombreSistema || defaultsSistemaConfig.nombreSistema).trim();
+    document.querySelectorAll(".system-name-text").forEach(elemento => {
+        elemento.textContent = nombre;
+    });
+
+    const partesTitulo = document.title.split(" - ");
+    document.title = `${partesTitulo[0] || "Imagenes y Videos"} - ${nombre}`;
 }
 
 function actualizarLogoLoader(logoUrl) {

@@ -17,6 +17,7 @@
     var sistemaConfig = await SistemaConfigService.F_GetSistemaVisualConfig();
     var logoSistema = Url.Content(sistemaConfig.LogoUrl);
     var faviconSistema = Url.Content(sistemaConfig.FaviconUrl);
+    var nombreSistema = string.IsNullOrWhiteSpace(sistemaConfig.NombreSistema) ? "Tienda Streaming" : sistemaConfig.NombreSistema;
 }
 
 <!DOCTYPE html>
@@ -24,7 +25,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Tienda Streaming</title>
+    <title>@ViewData["Title"] - @nombreSistema</title>
     <link rel="icon" type="image/png" href="@faviconSistema" />
     <meta name="app-logo" content="@logoSistema" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
@@ -51,7 +52,7 @@
             </button>
 
             <a class="navbar-brand fw-bold text-light ms-auto" asp-controller="Usuarios" asp-action="VwUsuarios">
-                Tienda Streaming
+                <span class="system-name-text">@nombreSistema</span>
             </a>
 
             @* Cierre de sesion protegido por antiforgery en AccountController.Logout. *@
@@ -76,7 +77,7 @@
         </div>
 
         <footer class="bg-black text-secondary text-center py-3 border-top border-secondary">
-            <small>&copy; 2026 - Tienda Streaming</small>
+            <small>&copy; 2026 - <span class="system-name-text">@nombreSistema</span></small>
         </footer>
     }
     else

@@ -8,7 +8,8 @@
     var authLogo = sistemaConfig.LogoUrl;
     var authBackground = sistemaConfig.LoginBackgroundUrl;
     var faviconSistema = Url.Content(sistemaConfig.FaviconUrl);
-    var authBrand = ViewData["AuthBrand"] as string ?? "Tienda Streaming";
+    var nombreSistema = string.IsNullOrWhiteSpace(sistemaConfig.NombreSistema) ? "Tienda Streaming" : sistemaConfig.NombreSistema;
+    var authBrand = ViewData["AuthBrand"] as string ?? nombreSistema;
     var backgroundStyle = string.IsNullOrWhiteSpace(authBackground)
         ? string.Empty
         : $"--auth-bg-image: url('{Url.Content(authBackground)}');";
@@ -34,7 +35,7 @@
         @* Tarjeta central de autenticacion. RenderBody inserta el formulario concreto. *@
         <section class="auth-card" aria-label="@title">
             <div class="auth-brand">
-                <h1>@authBrand</h1>
+                <h1 class="system-name-text">@authBrand</h1>
                 <img src="@Url.Content(authLogo)" alt="Logo @authBrand" class="auth-logo" />
             </div>
 

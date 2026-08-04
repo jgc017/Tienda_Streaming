@@ -34,6 +34,7 @@
             </div>
 
             <div class="card-body collapse show">
+                <input type="hidden" id="Id_InicioContenido" value="0" />
                 <div class="row form-flex">
                     <div class="col-12 col-md-4 custom-input-group">
                         <div class="form-group has-float-label select-float-label">
@@ -62,6 +63,23 @@
                                        data-toggle="toggle"
                                        data-on="Si"
                                        data-off="No"
+                                       data-onstyle="primary"
+                                       data-offstyle="danger"
+                                       data-size="small"
+                                       data-width="92"
+                                       data-height="30">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 custom-input-group estado-inicio-contenido d-none">
+                        <div class="form-status-editor">
+                            <label class="form-status-label">Estado</label>
+                            <div class="form-toggle-container">
+                                <input type="checkbox"
+                                       id="chkInicioContenidoVigente"
+                                       data-toggle="toggle"
+                                       data-on="Activo"
+                                       data-off="Inactivo"
                                        data-onstyle="primary"
                                        data-offstyle="danger"
                                        data-size="small"
@@ -118,7 +136,7 @@
                             <i class="fa-solid fa-file-circle-plus me-2"></i> Nuevo
                         </button>
                         <button type="button" id="BtnRegistrarInicioContenido" class="btn-form-action btn-fixed">
-                            <i class="fa-solid fa-save me-2"></i> Guardar
+                            <i class="fa-solid fa-save me-2"></i> <span id="txtAccionInicioContenido">Guardar</span>
                         </button>
                     </div>
                 </div>
@@ -149,86 +167,3 @@
         </div>
     </div>
 </div>
-
-<div id="modalEditarInicioContenido" class="modal-custom">
-    <div class="modal-content-custom modal-content-wide">
-        <div class="modal-header-custom">
-            <h5 class="modal-title">Actualizar Contenido</h5>
-            <button class="btn-close-custom">x</button>
-        </div>
-
-        <div class="modal-body-custom">
-            <input type="hidden" id="Id_InicioContenido">
-
-            <div class="row">
-                <div class="col-12 col-md-6 mb-3 form-group has-float-label select-float-label">
-                    @Html.DropDownList("ddlTipoContenidoModal", ViewBag.ddlTiposContenido as IEnumerable<SelectListItem>, "Seleccione una opcion", htmlAttributes: new { id = "ddlTipoContenidoModal", @class = "form-control floating-select select2" })
-                    <label class="floating-label">Tipo contenido</label>
-                </div>
-                <div class="col-12 col-md-6 mb-3">
-                    <label class="form-label">Titulo</label>
-                    <input type="text" id="TituloInicioModal" class="form-control">
-                </div>
-                <div class="col-12 col-md-4 mb-3">
-                    <label class="form-label">Orden</label>
-                    <input type="number" min="0" id="OrdenInicioModal" class="form-control">
-                </div>
-                <div class="col-12 col-md-4 mb-3">
-                    <div class="user-status-editor">
-                        <div class="form-group row form-group-toggle align-items-center">
-                            <label class="col-form-label Labels label-toggle">Mostrar en inicio</label>
-                            <div class="toggle-container"><input type="checkbox" id="chkMostrarInicioModal"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-4 mb-3">
-                    <div class="user-status-editor">
-                        <div class="form-group row form-group-toggle align-items-center">
-                            <label class="col-form-label Labels label-toggle">Estado</label>
-                            <div class="toggle-container"><input type="checkbox" id="chkInicioContenidoVigente"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 mb-3">
-                    <label class="form-label">Resumen</label>
-                    <input type="text" id="ResumenInicioModal" class="form-control">
-                </div>
-                <div class="col-12 col-md-6 mb-3">
-                    <label class="form-label">Imagen URL</label>
-                    <input type="text" id="ImagenInicioModal" class="form-control">
-                    <img id="previewImagenInicioModal" class="form-image-preview d-none" alt="Vista previa imagen" />
-                </div>
-                <div class="col-12 col-md-6 mb-3">
-                    <label class="form-label">Cambiar imagen</label>
-                    <div class="file-upload-row">
-                        <input id="fileImagenInicioModal" type="file" class="form-control file-upload-input" accept="image/jpeg,image/png,image/webp,image/gif" />
-                        <button type="button" id="btnSubirImagenInicioModal" class="btn btn-primary file-upload-button">
-                            <i class="fa-solid fa-upload"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 mb-3">
-                    <label class="form-label">Enlace</label>
-                    <input type="text" id="EnlaceInicioModal" class="form-control">
-                </div>
-                <div class="col-12 mb-3">
-                    <label class="form-label">Texto boton</label>
-                    <input type="text" id="TextoBotonInicioModal" class="form-control">
-                </div>
-                <div class="col-12 mb-3">
-                    <label class="form-label">Contenido</label>
-                    <textarea id="ContenidoInicioModal" class="form-control inicio-admin-textarea"></textarea>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-footer-custom">
-            <button class="btn btn-secondary" id="btnCancelarInicioContenidoModal">Cancelar</button>
-            <button class="btn btn-primary" id="btnGuardarInicioContenidoCambios">
-                <i class="fa-solid fa-pen-to-square me-2"></i> Actualizar
-            </button>
-        </div>
-    </div>
-</div>
-
-

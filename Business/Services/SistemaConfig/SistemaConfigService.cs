@@ -1,4 +1,7 @@
+using System.Text.Json;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Tienda_Streaming.Business.Common;
 using Tienda_Streaming.Business.Interfaces.SistemaConfig;
@@ -8,20 +11,30 @@ using Tienda_Streaming.Models.Dto.Administracion.SistemaConfig;
 
 namespace Tienda_Streaming.Business.Services.SistemaConfig
 {
-    // Servicio de negocio para las imagenes globales del sistema.
-    // Mantiene una sola configuracion activa y entrega valores por defecto si aun no existe tabla o registro.
+    // Servicio de negocio para la configuracion visual global del sistema.
+    // Las imagenes permanecen en SistemaVisualConfig; el nombre se guarda en archivo para no crear registros en tablas.
     public class SistemaConfigService : ISistemaConfig
     {
         private const string LogoDefault = "/img/IMAGENIA.png";
         private const string FaviconDefault = "/favicon.ico";
         private const string LoginBackgroundDefault = "/img/auth-background.svg";
+        private const string NombreSistemaDefault = "Tienda Streaming";
+        private const string NombreConfigFile = "sistema-nombre.json";
         private readonly AppDbContext _context;
         private readonly ILogger<SistemaConfigService> _logger;
+        private readonly IWebHostEnvironment _environment;
+        private readonly IConfiguration _configuration;
 
-        public SistemaConfigService(AppDbContext context, ILogger<SistemaConfigService> logger)
+        public SistemaConfigService(
+            AppDbContext context,
+            ILogger<SistemaConfigService> logger,
+            IWebHostEnvironment environment,
+            IConfiguration configuration)
         {
             _context = context;
             _logger = logger;
+            _environment = environment;
+            _configuration = configuration;
         }
 
         // F_GetSistemaVisualConfig: obtiene la configuracion vigente o retorna defaults.
@@ -43,22 +56,32 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
                     })
                     .FirstOrDefaultAsync();
 
-                return config ?? ObtenerConfigDefault();
+                var result = config ?? ObtenerConfigDefault();
+                result.NombreSistema = ObtenerNombreSistema();
+                return result;
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "No fue posible leer SistemaVisualConfig. Se usaran imagenes por defecto.");
-                return ObtenerConfigDefault();
+                var result = ObtenerConfigDefault();
+                result.NombreSistema = ObtenerNombreSistema();
+                return result;
             }
         }
 
         // P_UdpSistemaVisualConfig: crea o actualiza la configuracion visual global.
         public async Task<ServiceResult> P_UdpSistemaVisualConfig(DtoSistemaVisualConfigUpdateRequest model, AuditContext audit)
         {
+            var nombreSistema = NormalizarNombreSistema(model.NombreSistema);
             var logo = NormalizarRuta(model.LogoUrl);
             var favicon = NormalizarRuta(model.FaviconUrl);
             var loginBackground = NormalizarRuta(model.LoginBackgroundUrl);
             var video = NormalizarVideoUrl(NormalizarRutaOpcional(model.VideoUrl));
+
+            if (!NombreSistemaValido(nombreSistema))
+            {
+                return ServiceResult.Fail(StatusCodes.Status400BadRequest, "El nombre del sistema debe tener entre 2 y 120 caracteres.");
+            }
 
             if (!RutaLocalValida(logo) || !RutaLocalValida(favicon) || !RutaLocalValida(loginBackground))
             {
@@ -103,21 +126,75 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
             }
 
             await _context.SaveChangesAsync();
+            GuardarNombreSistema(nombreSistema);
 
             return ServiceResult.Success(
-                "Imagenes y Videos actualizados correctamente.",
+                "Imagenes, videos y nombre del sistema actualizados correctamente.",
                 await F_GetSistemaVisualConfig(),
-                auditDescription: "Actualizacion de logo, favicon, fondo de login y video publico del sistema");
+                auditDescription: "Actualizacion de nombre, logo, favicon, fondo de login y video publico del sistema");
         }
 
-        private static DtoSistemaVisualConfigItem ObtenerConfigDefault()
+        private DtoSistemaVisualConfigItem ObtenerConfigDefault()
         {
             return new DtoSistemaVisualConfigItem
             {
+                NombreSistema = ObtenerNombreSistema(),
                 LogoUrl = LogoDefault,
                 FaviconUrl = FaviconDefault,
                 LoginBackgroundUrl = LoginBackgroundDefault
             };
+        }
+
+        private string ObtenerNombreSistema()
+        {
+            try
+            {
+                var path = ObtenerRutaNombreConfig();
+                if (File.Exists(path))
+                {
+                    var json = File.ReadAllText(path);
+                    var config = JsonSerializer.Deserialize<SistemaNombreConfig>(json);
+                    var nombreArchivo = NormalizarNombreSistema(config?.NombreSistema);
+                    if (NombreSistemaValido(nombreArchivo))
+                    {
+                        return nombreArchivo;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "No fue posible leer el nombre del sistema desde archivo. Se usara el valor configurado o por defecto.");
+            }
+
+            var nombreConfigurado = NormalizarNombreSistema(_configuration["Sistema:Nombre"]);
+            return NombreSistemaValido(nombreConfigurado) ? nombreConfigurado : NombreSistemaDefault;
+        }
+
+        private void GuardarNombreSistema(string nombreSistema)
+        {
+            var directorio = Path.Combine(_environment.ContentRootPath, "App_Data");
+            Directory.CreateDirectory(directorio);
+
+            var json = JsonSerializer.Serialize(
+                new SistemaNombreConfig { NombreSistema = nombreSistema },
+                new JsonSerializerOptions { WriteIndented = true });
+
+            File.WriteAllText(ObtenerRutaNombreConfig(), json);
+        }
+
+        private string ObtenerRutaNombreConfig()
+        {
+            return Path.Combine(_environment.ContentRootPath, "App_Data", NombreConfigFile);
+        }
+
+        private static bool NombreSistemaValido(string? nombre)
+        {
+            return !string.IsNullOrWhiteSpace(nombre) && nombre.Length is >= 2 and <= 120;
+        }
+
+        private static string NormalizarNombreSistema(string? nombre)
+        {
+            return (nombre ?? string.Empty).Trim();
         }
 
         private static string NormalizarRuta(string ruta)
@@ -236,6 +313,11 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
 
             var id = value.Split('/', '?', '&', '#').FirstOrDefault() ?? string.Empty;
             return new string(id.Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '-').ToArray());
+        }
+
+        private sealed class SistemaNombreConfig
+        {
+            public string NombreSistema { get; set; } = NombreSistemaDefault;
         }
     }
 }
