@@ -1,9 +1,9 @@
 // Obtiene el token antifalsificacion generado en VwSistemaConfig.cshtml.
 const defaultsSistemaConfig = {
     nombreSistema: "Tienda Streaming",
-    logoUrl: "/img/IMAGENIA.png",
+    logoUrl: "/uploads/sistema/logo_20260801014229_436a9b3c1af244fca0be8dd75454e495.png",
     faviconUrl: "/favicon.ico",
-    loginBackgroundUrl: "/img/auth-background.svg",
+    loginBackgroundUrl: "/uploads/sistema/loginbackground_20260801014351_1b013f02f27345b4ac09677148c3ffe3.png",
     videoUrl: ""
 };
 
@@ -361,7 +361,7 @@ function limpiarYoutubeId(value) {
 
 function esArchivoVideoLocal(ruta) {
     const limpia = ruta.split("?")[0].split("#")[0].toLowerCase();
-    return (limpia.startsWith("/video/") || limpia.startsWith("/uploads/"))
+    return limpia.startsWith("/uploads/")
         && (limpia.endsWith(".mp4") || limpia.endsWith(".webm") || limpia.endsWith(".ogg"));
 }
 

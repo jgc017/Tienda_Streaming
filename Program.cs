@@ -257,6 +257,30 @@ builder.Services.AddRateLimiter(options =>
 // Construye la aplicacion con todos los servicios registrados.
 var app = builder.Build();
 
+// Copia una sola vez los recursos iniciales de la aplicacion al almacenamiento
+// persistente. Las cargas administrables nunca se sirven desde wwwroot.
+var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "App_Data", "uploads");
+foreach (var categoria in new[] { "sistema", "inicio", "productos", "combos" })
+{
+    var origen = Path.Combine(app.Environment.WebRootPath, "img", categoria);
+    var destino = Path.Combine(uploadsPath, categoria);
+    if (!Directory.Exists(origen))
+    {
+        continue;
+    }
+
+    foreach (var archivo in Directory.EnumerateFiles(origen, "*", SearchOption.AllDirectories))
+    {
+        var rutaRelativa = Path.GetRelativePath(origen, archivo);
+        var archivoDestino = Path.Combine(destino, rutaRelativa);
+        Directory.CreateDirectory(Path.GetDirectoryName(archivoDestino)!);
+        if (!File.Exists(archivoDestino))
+        {
+            File.Copy(archivo, archivoDestino);
+        }
+    }
+}
+
 // Ejecuta migraciones al iniciar cuando se habilita por configuracion o cuando
 // el contenedor se invoca con --migrate. Esto facilita levantar una base nueva.
 var ejecutarMigraciones = args.Contains("--migrate") ||
@@ -354,7 +378,6 @@ app.UseStaticFiles(new StaticFileOptions
 
 // Los archivos cargados desde administracion se conservan fuera de wwwroot.
 // Asi una nueva imagen Docker no sustituye los medios referenciados en la BD.
-var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "App_Data", "uploads");
 Directory.CreateDirectory(uploadsPath);
 app.UseStaticFiles(new StaticFileOptions
 {

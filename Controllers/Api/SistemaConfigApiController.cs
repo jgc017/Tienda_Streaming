@@ -209,8 +209,7 @@ namespace Tienda_Streaming.Controllers.Api
         private void EliminarVideoLocalAnterior(string? videoActual)
         {
             if (string.IsNullOrWhiteSpace(videoActual)
-                || (!videoActual.StartsWith("/uploads/sistema/", StringComparison.OrdinalIgnoreCase)
-                    && !videoActual.StartsWith("/video/sistema/", StringComparison.OrdinalIgnoreCase)))
+                || !videoActual.StartsWith("/uploads/sistema/", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -221,10 +220,7 @@ namespace Tienda_Streaming.Controllers.Api
                 return;
             }
 
-            var esRutaLegacy = videoActual.StartsWith("/video/sistema/", StringComparison.OrdinalIgnoreCase);
-            var carpetaVideos = esRutaLegacy
-                ? Path.Combine(_environment.WebRootPath, "video", "sistema")
-                : Path.Combine(_environment.ContentRootPath, "App_Data", "uploads", "sistema");
+            var carpetaVideos = Path.Combine(_environment.ContentRootPath, "App_Data", "uploads", "sistema");
             var rutaFisica = Path.Combine(carpetaVideos, nombreArchivo);
             var raizVideos = Path.GetFullPath(carpetaVideos);
             var rutaNormalizada = Path.GetFullPath(rutaFisica);

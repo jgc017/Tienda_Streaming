@@ -15,9 +15,9 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
     // Las imagenes permanecen en SistemaVisualConfig; el nombre se guarda en archivo para no crear registros en tablas.
     public class SistemaConfigService : ISistemaConfig
     {
-        private const string LogoDefault = "/img/IMAGENIA.png";
+        private const string LogoDefault = "/uploads/sistema/logo_20260801014229_436a9b3c1af244fca0be8dd75454e495.png";
         private const string FaviconDefault = "/favicon.ico";
-        private const string LoginBackgroundDefault = "/img/auth-background.svg";
+        private const string LoginBackgroundDefault = "/uploads/sistema/loginbackground_20260801014351_1b013f02f27345b4ac09677148c3ffe3.png";
         private const string NombreSistemaDefault = "Tienda Streaming";
         private const string NombreConfigFile = "sistema-nombre.json";
         private readonly AppDbContext _context;
@@ -85,7 +85,7 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
 
             if (!RutaLocalValida(logo) || !RutaLocalValida(favicon) || !RutaLocalValida(loginBackground))
             {
-                return ServiceResult.Fail(StatusCodes.Status400BadRequest, "Las rutas deben ser locales y comenzar por /img/, /uploads/ o /favicon.ico.");
+                return ServiceResult.Fail(StatusCodes.Status400BadRequest, "Las rutas de imagen deben ser locales y comenzar por /uploads/ o ser /favicon.ico.");
             }
 
             if (!VideoValido(video))
@@ -172,7 +172,7 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
 
         private void GuardarNombreSistema(string nombreSistema)
         {
-            var directorio = Path.Combine(_environment.ContentRootPath, "App_Data");
+            var directorio = Path.Combine(_environment.ContentRootPath, "App_Data", "config");
             Directory.CreateDirectory(directorio);
 
             var json = JsonSerializer.Serialize(
@@ -184,7 +184,7 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
 
         private string ObtenerRutaNombreConfig()
         {
-            return Path.Combine(_environment.ContentRootPath, "App_Data", NombreConfigFile);
+            return Path.Combine(_environment.ContentRootPath, "App_Data", "config", NombreConfigFile);
         }
 
         private static bool NombreSistemaValido(string? nombre)
@@ -205,8 +205,7 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
 
         private static bool RutaLocalValida(string ruta)
         {
-            return ruta.StartsWith("/img/", StringComparison.OrdinalIgnoreCase)
-                || ruta.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase)
+            return ruta.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(ruta, "/favicon.ico", StringComparison.OrdinalIgnoreCase);
         }
 
@@ -228,8 +227,7 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
                 return null;
             }
 
-            if (ruta.StartsWith("/video/", StringComparison.OrdinalIgnoreCase)
-                || ruta.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
+            if (ruta.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
             {
                 return ruta;
             }
@@ -246,8 +244,7 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
                 return true;
             }
 
-            if (ruta.StartsWith("/video/", StringComparison.OrdinalIgnoreCase)
-                || ruta.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
+            if (ruta.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }

@@ -13,7 +13,7 @@ namespace Tienda_Streaming.Models.Administracion
         // Logo principal usado en login, loader, inicio publico y menu interno.
         [Required]
         [StringLength(500)]
-        public string LogoUrl { get; set; } = "/img/IMAGENIA.png";
+        public string LogoUrl { get; set; } = "/uploads/sistema/logo_20260801014229_436a9b3c1af244fca0be8dd75454e495.png";
 
         // Icono del navegador. Debe apuntar a un archivo local de wwwroot.
         [Required]
@@ -23,7 +23,7 @@ namespace Tienda_Streaming.Models.Administracion
         // Imagen de fondo del login.
         [Required]
         [StringLength(500)]
-        public string LoginBackgroundUrl { get; set; } = "/img/auth-background.svg";
+        public string LoginBackgroundUrl { get; set; } = "/uploads/sistema/loginbackground_20260801014351_1b013f02f27345b4ac09677148c3ffe3.png";
 
         // Video destacado de las tiendas publicas. Acepta archivo local o enlace de YouTube.
         [StringLength(500)]
