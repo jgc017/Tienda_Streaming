@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.EntityFrameworkCore;
 using Tienda_Streaming.Business.Interfaces.Dominios;
 using Tienda_Streaming.Business.Interfaces.CodigosPlataformas;
@@ -348,6 +349,17 @@ staticFileContentTypes.Mappings[".glb"] = "model/gltf-binary";
 staticFileContentTypes.Mappings[".gltf"] = "model/gltf+json";
 app.UseStaticFiles(new StaticFileOptions
 {
+    ContentTypeProvider = staticFileContentTypes
+});
+
+// Los archivos cargados desde administracion se conservan fuera de wwwroot.
+// Asi una nueva imagen Docker no sustituye los medios referenciados en la BD.
+var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "App_Data", "uploads");
+Directory.CreateDirectory(uploadsPath);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads",
     ContentTypeProvider = staticFileContentTypes
 });
 

@@ -85,7 +85,7 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
 
             if (!RutaLocalValida(logo) || !RutaLocalValida(favicon) || !RutaLocalValida(loginBackground))
             {
-                return ServiceResult.Fail(StatusCodes.Status400BadRequest, "Las rutas deben ser locales y comenzar por /img/ o /favicon.ico.");
+                return ServiceResult.Fail(StatusCodes.Status400BadRequest, "Las rutas deben ser locales y comenzar por /img/, /uploads/ o /favicon.ico.");
             }
 
             if (!VideoValido(video))
@@ -206,6 +206,7 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
         private static bool RutaLocalValida(string ruta)
         {
             return ruta.StartsWith("/img/", StringComparison.OrdinalIgnoreCase)
+                || ruta.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(ruta, "/favicon.ico", StringComparison.OrdinalIgnoreCase);
         }
 
@@ -227,7 +228,8 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
                 return null;
             }
 
-            if (ruta.StartsWith("/video/", StringComparison.OrdinalIgnoreCase))
+            if (ruta.StartsWith("/video/", StringComparison.OrdinalIgnoreCase)
+                || ruta.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
             {
                 return ruta;
             }
@@ -244,7 +246,8 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
                 return true;
             }
 
-            if (ruta.StartsWith("/video/", StringComparison.OrdinalIgnoreCase))
+            if (ruta.StartsWith("/video/", StringComparison.OrdinalIgnoreCase)
+                || ruta.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }

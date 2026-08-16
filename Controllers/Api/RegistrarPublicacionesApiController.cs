@@ -170,7 +170,7 @@ namespace Tienda_Streaming.Controllers.Api
                 });
             }
 
-            var carpetaDestino = Path.Combine(_environment.WebRootPath, "img", "inicio");
+            var carpetaDestino = Path.Combine(_environment.ContentRootPath, "App_Data", "uploads", "inicio");
             Directory.CreateDirectory(carpetaDestino);
 
             var nombreArchivo = $"inicio_{DateTime.UtcNow:yyyyMMddHHmmss}_{Guid.NewGuid():N}{extension.ToLower()}";
@@ -178,7 +178,7 @@ namespace Tienda_Streaming.Controllers.Api
 
             await System.IO.File.WriteAllBytesAsync(rutaFisica, bytesImagen);
 
-            var rutaPublica = $"/img/inicio/{nombreArchivo}";
+            var rutaPublica = $"/uploads/inicio/{nombreArchivo}";
             await _general.RegistrarAuditoria(
                 GetAuditContext(),
                 "VwRegistrarPublicaciones",

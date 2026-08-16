@@ -118,7 +118,7 @@ namespace Tienda_Streaming.Controllers.Api
                 return BadRequest(new { ok = false, mensaje = "Formato no permitido. Usa JPG, PNG o WEBP." });
             }
 
-            var carpetaDestino = Path.Combine(_environment.WebRootPath, "img", "productos");
+            var carpetaDestino = Path.Combine(_environment.ContentRootPath, "App_Data", "uploads", "productos");
             Directory.CreateDirectory(carpetaDestino);
 
             var nombreArchivo = $"producto_{DateTime.UtcNow:yyyyMMddHHmmss}_{Guid.NewGuid():N}{extension.ToLower()}";
@@ -129,7 +129,7 @@ namespace Tienda_Streaming.Controllers.Api
                 await imagen.CopyToAsync(stream);
             }
 
-            var rutaPublica = $"/img/productos/{nombreArchivo}";
+            var rutaPublica = $"/uploads/productos/{nombreArchivo}";
             await _general.RegistrarAuditoria(GetAuditContext(), "VwImagenesProducto", "P_UploadImagenProducto", $"Carga de imagen producto {rutaPublica}");
 
             return Ok(new { ok = true, mensaje = "Imagen cargada correctamente.", data = rutaPublica });

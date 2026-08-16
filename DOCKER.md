@@ -50,7 +50,8 @@ No elimines estos volumenes sin respaldo:
 
 - `postgres_data`: datos PostgreSQL.
 - `app_dataprotection`: llaves DataProtection para descifrar cookies y contrasenas protegidas de cuentas.
-- `app_images`: imagenes cargadas desde administracion.
+- `app_uploads`: imagenes y videos cargados desde administracion.
+- `app_images`: compatibilidad con imagenes cargadas desde administracion en versiones anteriores.
 
 Perder `app_dataprotection` puede impedir descifrar contrasenas de cuentas registradas previamente.
 

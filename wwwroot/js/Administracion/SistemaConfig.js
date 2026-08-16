@@ -361,7 +361,8 @@ function limpiarYoutubeId(value) {
 
 function esArchivoVideoLocal(ruta) {
     const limpia = ruta.split("?")[0].split("#")[0].toLowerCase();
-    return limpia.startsWith("/video/") && (limpia.endsWith(".mp4") || limpia.endsWith(".webm") || limpia.endsWith(".ogg"));
+    return (limpia.startsWith("/video/") || limpia.startsWith("/uploads/"))
+        && (limpia.endsWith(".mp4") || limpia.endsWith(".webm") || limpia.endsWith(".ogg"));
 }
 
 function actualizarNombreSistema(nombreSistema) {

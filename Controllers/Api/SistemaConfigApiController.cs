@@ -125,7 +125,7 @@ namespace Tienda_Streaming.Controllers.Api
                 return BadRequest(new { ok = false, mensaje = $"Formato no permitido. Usa {formatos}." });
             }
 
-            var carpetaDestino = Path.Combine(_environment.WebRootPath, "img", "sistema");
+            var carpetaDestino = Path.Combine(_environment.ContentRootPath, "App_Data", "uploads", "sistema");
             Directory.CreateDirectory(carpetaDestino);
 
             var nombreArchivo = $"{tipo}_{DateTime.UtcNow:yyyyMMddHHmmss}_{Guid.NewGuid():N}{extension.ToLowerInvariant()}";
@@ -136,7 +136,7 @@ namespace Tienda_Streaming.Controllers.Api
                 await imagen.CopyToAsync(stream);
             }
 
-            var rutaPublica = $"/img/sistema/{nombreArchivo}";
+            var rutaPublica = $"/uploads/sistema/{nombreArchivo}";
             await _general.RegistrarAuditoria(
                 GetAuditContext(),
                 "VwSistemaConfig",
@@ -178,7 +178,7 @@ namespace Tienda_Streaming.Controllers.Api
                 return BadRequest(new { ok = false, mensaje = "Formato no permitido. Usa MP4, WEBM u OGG." });
             }
 
-            var carpetaDestino = Path.Combine(_environment.WebRootPath, "video", "sistema");
+            var carpetaDestino = Path.Combine(_environment.ContentRootPath, "App_Data", "uploads", "sistema");
             Directory.CreateDirectory(carpetaDestino);
 
             var nombreArchivo = $"sistema_video_{DateTime.UtcNow:yyyyMMddHHmmss}_{Guid.NewGuid():N}{extension.ToLowerInvariant()}";
@@ -191,7 +191,7 @@ namespace Tienda_Streaming.Controllers.Api
 
             EliminarVideoLocalAnterior(videoActual);
 
-            var rutaPublica = $"/video/sistema/{nombreArchivo}";
+            var rutaPublica = $"/uploads/sistema/{nombreArchivo}";
             await _general.RegistrarAuditoria(
                 GetAuditContext(),
                 "VwSistemaConfig",
@@ -209,7 +209,8 @@ namespace Tienda_Streaming.Controllers.Api
         private void EliminarVideoLocalAnterior(string? videoActual)
         {
             if (string.IsNullOrWhiteSpace(videoActual)
-                || !videoActual.StartsWith("/video/sistema/", StringComparison.OrdinalIgnoreCase))
+                || (!videoActual.StartsWith("/uploads/sistema/", StringComparison.OrdinalIgnoreCase)
+                    && !videoActual.StartsWith("/video/sistema/", StringComparison.OrdinalIgnoreCase)))
             {
                 return;
             }
@@ -220,8 +221,12 @@ namespace Tienda_Streaming.Controllers.Api
                 return;
             }
 
-            var rutaFisica = Path.Combine(_environment.WebRootPath, "video", "sistema", nombreArchivo);
-            var raizVideos = Path.GetFullPath(Path.Combine(_environment.WebRootPath, "video", "sistema"));
+            var esRutaLegacy = videoActual.StartsWith("/video/sistema/", StringComparison.OrdinalIgnoreCase);
+            var carpetaVideos = esRutaLegacy
+                ? Path.Combine(_environment.WebRootPath, "video", "sistema")
+                : Path.Combine(_environment.ContentRootPath, "App_Data", "uploads", "sistema");
+            var rutaFisica = Path.Combine(carpetaVideos, nombreArchivo);
+            var raizVideos = Path.GetFullPath(carpetaVideos);
             var rutaNormalizada = Path.GetFullPath(rutaFisica);
 
             if (!rutaNormalizada.StartsWith(raizVideos, StringComparison.OrdinalIgnoreCase)

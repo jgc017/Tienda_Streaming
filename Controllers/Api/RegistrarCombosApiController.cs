@@ -105,7 +105,7 @@ namespace Tienda_Streaming.Controllers.Api
                 return BadRequest(new { ok = false, mensaje = "Formato no permitido. Usa JPG, PNG o WEBP." });
             }
 
-            var carpetaDestino = Path.Combine(_environment.WebRootPath, "img", "combos");
+            var carpetaDestino = Path.Combine(_environment.ContentRootPath, "App_Data", "uploads", "combos");
             Directory.CreateDirectory(carpetaDestino);
 
             var nombreArchivo = $"combo_{DateTime.UtcNow:yyyyMMddHHmmss}_{Guid.NewGuid():N}{extension.ToLowerInvariant()}";
@@ -116,7 +116,7 @@ namespace Tienda_Streaming.Controllers.Api
                 await imagen.CopyToAsync(stream);
             }
 
-            var rutaPublica = $"/img/combos/{nombreArchivo}";
+            var rutaPublica = $"/uploads/combos/{nombreArchivo}";
             await RegistrarAuditoria("VwRegistrarCombos", "P_UploadImagenCombo", $"Carga de imagen combo {rutaPublica}");
 
             return Ok(new { ok = true, mensaje = "Imagen cargada correctamente.", data = rutaPublica });

@@ -68,6 +68,8 @@ services:
       CodigosPlataformas__DeleteFromMailboxAfterImport: ${CODIGOS_PLATAFORMAS_DELETE_FROM_MAILBOX_AFTER_IMPORT:-true}
     volumes:
       - app_dataprotection:/app/App_Data/DataProtectionKeys
+      - app_uploads:/app/App_Data/uploads
+      # Mantiene disponibles las imagenes cargadas con versiones anteriores.
       - app_images:/app/wwwroot/img
 
   pgadmin:
@@ -88,5 +90,6 @@ services:
 volumes:
   postgres_data:
   app_dataprotection:
+  app_uploads:
   app_images:
   pgadmin_data:
