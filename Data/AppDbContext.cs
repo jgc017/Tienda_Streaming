@@ -35,6 +35,7 @@ namespace Tienda_Streaming.Data
         public DbSet<PedidoDetalles> PedidoDetalles { get; set; }
         public DbSet<PedidoCuentas> PedidoCuentas { get; set; }
         public DbSet<ImagenesProducto> ImagenesProducto { get; set; }
+        public DbSet<ArchivoSubido> ArchivosSubidos { get; set; }
         public DbSet<Permisos> Permisos { get; set; }
         public DbSet<Roles> Roles { get; set; }
         public DbSet<Roles_Permisos> Roles_Permisos { get; set; }
@@ -324,6 +325,15 @@ namespace Tienda_Streaming.Data
             });
 
             // ImagenesProducto: imagen visible por plataforma en las tiendas.
+            modelBuilder.Entity<ArchivoSubido>(entity =>
+            {
+                entity.HasIndex(a => new { a.Categoria, a.NombreArchivo }).IsUnique();
+                entity.Property(a => a.Categoria).HasMaxLength(30).IsRequired();
+                entity.Property(a => a.NombreArchivo).HasMaxLength(180).IsRequired();
+                entity.Property(a => a.ContentType).HasMaxLength(100).IsRequired();
+                entity.Property(a => a.Contenido).HasColumnType("bytea").IsRequired();
+            });
+
             modelBuilder.Entity<ImagenesProducto>(entity =>
             {
                 entity.HasIndex(i => new { i.Id_Plataforma, i.Id_Tipo_Imagen }).IsUnique();
