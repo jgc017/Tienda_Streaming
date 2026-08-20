@@ -132,13 +132,21 @@ namespace Tienda_Streaming.Services.Email
                     ? SecureSocketOptions.StartTls
                     : SecureSocketOptions.Auto;
 
-            // Conecta, autentica con el proveedor SMTP y envia el mensaje.
-            await client.ConnectAsync(_settings.Host, _settings.Port, socketOptions);
-            await client.AuthenticateAsync(_settings.UserName, _settings.Password);
-            await client.SendAsync(message);
-            await client.DisconnectAsync(true);
+            try
+            {
+                // Conecta, autentica con el proveedor SMTP y envia el mensaje.
+                await client.ConnectAsync(_settings.Host, _settings.Port, socketOptions);
+                await client.AuthenticateAsync(_settings.UserName, _settings.Password);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error enviando correo SMTP a {Email}", toEmail);
+                return false;
+            }
         }
 
         private static string Html(string? value)

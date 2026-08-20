@@ -1188,6 +1188,11 @@ namespace Tienda_Streaming.Migrations
                     b.Property<string>("Maquina_Modifica")
                         .HasColumnType("text");
 
+                    b.Property<string>("NombreSistema")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
                     b.Property<string>("VideoUrl")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -1564,4 +1569,3 @@ namespace Tienda_Streaming.Migrations
         }
     }
 }
-

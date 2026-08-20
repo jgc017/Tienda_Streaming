@@ -1,4 +1,4 @@
-@model Tienda_Streaming.Models.Dto.Administracion.RegistrarPublicaciones.DtoInicioPublico
+﻿@model Tienda_Streaming.Models.Dto.Administracion.RegistrarPublicaciones.DtoInicioPublico
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 
 @{
@@ -85,14 +85,14 @@
 
                                     <p>@(item.Resumen ?? "Selecciona tus productos, ajusta la cantidad y revisa el carrito antes de continuar.")</p>
 
-                                    @* Botón opcional que abre en nueva pestaña *@
+                                    @* BotÃ³n opcional que abre en nueva pestaÃ±a *@
                                     @if (!string.IsNullOrWhiteSpace(item.EnlaceUrl))
                                     {
                                         <a href="@item.EnlaceUrl"
                                            target="_blank"
                                            rel="noopener noreferrer"
                                            class="btn btn-primary public-carousel-button">
-                                            @(item.TextoBoton ?? "Ver más")
+                                            @(item.TextoBoton ?? "Ver mÃ¡s")
                                         </a>
                                     }
 
@@ -205,8 +205,23 @@
                 <h2>Contacto</h2>
                 <span>Atencion</span>
             </div>
-            <p>@(Model?.Contacto?.Resumen ?? Model?.Contacto?.Contenido ?? "Para confirmar disponibilidad, tiempos de entrega o resolver dudas, comunicate con el administrador de la tienda.")</p>
-            <a asp-controller="Home" asp-action="VwContacto">Ver canales de contacto</a>
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+                <div style="flex: 1;">
+                    @if (!string.IsNullOrWhiteSpace(Model?.Contacto?.Resumen))
+                    {
+                        <p style="font-weight: bold; margin-bottom: 5px;">@Model.Contacto.Resumen</p>
+                    }
+                    <p>@(Model?.Contacto?.Contenido ?? "Para confirmar disponibilidad, tiempos de entrega o resolver dudas, comunicate con el administrador de la tienda.")</p>
+                    <a asp-controller="Home" asp-action="VwContacto">Ver canales de contacto</a>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model?.Contacto?.ImagenUrl))
+                {
+                    <div>
+                        <img src="@Model.Contacto.ImagenUrl" alt="Contacto" style="max-height: 90px; max-width: 120px; border-radius: 8px; object-fit: contain;" />
+                    </div>
+                }
+            </div>
         </section>
     </main>
 </section>
@@ -298,6 +313,11 @@
             || limpio.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase);
     }
 }
+
+
+
+
+
 
 
 

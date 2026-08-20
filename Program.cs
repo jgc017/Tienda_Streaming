@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Features;
@@ -33,7 +33,6 @@ using Tienda_Streaming.Controllers;
 using Tienda_Streaming.Data;
 using Tienda_Streaming.Security;
 using Tienda_Streaming.Services.Email;
-using Tienda_Streaming.Services.Storage;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 using System.IO;
@@ -101,7 +100,7 @@ builder.Services.AddScoped<ICodigosPlataformas, CodigosPlataformasService>();
 builder.Services.AddScoped<IRegistrarPublicaciones, RegistrarPublicacionesService>();
 builder.Services.AddScoped<IRegistrarProductos, RegistrarProductosService>();
 builder.Services.AddScoped<IImagenesProducto, ImagenesProductoService>();
-builder.Services.AddScoped<IAlmacenamientoArchivosSubidos, AlmacenamientoArchivosSubidos>();
+
 builder.Services.AddScoped<IDominios, DominiosService>();
 builder.Services.AddScoped<IPermisos, PermisosService>();
 builder.Services.AddScoped<IPermisosMetodos, PermisosMetodosServices>();
@@ -448,3 +447,4 @@ app.MapControllerRoute(
 
 // Inicia el servidor web.
 app.Run();
+

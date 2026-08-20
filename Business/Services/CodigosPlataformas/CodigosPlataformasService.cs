@@ -14,6 +14,7 @@ using Tienda_Streaming.Models.Administracion;
 using Tienda_Streaming.Models.Dto.Administracion.CodigosPlataformas;
 using Tienda_Streaming.Services.Email;
 using System.Net;
+using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -274,6 +275,20 @@ namespace Tienda_Streaming.Business.Services.CodigosPlataformas
                 Asunto = correo.Asunto,
                 Fecha_Recepcion = correo.Fecha_Recepcion,
                 Fecha_Registro = correo.Fecha_Registro,
+                Cuerpo_Texto = correo.Cuerpo_Texto ?? string.Empty,
+                Cuerpo_Html = html,
+                Enlaces = ExtraerEnlaces(html)
+            };
+        }
+
+        private static DtoCorreoPublicoDetalle MapDetallePublico(CorreosPlataforma correo)
+        {
+            var html = !string.IsNullOrWhiteSpace(correo.Cuerpo_Html)
+                ? correo.Cuerpo_Html!
+                : TextoPlanoAHtml(correo.Cuerpo_Texto);
+
+            return new DtoCorreoPublicoDetalle
+            {
                 Cuerpo_Texto = correo.Cuerpo_Texto ?? string.Empty,
                 Cuerpo_Html = html,
                 Enlaces = ExtraerEnlaces(html)

@@ -12,7 +12,7 @@ using Tienda_Streaming.Data;
 namespace Tienda_Streaming.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260729135049_InicialTiendaStreaming")]
+    [Migration("20260820022128_InicialTiendaStreaming")]
     partial class InicialTiendaStreaming
     {
         /// <inheritdoc />
@@ -1191,6 +1191,11 @@ namespace Tienda_Streaming.Migrations
                     b.Property<string>("Maquina_Modifica")
                         .HasColumnType("text");
 
+                    b.Property<string>("NombreSistema")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
                     b.Property<string>("VideoUrl")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -1567,4 +1572,3 @@ namespace Tienda_Streaming.Migrations
         }
     }
 }
-

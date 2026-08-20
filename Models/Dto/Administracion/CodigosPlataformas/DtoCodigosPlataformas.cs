@@ -33,6 +33,13 @@ namespace Tienda_Streaming.Models.Dto.Administracion.CodigosPlataformas
         public List<DtoCorreoPlataformaEnlace> Enlaces { get; set; } = new();
     }
 
+    public class DtoCorreoPublicoDetalle
+    {
+        public string Cuerpo_Texto { get; set; } = string.Empty;
+        public string Cuerpo_Html { get; set; } = string.Empty;
+        public List<DtoCorreoPlataformaEnlace> Enlaces { get; set; } = new();
+    }
+
     public class DtoCorreoPlataformaEnlace
     {
         public string Texto { get; set; } = string.Empty;

@@ -176,6 +176,7 @@ namespace Tienda_Streaming.Migrations
                 {
                     Id_SistemaVisualConfig = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    NombreSistema = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
                     LogoUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     FaviconUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     LoginBackgroundUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
@@ -955,9 +956,83 @@ namespace Tienda_Streaming.Migrations
                 table: "Usuarios",
                 column: "Usuario",
                 unique: true);
-
             SembrarDatosIniciales(migrationBuilder);
         }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "Auditoria");
+
+            migrationBuilder.DropTable(
+                name: "ComboPlataformas");
+
+            migrationBuilder.DropTable(
+                name: "CorreosPlataforma");
+
+            migrationBuilder.DropTable(
+                name: "ImagenesProducto");
+
+            migrationBuilder.DropTable(
+                name: "InicioContenidos");
+
+            migrationBuilder.DropTable(
+                name: "MovimientosBilletera");
+
+            migrationBuilder.DropTable(
+                name: "PasswordResetTokens");
+
+            migrationBuilder.DropTable(
+                name: "PedidoCuentas");
+
+            migrationBuilder.DropTable(
+                name: "PreciosProducto");
+
+            migrationBuilder.DropTable(
+                name: "Roles_Permisos");
+
+            migrationBuilder.DropTable(
+                name: "Roles_User");
+
+            migrationBuilder.DropTable(
+                name: "SistemaVisualConfig");
+
+            migrationBuilder.DropTable(
+                name: "BilleteraVendedores");
+
+            migrationBuilder.DropTable(
+                name: "Cuentas");
+
+            migrationBuilder.DropTable(
+                name: "PedidoDetalles");
+
+            migrationBuilder.DropTable(
+                name: "Permisos");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
+
+            migrationBuilder.DropTable(
+                name: "Combos");
+
+            migrationBuilder.DropTable(
+                name: "Pedidos");
+
+            migrationBuilder.DropTable(
+                name: "Menus");
+
+            migrationBuilder.DropTable(
+                name: "CodigosCompra");
+
+            migrationBuilder.DropTable(
+                name: "Dominios");
+
+            migrationBuilder.DropTable(
+                name: "Usuarios");
+        }
+
+
 
         private static void SembrarDatosIniciales(MigrationBuilder migrationBuilder)
         {
@@ -965,7 +1040,7 @@ namespace Tienda_Streaming.Migrations
                 INSERT INTO "Roles" ("Id_Rol", "Rol", "Vigente", "Fecha_Creacion", "Maquina_Creacion") VALUES
                 (1, 'Super Usuario', 1, now(), 'MigracionInicial'),
                 (2, 'Administrador', 1, now(), 'MigracionInicial'),
-                (3, 'Vendedor', 1, now(), 'MigracionInicial');
+                (3, 'Vendedor', 1, now(), 'MigracionInicial') ON CONFLICT ("Id_Rol") DO NOTHING;
 
                 INSERT INTO "Dominios" ("Id_Dominio", "Descripcion", "Id_Padre", "Vigente", "Fecha_Creacion", "Maquina_Creacion", "DominioPadre") VALUES
                 (1, 'SIN DATOS', NULL, 1, now(), 'MigracionInicial', 'Si'),
@@ -997,7 +1072,7 @@ namespace Tienda_Streaming.Migrations
                 (27, 'Contacto', 25, 1, now(), 'MigracionInicial', 'No'),
                 (34, 'Tipo Imagen', 2, 1, now(), 'MigracionInicial', 'Si'),
                 (35, 'Pantalla Individual', 34, 1, now(), 'MigracionInicial', 'No'),
-                (36, 'Combo', 34, 1, now(), 'MigracionInicial', 'No');
+                (36, 'Combo', 34, 1, now(), 'MigracionInicial', 'No') ON CONFLICT ("Id_Dominio") DO NOTHING;
 
                 INSERT INTO "Menus" ("Id_Menu", "Descripcion", "Id_Padre", "Posicion", "Tipo", "Controlador", "Vista", "Icono", "Vigente", "Fecha_Creacion", "Maquina_Creacion") VALUES
                 (1, 'Administracion', NULL, 2, 'Modulo', NULL, NULL, 'fa-solid fa-gear', 1, now(), 'MigracionInicial'),
@@ -1017,10 +1092,7 @@ namespace Tienda_Streaming.Migrations
                 (15, 'Codigos Compra', 6, 7, 'Formulario', 'CodigosCompra', 'VwCodigosCompra', 'fa-solid fa-ticket', 1, now(), 'MigracionInicial'),
                 (16, 'Historial Compras', 6, 8, 'Formulario', 'HistorialCompras', 'VwHistorialCompras', 'fa-solid fa-clock-rotate-left', 1, now(), 'MigracionInicial'),
                 (17, 'Administracion Correos', NULL, 4, 'Modulo', NULL, NULL, 'fa-solid fa-envelopes-bulk', 1, now(), 'MigracionInicial'),
-                (18, 'Codigos Plataformas', 17, 1, 'Formulario', 'AdministracionCorreos', 'VwCodigosPlataformas', 'fa-solid fa-envelope-open-text', 1, now(), 'MigracionInicial');
-
-                INSERT INTO "SistemaVisualConfig" ("Id_SistemaVisualConfig", "LogoUrl", "FaviconUrl", "LoginBackgroundUrl", "VideoUrl", "Vigente", "Fecha_Creacion", "Maquina_Creacion") VALUES
-                (1, '/img/sistema/logo_20260722004923_478d1f5c87ad499db5dcdd1a3cadc0d9.png', '/img/sistema/favicon_20260722004933_6e85d8407b7940afbdb358d96c32110a.png', '/img/sistema/loginbackground_20260722004943_872c15bb659e4aa9a860bc33bc7e449b.png', NULL, 1, now(), 'MigracionInicial');
+                (18, 'Codigos Plataformas', 17, 1, 'Formulario', 'AdministracionCorreos', 'VwCodigosPlataformas', 'fa-solid fa-envelope-open-text', 1, now(), 'MigracionInicial') ON CONFLICT ("Id_Menu") DO NOTHING;
 
                 INSERT INTO "Permisos" ("Id_Permiso", "TipoPermiso", "Id_Menu", "Modulo", "Accion", "Descripcion", "Controlador", "Metodo", "HttpMetodo", "CodigoPermiso", "Vigente", "Fecha_Creacion", "Maquina_Creacion") VALUES
                 (1, 'Menu', 2, 'Usuarios', 'Ver', 'Ver Usuarios', 'Usuarios', 'VwUsuarios', 'GET', 'Menu:Usuarios:VwUsuarios:Ver', 1, now(), 'MigracionInicial'),
@@ -1104,7 +1176,11 @@ namespace Tienda_Streaming.Migrations
                 (79, 'Metodo', 8, 'Tiendas', 'Crear', 'Permite registrar nueva informacion en el modulo Tiendas.', 'TiendaInternaApi', 'P_ConfirmarCompra', 'POST', 'TIENDAINTERNAAPI.P_CONFIRMARCOMPRA.POST', 1, now(), 'MigracionInicial'),
                 (80, 'Metodo', 2, 'Usuarios', 'Consultar', 'Permite consultar el detalle de registros del modulo Usuarios.', 'UsuariosApi', 'F_GetUsuario', 'GET', 'USUARIOSAPI.F_GETUSUARIO.GET', 1, now(), 'MigracionInicial'),
                 (81, 'Metodo', 2, 'Usuarios', 'Eliminar', 'Permite eliminar o inactivar registros del modulo Usuarios.', 'UsuariosApi', 'P_DeleteUsuario', 'DELETE', 'USUARIOSAPI.P_DELETEUSUARIO.DELETE', 1, now(), 'MigracionInicial'),
-                (82, 'Metodo', 2, 'Usuarios', 'Actualizar', 'Permite modificar informacion existente del modulo Usuarios.', 'UsuariosApi', 'P_UdpUsuario', 'PUT', 'USUARIOSAPI.P_UDPUSUARIO.PUT', 1, now(), 'MigracionInicial');
+                (82, 'Metodo', 2, 'Usuarios', 'Actualizar', 'Permite modificar informacion existente del modulo Usuarios.', 'UsuariosApi', 'P_UdpUsuario', 'PUT', 'USUARIOSAPI.P_UDPUSUARIO.PUT', 1, now(), 'MigracionInicial') ON CONFLICT ("Id_Permiso") DO NOTHING;
+
+                INSERT INTO "Roles_Permisos" ("Id_Rol", "Id_Permiso", "Vigente", "Fecha_Creacion", "Maquina_Creacion")
+                SELECT 1, "Id_Permiso", 1, now(), 'MigracionInicial' FROM "Permisos"
+                ON CONFLICT ("Id_Rol", "Id_Permiso") DO NOTHING;
 
                 INSERT INTO "Roles_Permisos" ("Id_Rol", "Id_Permiso", "Vigente", "Fecha_Creacion", "Maquina_Creacion")
                 SELECT 2, "Id_Permiso", 1, now(), 'MigracionInicial'
@@ -1119,7 +1195,8 @@ namespace Tienda_Streaming.Migrations
                 UNION ALL
                 SELECT 3, "Id_Permiso", 1, now(), 'MigracionInicial'
                 FROM "Permisos"
-                WHERE "Id_Permiso" IN (6, 14, 30, 31, 78, 79);
+                WHERE "Id_Permiso" IN (6, 14, 30, 31, 78, 79)
+                ON CONFLICT ("Id_Rol", "Id_Permiso") DO NOTHING;
 
                 SELECT setval(pg_get_serial_sequence('"Roles"', 'Id_Rol'), COALESCE((SELECT MAX("Id_Rol") FROM "Roles"), 1), true);
                 SELECT setval(pg_get_serial_sequence('"Dominios"', 'Id_Dominio'), COALESCE((SELECT MAX("Id_Dominio") FROM "Dominios"), 1), true);
@@ -1130,78 +1207,8 @@ namespace Tienda_Streaming.Migrations
                 """);
         }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropTable(
-                name: "Auditoria");
-
-            migrationBuilder.DropTable(
-                name: "ComboPlataformas");
-
-            migrationBuilder.DropTable(
-                name: "CorreosPlataforma");
-
-            migrationBuilder.DropTable(
-                name: "ImagenesProducto");
-
-            migrationBuilder.DropTable(
-                name: "InicioContenidos");
-
-            migrationBuilder.DropTable(
-                name: "MovimientosBilletera");
-
-            migrationBuilder.DropTable(
-                name: "PasswordResetTokens");
-
-            migrationBuilder.DropTable(
-                name: "PedidoCuentas");
-
-            migrationBuilder.DropTable(
-                name: "PreciosProducto");
-
-            migrationBuilder.DropTable(
-                name: "Roles_Permisos");
-
-            migrationBuilder.DropTable(
-                name: "Roles_User");
-
-            migrationBuilder.DropTable(
-                name: "SistemaVisualConfig");
-
-            migrationBuilder.DropTable(
-                name: "BilleteraVendedores");
-
-            migrationBuilder.DropTable(
-                name: "Cuentas");
-
-            migrationBuilder.DropTable(
-                name: "PedidoDetalles");
-
-            migrationBuilder.DropTable(
-                name: "Permisos");
-
-            migrationBuilder.DropTable(
-                name: "Roles");
-
-            migrationBuilder.DropTable(
-                name: "Combos");
-
-            migrationBuilder.DropTable(
-                name: "Pedidos");
-
-            migrationBuilder.DropTable(
-                name: "Menus");
-
-            migrationBuilder.DropTable(
-                name: "CodigosCompra");
-
-            migrationBuilder.DropTable(
-                name: "Dominios");
-
-            migrationBuilder.DropTable(
-                name: "Usuarios");
-        }
     }
 }
+
+
 

@@ -1,4 +1,4 @@
-@model List<Tienda_Streaming.Models.Dto.Administracion.RegistrarPublicaciones.DtoInicioContenidoItem>
+﻿@model List<Tienda_Streaming.Models.Dto.Administracion.RegistrarPublicaciones.DtoInicioContenidoItem>
 
 @{
     ViewData["Title"] = "Contacto";
@@ -25,21 +25,38 @@
         {
             @foreach (var item in Model)
             {
-                <article class="public-content-card">
+                <article class="public-content-card" style="grid-template-columns: 1fr;">
                     <div class="public-content-body">
-                        <h2>@item.Titulo</h2>
-                        <p class="public-preline">@(item.Contenido ?? item.Resumen)</p>
-                        @if (!string.IsNullOrWhiteSpace(item.EnlaceUrl))
-                        {
-                            <a href="@item.EnlaceUrl">@(item.TextoBoton ?? "Abrir enlace")</a>
-                        }
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+                              <div style="flex: 1;">
+                                  <h2 style="margin-top: 0;">@item.Titulo</h2>
+                                @if (!string.IsNullOrWhiteSpace(item.Resumen))
+                                {
+                                    <p class="public-preline" style="font-weight: bold; margin-bottom: 5px;">@item.Resumen</p>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(item.Contenido))
+                                {
+                                    <p class="public-preline">@item.Contenido</p>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(item.EnlaceUrl))
+                                {
+                                    <a href="@item.EnlaceUrl">@(item.TextoBoton ?? "Abrir enlace")</a>
+                                }
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(item.ImagenUrl))
+                            {
+                                <div>
+                                    <img src="@item.ImagenUrl" alt="@item.Titulo" class="public-content-image" style="max-height: 90px; max-width: 120px; border-radius: 8px; object-fit: contain;" />
+                                </div>
+                            }
+                        </div>
                     </div>
                 </article>
             }
         }
         else
         {
-            <article class="public-content-card">
+            <article class="public-content-card" style="grid-template-columns: 1fr;">
                 <div class="public-content-body">
                     <h2>Contacto pendiente</h2>
                     <p>El administrador podra publicar aqui los canales oficiales de contacto.</p>
@@ -53,5 +70,12 @@
     <script src="~/js/public-store.js" asp-append-version="true"></script>
     <script type="module" src="~/js/cart-3d.js" asp-append-version="true"></script>
 }
+
+
+
+
+
+
+
 
 

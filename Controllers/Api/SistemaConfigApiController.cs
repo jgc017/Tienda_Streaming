@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tienda_Streaming.Business.Common;
 using Tienda_Streaming.Business.Interfaces.General;
@@ -42,18 +42,15 @@ namespace Tienda_Streaming.Controllers.Api
         private readonly ISistemaConfig _sistemaConfig;
         private readonly IGeneral _general;
         private readonly IWebHostEnvironment _environment;
-        private readonly Tienda_Streaming.Services.Storage.IAlmacenamientoArchivosSubidos _almacenamiento;
 
         public SistemaConfigApiController(
             ISistemaConfig sistemaConfig,
             IGeneral general,
-            IWebHostEnvironment environment,
-            Tienda_Streaming.Services.Storage.IAlmacenamientoArchivosSubidos almacenamiento)
+            IWebHostEnvironment environment)
         {
             _sistemaConfig = sistemaConfig;
             _general = general;
             _environment = environment;
-            _almacenamiento = almacenamiento;
         }
 
         // GET: /api/SistemaConfigApi/F_GetSistemaVisualConfig
@@ -145,7 +142,6 @@ namespace Tienda_Streaming.Controllers.Api
             using var ms = new MemoryStream();
             await imagen.CopyToAsync(ms);
             ms.Position = 0;
-            await _almacenamiento.GuardarAsync("sistema", nombreArchivo, imagen.ContentType, ms);
 
             var rutaPublica = $"/uploads/sistema/{nombreArchivo}";
             await _general.RegistrarAuditoria(
@@ -203,7 +199,6 @@ namespace Tienda_Streaming.Controllers.Api
             using var ms = new MemoryStream();
             await video.CopyToAsync(ms);
             ms.Position = 0;
-            await _almacenamiento.GuardarAsync("sistema", nombreArchivo, video.ContentType, ms);
 
             EliminarVideoLocalAnterior(videoActual);
 
@@ -287,3 +282,9 @@ namespace Tienda_Streaming.Controllers.Api
         }
     }
 }
+
+
+
+
+
+

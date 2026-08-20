@@ -1,0 +1,178 @@
+
+
+        private static void SembrarDatosIniciales(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.Sql("""
+                INSERT INTO "Roles" ("Id_Rol", "Rol", "Vigente", "Fecha_Creacion", "Maquina_Creacion") VALUES
+                (1, 'Super Usuario', 1, now(), 'MigracionInicial'),
+                (2, 'Administrador', 1, now(), 'MigracionInicial'),
+                (3, 'Vendedor', 1, now(), 'MigracionInicial') ON CONFLICT ("Id_Rol") DO NOTHING;
+
+                INSERT INTO "Dominios" ("Id_Dominio", "Descripcion", "Id_Padre", "Vigente", "Fecha_Creacion", "Maquina_Creacion", "DominioPadre") VALUES
+                (1, 'SIN DATOS', NULL, 1, now(), 'MigracionInicial', 'Si'),
+                (2, 'Dominio', 1, 1, now(), 'MigracionInicial', 'Si'),
+                (3, 'Permisos', 2, 1, now(), 'MigracionInicial', 'Si'),
+                (4, 'Ver', 3, 1, now(), 'MigracionInicial', 'No'),
+                (5, 'Crear', 3, 1, now(), 'MigracionInicial', 'No'),
+                (6, 'Consultar', 3, 1, now(), 'MigracionInicial', 'No'),
+                (7, 'Actualizar', 3, 1, now(), 'MigracionInicial', 'No'),
+                (8, 'Eliminar', 3, 1, now(), 'MigracionInicial', 'No'),
+                (9, 'Asignar', 3, 1, now(), 'MigracionInicial', 'No'),
+                (10, 'Plataforma', 2, 1, now(), 'MigracionInicial', 'Si'),
+                (11, 'Netflix', 10, 1, now(), 'MigracionInicial', 'No'),
+                (12, 'HBO Max', 10, 1, now(), 'MigracionInicial', 'No'),
+                (13, 'Prime Video', 10, 1, now(), 'MigracionInicial', 'No'),
+                (14, 'Paramount', 10, 1, now(), 'MigracionInicial', 'No'),
+                (15, 'Disney Premium', 10, 1, now(), 'MigracionInicial', 'No'),
+                (16, 'Disney Basic', 10, 1, now(), 'MigracionInicial', 'No'),
+                (17, 'Vix', 10, 1, now(), 'MigracionInicial', 'No'),
+                (18, 'Crunchyroll', 10, 1, now(), 'MigracionInicial', 'No'),
+                (19, 'Netflix Extranjera', 10, 1, now(), 'MigracionInicial', 'No'),
+                (20, 'Spotify', 10, 1, now(), 'MigracionInicial', 'No'),
+                (21, 'Youtube', 10, 1, now(), 'MigracionInicial', 'No'),
+                (22, 'Tipo Usuario', 2, 1, now(), 'MigracionInicial', 'Si'),
+                (23, 'Cliente', 22, 1, now(), 'MigracionInicial', 'No'),
+                (24, 'Vendedor', 22, 1, now(), 'MigracionInicial', 'No'),
+                (25, 'TipoContenidoInicio', 2, 1, now(), 'MigracionInicial', 'Si'),
+                (26, 'Slider', 25, 1, now(), 'MigracionInicial', 'No'),
+                (27, 'Contacto', 25, 1, now(), 'MigracionInicial', 'No'),
+                (34, 'Tipo Imagen', 2, 1, now(), 'MigracionInicial', 'Si'),
+                (35, 'Pantalla Individual', 34, 1, now(), 'MigracionInicial', 'No'),
+                (36, 'Combo', 34, 1, now(), 'MigracionInicial', 'No') ON CONFLICT ("Id_Dominio") DO NOTHING;
+
+                INSERT INTO "Menus" ("Id_Menu", "Descripcion", "Id_Padre", "Posicion", "Tipo", "Controlador", "Vista", "Icono", "Vigente", "Fecha_Creacion", "Maquina_Creacion") VALUES
+                (1, 'Administracion', NULL, 2, 'Modulo', NULL, NULL, 'fa-solid fa-gear', 1, now(), 'MigracionInicial'),
+                (2, 'Usuarios', 1, 1, 'Formulario', 'Usuarios', 'VwUsuarios', 'fa-solid fa-users', 1, now(), 'MigracionInicial'),
+                (3, 'Roles', 1, 2, 'Formulario', 'Roles', 'VwRoles', 'fa-solid fa-user-shield', 1, now(), 'MigracionInicial'),
+                (4, 'Permisos', 1, 3, 'Formulario', 'Permisos', 'VwPermisos', 'fa-solid fa-key', 1, now(), 'MigracionInicial'),
+                (5, 'Dominios', 1, 4, 'Formulario', 'Dominios', 'VwDominios', 'fa-solid fa-sitemap', 1, now(), 'MigracionInicial'),
+                (6, 'Agregar Productos', NULL, 3, 'Modulo', NULL, NULL, 'fa-solid fa-house-chimney-window', 1, now(), 'MigracionInicial'),
+                (7, 'Imagenes y Videos', 1, 6, 'Formulario', 'SistemaConfig', 'VwSistemaConfig', 'fa-solid fa-image', 1, now(), 'MigracionInicial'),
+                (8, 'Tiendas', NULL, 1, 'Formulario', 'Tiendas', 'VwTiendas', 'fa-solid fa-store', 1, now(), 'MigracionInicial'),
+                (9, 'Registrar Publicaciones', 6, 1, 'Formulario', 'RegistrarPublicaciones', 'VwRegistrarPublicaciones', 'fa-solid fa-newspaper', 1, now(), 'MigracionInicial'),
+                (10, 'Registrar Productos', 6, 2, 'Formulario', 'RegistrarProductos', 'VwRegistrarProductos', 'fa-solid fa-boxes-stacked', 1, now(), 'MigracionInicial'),
+                (11, 'Imagenes Producto', 6, 3, 'Formulario', 'ImagenesProducto', 'VwImagenesProducto', 'fa-solid fa-image', 1, now(), 'MigracionInicial'),
+                (12, 'Registrar Precios', 6, 4, 'Formulario', 'RegistrarPrecios', 'VwRegistrarPrecios', 'fa-solid fa-tags', 1, now(), 'MigracionInicial'),
+                (13, 'Registrar Combos', 6, 5, 'Formulario', 'RegistrarCombos', 'VwRegistrarCombos', 'fa-solid fa-layer-group', 1, now(), 'MigracionInicial'),
+                (14, 'Billetera Vendedores', 6, 6, 'Formulario', 'BilleteraVendedores', 'VwBilleteraVendedores', 'fa-solid fa-wallet', 1, now(), 'MigracionInicial'),
+                (15, 'Codigos Compra', 6, 7, 'Formulario', 'CodigosCompra', 'VwCodigosCompra', 'fa-solid fa-ticket', 1, now(), 'MigracionInicial'),
+                (16, 'Historial Compras', 6, 8, 'Formulario', 'HistorialCompras', 'VwHistorialCompras', 'fa-solid fa-clock-rotate-left', 1, now(), 'MigracionInicial'),
+                (17, 'Administracion Correos', NULL, 4, 'Modulo', NULL, NULL, 'fa-solid fa-envelopes-bulk', 1, now(), 'MigracionInicial'),
+                (18, 'Codigos Plataformas', 17, 1, 'Formulario', 'AdministracionCorreos', 'VwCodigosPlataformas', 'fa-solid fa-envelope-open-text', 1, now(), 'MigracionInicial') ON CONFLICT ("Id_Menu") DO NOTHING;
+
+                INSERT INTO "SistemaVisualConfig" ("Id_SistemaVisualConfig", "LogoUrl", "FaviconUrl", "LoginBackgroundUrl", "VideoUrl", "Vigente", "Fecha_Creacion", "Maquina_Creacion") VALUES
+                (1, '/img/sistema/logo_20260722004923_478d1f5c87ad499db5dcdd1a3cadc0d9.png', '/img/sistema/favicon_20260722004933_6e85d8407b7940afbdb358d96c32110a.png', '/img/sistema/loginbackground_20260722004943_872c15bb659e4aa9a860bc33bc7e449b.png', NULL, 1, now(), 'MigracionInicial') ON CONFLICT ("Id_SistemaVisualConfig") DO NOTHING;
+
+                INSERT INTO "Permisos" ("Id_Permiso", "TipoPermiso", "Id_Menu", "Modulo", "Accion", "Descripcion", "Controlador", "Metodo", "HttpMetodo", "CodigoPermiso", "Vigente", "Fecha_Creacion", "Maquina_Creacion") VALUES
+                (1, 'Menu', 2, 'Usuarios', 'Ver', 'Ver Usuarios', 'Usuarios', 'VwUsuarios', 'GET', 'Menu:Usuarios:VwUsuarios:Ver', 1, now(), 'MigracionInicial'),
+                (2, 'Menu', 3, 'Roles', 'Ver', 'Ver Roles', 'Roles', 'VwRoles', 'GET', 'Menu:Roles:VwRoles:Ver', 1, now(), 'MigracionInicial'),
+                (3, 'Menu', 4, 'Permisos', 'Ver', 'Ver Permisos', 'Permisos', 'VwPermisos', 'GET', 'Menu:Permisos:VwPermisos:Ver', 1, now(), 'MigracionInicial'),
+                (4, 'Menu', 5, 'Dominios', 'Ver', 'Ver Dominios', 'Dominios', 'VwDominios', 'GET', 'Menu:Dominios:VwDominios:Ver', 1, now(), 'MigracionInicial'),
+                (5, 'Menu', 7, 'SistemaConfig', 'Ver', 'Ver Imagenes y Videos', 'SistemaConfig', 'VwSistemaConfig', 'GET', 'Menu:SistemaConfig:VwSistemaConfig:Ver', 1, now(), 'MigracionInicial'),
+                (6, 'Menu', 8, 'Tiendas', 'Ver', 'Ver Tiendas', 'Tiendas', 'VwTiendas', 'GET', 'Menu:Tiendas:VwTiendas:Ver', 1, now(), 'MigracionInicial'),
+                (7, 'Menu', 9, 'RegistrarPublicaciones', 'Ver', 'Ver Registrar Publicaciones', 'RegistrarPublicaciones', 'VwRegistrarPublicaciones', 'GET', 'Menu:RegistrarPublicaciones:VwRegistrarPublicaciones:Ver', 1, now(), 'MigracionInicial'),
+                (8, 'Menu', 10, 'RegistrarProductos', 'Ver', 'Ver Registrar Productos', 'RegistrarProductos', 'VwRegistrarProductos', 'GET', 'Menu:RegistrarProductos:VwRegistrarProductos:Ver', 1, now(), 'MigracionInicial'),
+                (9, 'Menu', 11, 'ImagenesProducto', 'Ver', 'Ver Imagenes Producto', 'ImagenesProducto', 'VwImagenesProducto', 'GET', 'Menu:ImagenesProducto:VwImagenesProducto:Ver', 1, now(), 'MigracionInicial'),
+                (10, 'Menu', 12, 'RegistrarPrecios', 'Ver', 'Ver Registrar Precios', 'RegistrarPrecios', 'VwRegistrarPrecios', 'GET', 'Menu:RegistrarPrecios:VwRegistrarPrecios:Ver', 1, now(), 'MigracionInicial'),
+                (11, 'Menu', 13, 'RegistrarCombos', 'Ver', 'Ver Registrar Combos', 'RegistrarCombos', 'VwRegistrarCombos', 'GET', 'Menu:RegistrarCombos:VwRegistrarCombos:Ver', 1, now(), 'MigracionInicial'),
+                (12, 'Menu', 14, 'BilleteraVendedores', 'Ver', 'Ver Billetera Vendedores', 'BilleteraVendedores', 'VwBilleteraVendedores', 'GET', 'Menu:BilleteraVendedores:VwBilleteraVendedores:Ver', 1, now(), 'MigracionInicial'),
+                (13, 'Menu', 15, 'CodigosCompra', 'Ver', 'Ver Codigos Compra', 'CodigosCompra', 'VwCodigosCompra', 'GET', 'Menu:CodigosCompra:VwCodigosCompra:Ver', 1, now(), 'MigracionInicial'),
+                (14, 'Menu', 16, 'HistorialCompras', 'Ver', 'Ver Historial Compras', 'HistorialCompras', 'VwHistorialCompras', 'GET', 'Menu:HistorialCompras:VwHistorialCompras:Ver', 1, now(), 'MigracionInicial'),
+                (15, 'Menu', 18, 'AdministracionCorreos', 'Ver', 'Ver Codigos Plataformas', 'AdministracionCorreos', 'VwCodigosPlataformas', 'GET', 'Menu:AdministracionCorreos:VwCodigosPlataformas:Ver', 1, now(), 'MigracionInicial'),
+                (16, 'Metodo', 14, 'BilleteraVendedores', 'Consultar', 'Permite consultar el detalle de registros del modulo Billetera Vendedores.', 'BilleteraVendedoresApi', 'F_GetBilletera', 'GET', 'BILLETERAVENDEDORESAPI.F_GETBILLETERA.GET', 1, now(), 'MigracionInicial'),
+                (17, 'Metodo', 14, 'BilleteraVendedores', 'Crear', 'Permite registrar nueva informacion en el modulo Billetera Vendedores.', 'BilleteraVendedoresApi', 'P_RecargarBilletera', 'POST', 'BILLETERAVENDEDORESAPI.P_RECARGARBILLETERA.POST', 1, now(), 'MigracionInicial'),
+                (18, 'Metodo', 14, 'BilleteraVendedores', 'Actualizar', 'Permite modificar informacion existente del modulo Billetera Vendedores.', 'BilleteraVendedoresApi', 'P_UdpBilletera', 'PUT', 'BILLETERAVENDEDORESAPI.P_UDPBILLETERA.PUT', 1, now(), 'MigracionInicial'),
+                (19, 'Metodo', 15, 'CodigosCompra', 'Consultar', 'Permite consultar el detalle de registros del modulo Codigos Compra.', 'CodigosCompraApi', 'F_GetCodigoCompra', 'GET', 'CODIGOSCOMPRAAPI.F_GETCODIGOCOMPRA.GET', 1, now(), 'MigracionInicial'),
+                (20, 'Metodo', 15, 'CodigosCompra', 'Eliminar', 'Permite eliminar o inactivar registros del modulo Codigos Compra.', 'CodigosCompraApi', 'P_DeleteCodigoCompra', 'DELETE', 'CODIGOSCOMPRAAPI.P_DELETECODIGOCOMPRA.DELETE', 1, now(), 'MigracionInicial'),
+                (21, 'Metodo', 15, 'CodigosCompra', 'Crear', 'Permite registrar nueva informacion en el modulo Codigos Compra.', 'CodigosCompraApi', 'P_GenerarCodigoCompra', 'POST', 'CODIGOSCOMPRAAPI.P_GENERARCODIGOCOMPRA.POST', 1, now(), 'MigracionInicial'),
+                (22, 'Metodo', 15, 'CodigosCompra', 'Actualizar', 'Permite modificar informacion existente del modulo Codigos Compra.', 'CodigosCompraApi', 'P_UdpCodigoCompra', 'PUT', 'CODIGOSCOMPRAAPI.P_UDPCODIGOCOMPRA.PUT', 1, now(), 'MigracionInicial'),
+                (23, 'Metodo', 18, 'CodigosPlataformas', 'Consultar', 'Permite consultar el detalle de registros del modulo Codigos Plataformas.', 'CodigosPlataformasApi', 'F_GetCorreoDetalle', 'GET', 'CODIGOSPLATAFORMASAPI.F_GETCORREODETALLE.GET', 1, now(), 'MigracionInicial'),
+                (24, 'Metodo', 18, 'CodigosPlataformas', 'Eliminar', 'Permite eliminar o inactivar registros del modulo Codigos Plataformas.', 'CodigosPlataformasApi', 'P_DeleteCorreo', 'DELETE', 'CODIGOSPLATAFORMASAPI.P_DELETECORREO.DELETE', 1, now(), 'MigracionInicial'),
+                (25, 'Metodo', 18, 'CodigosPlataformas', 'Crear', 'Permite registrar nueva informacion en el modulo Codigos Plataformas.', 'CodigosPlataformasApi', 'P_SincronizarBuzon', 'POST', 'CODIGOSPLATAFORMASAPI.P_SINCRONIZARBUZON.POST', 1, now(), 'MigracionInicial'),
+                (26, 'Metodo', 5, 'Dominios', 'Consultar', 'Permite consultar el detalle de registros del modulo Dominios.', 'DominiosApi', 'F_GetDominio', 'GET', 'DOMINIOSAPI.F_GETDOMINIO.GET', 1, now(), 'MigracionInicial'),
+                (27, 'Metodo', 5, 'Dominios', 'Eliminar', 'Permite eliminar o inactivar registros del modulo Dominios.', 'DominiosApi', 'P_DeleteDominio', 'DELETE', 'DOMINIOSAPI.P_DELETEDOMINIO.DELETE', 1, now(), 'MigracionInicial'),
+                (28, 'Metodo', 5, 'Dominios', 'Crear', 'Permite registrar nueva informacion en el modulo Dominios.', 'DominiosApi', 'P_InsDominio', 'POST', 'DOMINIOSAPI.P_INSDOMINIO.POST', 1, now(), 'MigracionInicial'),
+                (29, 'Metodo', 5, 'Dominios', 'Actualizar', 'Permite modificar informacion existente del modulo Dominios.', 'DominiosApi', 'P_UdpDominio', 'PUT', 'DOMINIOSAPI.P_UDPDOMINIO.PUT', 1, now(), 'MigracionInicial'),
+                (30, 'Metodo', 16, 'HistorialCompras', 'Consultar', 'Permite consultar el detalle de registros del modulo Historial Compras.', 'HistorialComprasApi', 'F_GetDetalleCompra', 'GET', 'HISTORIALCOMPRASAPI.F_GETDETALLECOMPRA.GET', 1, now(), 'MigracionInicial'),
+                (31, 'Metodo', 16, 'HistorialCompras', 'Consultar', 'Permite consultar el detalle de registros del modulo Historial Compras.', 'HistorialComprasApi', 'F_GetHistorialCompras', 'GET', 'HISTORIALCOMPRASAPI.F_GETHISTORIALCOMPRAS.GET', 1, now(), 'MigracionInicial'),
+                (32, 'Metodo', 11, 'ImagenesProducto', 'Consultar', 'Permite cargar archivos o imagenes del modulo Imagenes Producto.', 'ImagenesProductoApi', 'F_GetImagenProducto', 'GET', 'IMAGENESPRODUCTOAPI.F_GETIMAGENPRODUCTO.GET', 1, now(), 'MigracionInicial'),
+                (33, 'Metodo', 11, 'ImagenesProducto', 'Eliminar', 'Permite cargar archivos o imagenes del modulo Imagenes Producto.', 'ImagenesProductoApi', 'P_DeleteImagenProducto', 'DELETE', 'IMAGENESPRODUCTOAPI.P_DELETEIMAGENPRODUCTO.DELETE', 1, now(), 'MigracionInicial'),
+                (34, 'Metodo', 11, 'ImagenesProducto', 'Crear', 'Permite cargar archivos o imagenes del modulo Imagenes Producto.', 'ImagenesProductoApi', 'P_InsImagenProducto', 'POST', 'IMAGENESPRODUCTOAPI.P_INSIMAGENPRODUCTO.POST', 1, now(), 'MigracionInicial'),
+                (35, 'Metodo', 11, 'ImagenesProducto', 'Crear', 'Permite cargar archivos o imagenes del modulo Imagenes Producto.', 'ImagenesProductoApi', 'P_MoverImagenProducto', 'POST', 'IMAGENESPRODUCTOAPI.P_MOVERIMAGENPRODUCTO.POST', 1, now(), 'MigracionInicial'),
+                (36, 'Metodo', 11, 'ImagenesProducto', 'Actualizar', 'Permite cargar archivos o imagenes del modulo Imagenes Producto.', 'ImagenesProductoApi', 'P_UdpImagenProducto', 'PUT', 'IMAGENESPRODUCTOAPI.P_UDPIMAGENPRODUCTO.PUT', 1, now(), 'MigracionInicial'),
+                (37, 'Metodo', 11, 'ImagenesProducto', 'Cargar', 'Permite cargar archivos o imagenes del modulo Imagenes Producto.', 'ImagenesProductoApi', 'P_UploadImagenProducto', 'POST', 'IMAGENESPRODUCTOAPI.P_UPLOADIMAGENPRODUCTO.POST', 1, now(), 'MigracionInicial'),
+                (38, 'Metodo', 4, 'Permisos', 'Consultar', 'Permite consultar el detalle de registros del modulo Permisos.', 'PermisosApi', 'F_GetPermiso', 'GET', 'PERMISOSAPI.F_GETPERMISO.GET', 1, now(), 'MigracionInicial'),
+                (39, 'Metodo', 4, 'Permisos', 'Asignar', 'Permite asignar o actualizar relaciones del modulo Permisos.', 'PermisosApi', 'F_GetPermisoRol', 'GET', 'PERMISOSAPI.F_GETPERMISOROL.GET', 1, now(), 'MigracionInicial'),
+                (40, 'Metodo', 4, 'Permisos', 'Consultar', 'Permite consultar el detalle de registros del modulo Permisos.', 'PermisosApi', 'F_GetRolesPorPermiso', 'GET', 'PERMISOSAPI.F_GETROLESPORPERMISO.GET', 1, now(), 'MigracionInicial'),
+                (41, 'Metodo', 4, 'Permisos', 'Eliminar', 'Permite eliminar o inactivar registros del modulo Permisos.', 'PermisosApi', 'P_DeletePermiso', 'DELETE', 'PERMISOSAPI.P_DELETEPERMISO.DELETE', 1, now(), 'MigracionInicial'),
+                (42, 'Metodo', 4, 'Permisos', 'Asignar', 'Permite asignar o actualizar relaciones del modulo Permisos.', 'PermisosApi', 'P_DeletePermisoRol', 'DELETE', 'PERMISOSAPI.P_DELETEPERMISOROL.DELETE', 1, now(), 'MigracionInicial'),
+                (43, 'Metodo', 4, 'Permisos', 'Crear', 'Permite registrar nueva informacion en el modulo Permisos.', 'PermisosApi', 'P_InsPermiso', 'POST', 'PERMISOSAPI.P_INSPERMISO.POST', 1, now(), 'MigracionInicial'),
+                (44, 'Metodo', 4, 'Permisos', 'Asignar', 'Permite asignar o actualizar relaciones del modulo Permisos.', 'PermisosApi', 'P_InsPermisoRol', 'POST', 'PERMISOSAPI.P_INSPERMISOROL.POST', 1, now(), 'MigracionInicial'),
+                (45, 'Metodo', 4, 'Permisos', 'Actualizar', 'Permite modificar informacion existente del modulo Permisos.', 'PermisosApi', 'P_UdpPermiso', 'PUT', 'PERMISOSAPI.P_UDPPERMISO.PUT', 1, now(), 'MigracionInicial'),
+                (46, 'Metodo', 4, 'Permisos', 'Asignar', 'Permite asignar o actualizar relaciones del modulo Permisos.', 'PermisosApi', 'P_UdpRolesPermiso', 'PUT', 'PERMISOSAPI.P_UDPROLESPERMISO.PUT', 1, now(), 'MigracionInicial'),
+                (47, 'Metodo', 4, 'Permisos', 'Consultar', 'Permite consultar el detalle de registros del modulo Permisos.', 'PermisosMetodosApi', 'F_GetPermisoMetodo', 'GET', 'PERMISOSMETODOSAPI.F_GETPERMISOMETODO.GET', 1, now(), 'MigracionInicial'),
+                (48, 'Metodo', 4, 'Permisos', 'Eliminar', 'Permite eliminar o inactivar registros del modulo Permisos.', 'PermisosMetodosApi', 'P_DeletePermisoMetodo', 'DELETE', 'PERMISOSMETODOSAPI.P_DELETEPERMISOMETODO.DELETE', 1, now(), 'MigracionInicial'),
+                (49, 'Metodo', 4, 'Permisos', 'Sincronizar', 'Permite sincronizar informacion automatica del modulo Permisos.', 'PermisosMetodosApi', 'P_SyncPermisosMetodos', 'POST', 'PERMISOSMETODOSAPI.P_SYNCPERMISOSMETODOS.POST', 1, now(), 'MigracionInicial'),
+                (50, 'Metodo', 4, 'Permisos', 'Actualizar', 'Permite modificar informacion existente del modulo Permisos.', 'PermisosMetodosApi', 'P_UdpPermisoMetodo', 'PUT', 'PERMISOSMETODOSAPI.P_UDPPERMISOMETODO.PUT', 1, now(), 'MigracionInicial'),
+                (51, 'Metodo', 13, 'RegistrarCombos', 'Consultar', 'Permite consultar el detalle de registros del modulo Registrar Combos.', 'RegistrarCombosApi', 'F_GetCombo', 'GET', 'REGISTRARCOMBOSAPI.F_GETCOMBO.GET', 1, now(), 'MigracionInicial'),
+                (52, 'Metodo', 13, 'RegistrarCombos', 'Eliminar', 'Permite eliminar o inactivar registros del modulo Registrar Combos.', 'RegistrarCombosApi', 'P_DeleteCombo', 'DELETE', 'REGISTRARCOMBOSAPI.P_DELETECOMBO.DELETE', 1, now(), 'MigracionInicial'),
+                (53, 'Metodo', 13, 'RegistrarCombos', 'Crear', 'Permite registrar nueva informacion en el modulo Registrar Combos.', 'RegistrarCombosApi', 'P_InsCombo', 'POST', 'REGISTRARCOMBOSAPI.P_INSCOMBO.POST', 1, now(), 'MigracionInicial'),
+                (54, 'Metodo', 13, 'RegistrarCombos', 'Actualizar', 'Permite modificar informacion existente del modulo Registrar Combos.', 'RegistrarCombosApi', 'P_UdpCombo', 'PUT', 'REGISTRARCOMBOSAPI.P_UDPCOMBO.PUT', 1, now(), 'MigracionInicial'),
+                (55, 'Metodo', 13, 'RegistrarCombos', 'Cargar', 'Permite cargar archivos o imagenes del modulo Registrar Combos.', 'RegistrarCombosApi', 'P_UploadImagenCombo', 'POST', 'REGISTRARCOMBOSAPI.P_UPLOADIMAGENCOMBO.POST', 1, now(), 'MigracionInicial'),
+                (56, 'Metodo', 12, 'RegistrarPrecios', 'Eliminar', 'Permite eliminar o inactivar registros del modulo Registrar Precios.', 'RegistrarPreciosApi', 'P_DeletePrecioProducto', 'DELETE', 'REGISTRARPRECIOSAPI.P_DELETEPRECIOPRODUCTO.DELETE', 1, now(), 'MigracionInicial'),
+                (57, 'Metodo', 12, 'RegistrarPrecios', 'Crear', 'Permite registrar nueva informacion en el modulo Registrar Precios.', 'RegistrarPreciosApi', 'P_InsPrecioProducto', 'POST', 'REGISTRARPRECIOSAPI.P_INSPRECIOPRODUCTO.POST', 1, now(), 'MigracionInicial'),
+                (58, 'Metodo', 12, 'RegistrarPrecios', 'Actualizar', 'Permite modificar informacion existente del modulo Registrar Precios.', 'RegistrarPreciosApi', 'P_UdpPrecioProducto', 'PUT', 'REGISTRARPRECIOSAPI.P_UDPPRECIOPRODUCTO.PUT', 1, now(), 'MigracionInicial'),
+                (59, 'Metodo', 10, 'RegistrarProductos', 'Consultar', 'Permite consultar el detalle de registros del modulo Registrar Productos.', 'RegistrarProductosApi', 'F_GetCuenta', 'GET', 'REGISTRARPRODUCTOSAPI.F_GETCUENTA.GET', 1, now(), 'MigracionInicial'),
+                (60, 'Metodo', 10, 'RegistrarProductos', 'Eliminar', 'Permite eliminar o inactivar registros del modulo Registrar Productos.', 'RegistrarProductosApi', 'P_DeleteCuenta', 'DELETE', 'REGISTRARPRODUCTOSAPI.P_DELETECUENTA.DELETE', 1, now(), 'MigracionInicial'),
+                (61, 'Metodo', 10, 'RegistrarProductos', 'Crear', 'Permite registrar nueva informacion en el modulo Registrar Productos.', 'RegistrarProductosApi', 'P_InsCuenta', 'POST', 'REGISTRARPRODUCTOSAPI.P_INSCUENTA.POST', 1, now(), 'MigracionInicial'),
+                (62, 'Metodo', 10, 'RegistrarProductos', 'Actualizar', 'Permite modificar informacion existente del modulo Registrar Productos.', 'RegistrarProductosApi', 'P_UdpCuenta', 'PUT', 'REGISTRARPRODUCTOSAPI.P_UDPCUENTA.PUT', 1, now(), 'MigracionInicial'),
+                (63, 'Metodo', 9, 'RegistrarPublicaciones', 'Consultar', 'Permite consultar el detalle de registros del modulo Registrar Publicaciones.', 'RegistrarPublicacionesApi', 'F_GetInicioContenido', 'GET', 'REGISTRARPUBLICACIONESAPI.F_GETINICIOCONTENIDO.GET', 1, now(), 'MigracionInicial'),
+                (64, 'Metodo', 9, 'RegistrarPublicaciones', 'Eliminar', 'Permite eliminar o inactivar registros del modulo Registrar Publicaciones.', 'RegistrarPublicacionesApi', 'P_DeleteInicioContenido', 'DELETE', 'REGISTRARPUBLICACIONESAPI.P_DELETEINICIOCONTENIDO.DELETE', 1, now(), 'MigracionInicial'),
+                (65, 'Metodo', 9, 'RegistrarPublicaciones', 'Crear', 'Permite registrar nueva informacion en el modulo Registrar Publicaciones.', 'RegistrarPublicacionesApi', 'P_InsInicioContenido', 'POST', 'REGISTRARPUBLICACIONESAPI.P_INSINICIOCONTENIDO.POST', 1, now(), 'MigracionInicial'),
+                (66, 'Metodo', 9, 'RegistrarPublicaciones', 'Actualizar', 'Permite modificar informacion existente del modulo Registrar Publicaciones.', 'RegistrarPublicacionesApi', 'P_UdpInicioContenido', 'PUT', 'REGISTRARPUBLICACIONESAPI.P_UDPINICIOCONTENIDO.PUT', 1, now(), 'MigracionInicial'),
+                (67, 'Metodo', 9, 'RegistrarPublicaciones', 'Cargar', 'Permite cargar archivos o imagenes del modulo Registrar Publicaciones.', 'RegistrarPublicacionesApi', 'P_UploadImagenInicio', 'POST', 'REGISTRARPUBLICACIONESAPI.P_UPLOADIMAGENINICIO.POST', 1, now(), 'MigracionInicial'),
+                (68, 'Metodo', 3, 'Roles', 'Consultar', 'Permite consultar el detalle de registros del modulo Roles.', 'RolesApi', 'F_GetRol', 'GET', 'ROLESAPI.F_GETROL.GET', 1, now(), 'MigracionInicial'),
+                (69, 'Metodo', 3, 'Roles', 'Eliminar', 'Permite eliminar o inactivar registros del modulo Roles.', 'RolesApi', 'P_DeleteRol', 'DELETE', 'ROLESAPI.P_DELETEROL.DELETE', 1, now(), 'MigracionInicial'),
+                (70, 'Metodo', 3, 'Roles', 'Crear', 'Permite registrar nueva informacion en el modulo Roles.', 'RolesApi', 'P_InsRol', 'POST', 'ROLESAPI.P_INSROL.POST', 1, now(), 'MigracionInicial'),
+                (71, 'Metodo', 3, 'Roles', 'Asignar', 'Permite asignar o actualizar relaciones del modulo Roles.', 'RolesApi', 'P_UdpRol', 'PUT', 'ROLESAPI.P_UDPROL.PUT', 1, now(), 'MigracionInicial'),
+                (72, 'Metodo', 2, 'Usuarios', 'Asignar', 'Permite asignar o actualizar relaciones del modulo Usuarios.', 'RolesUserApi', 'Asignar', 'PUT', 'ROLESUSERAPI.ASIGNAR.PUT', 1, now(), 'MigracionInicial'),
+                (73, 'Metodo', 2, 'Usuarios', 'Consultar', 'Permite consultar el detalle de registros del modulo Usuarios.', 'RolesUserApi', 'GetIdUserRoles', 'GET', 'ROLESUSERAPI.GETIDUSERROLES.GET', 1, now(), 'MigracionInicial'),
+                (74, 'Metodo', 7, 'SistemaConfig', 'Consultar', 'Permite consultar el detalle de registros del modulo Sistema Config.', 'SistemaConfigApi', 'F_GetSistemaVisualConfig', 'GET', 'SISTEMACONFIGAPI.F_GETSISTEMAVISUALCONFIG.GET', 1, now(), 'MigracionInicial'),
+                (75, 'Metodo', 7, 'SistemaConfig', 'Actualizar', 'Permite modificar informacion existente del modulo Sistema Config.', 'SistemaConfigApi', 'P_UdpSistemaVisualConfig', 'PUT', 'SISTEMACONFIGAPI.P_UDPSISTEMAVISUALCONFIG.PUT', 1, now(), 'MigracionInicial'),
+                (76, 'Metodo', 7, 'SistemaConfig', 'Cargar', 'Permite cargar archivos o imagenes del modulo Sistema Config.', 'SistemaConfigApi', 'P_UploadImagenSistema', 'POST', 'SISTEMACONFIGAPI.P_UPLOADIMAGENSISTEMA.POST', 1, now(), 'MigracionInicial'),
+                (77, 'Metodo', 7, 'SistemaConfig', 'Cargar', 'Permite cargar archivos o imagenes del modulo Sistema Config.', 'SistemaConfigApi', 'P_UploadVideoSistema', 'POST', 'SISTEMACONFIGAPI.P_UPLOADVIDEOSISTEMA.POST', 1, now(), 'MigracionInicial'),
+                (78, 'Metodo', 8, 'Tiendas', 'Consultar', 'Permite consultar el detalle de registros del modulo Tiendas.', 'TiendaInternaApi', 'F_GetSaldoBilletera', 'GET', 'TIENDAINTERNAAPI.F_GETSALDOBILLETERA.GET', 1, now(), 'MigracionInicial'),
+                (79, 'Metodo', 8, 'Tiendas', 'Crear', 'Permite registrar nueva informacion en el modulo Tiendas.', 'TiendaInternaApi', 'P_ConfirmarCompra', 'POST', 'TIENDAINTERNAAPI.P_CONFIRMARCOMPRA.POST', 1, now(), 'MigracionInicial'),
+                (80, 'Metodo', 2, 'Usuarios', 'Consultar', 'Permite consultar el detalle de registros del modulo Usuarios.', 'UsuariosApi', 'F_GetUsuario', 'GET', 'USUARIOSAPI.F_GETUSUARIO.GET', 1, now(), 'MigracionInicial'),
+                (81, 'Metodo', 2, 'Usuarios', 'Eliminar', 'Permite eliminar o inactivar registros del modulo Usuarios.', 'UsuariosApi', 'P_DeleteUsuario', 'DELETE', 'USUARIOSAPI.P_DELETEUSUARIO.DELETE', 1, now(), 'MigracionInicial'),
+                (82, 'Metodo', 2, 'Usuarios', 'Actualizar', 'Permite modificar informacion existente del modulo Usuarios.', 'UsuariosApi', 'P_UdpUsuario', 'PUT', 'USUARIOSAPI.P_UDPUSUARIO.PUT', 1, now(), 'MigracionInicial') ON CONFLICT ("Id_Permiso") DO NOTHING;
+
+                INSERT INTO "Roles_Permisos" ("Id_Rol", "Id_Permiso", "Vigente", "Fecha_Creacion", "Maquina_Creacion")
+                SELECT 1, "Id_Permiso", 1, now(), 'MigracionInicial' FROM "Permisos"
+                ON CONFLICT ("Id_Rol", "Id_Permiso") DO NOTHING;
+
+                INSERT INTO "Roles_Permisos" ("Id_Rol", "Id_Permiso", "Vigente", "Fecha_Creacion", "Maquina_Creacion")
+                SELECT 2, "Id_Permiso", 1, now(), 'MigracionInicial'
+                FROM "Permisos"
+                WHERE "TipoPermiso" = 'Menu'
+                    AND "Id_Permiso" NOT IN (2, 3)
+                UNION ALL
+                SELECT 2, "Id_Permiso", 1, now(), 'MigracionInicial'
+                FROM "Permisos"
+                WHERE "TipoPermiso" = 'Metodo'
+                    AND "Modulo" NOT IN ('Roles', 'Permisos')
+                UNION ALL
+                SELECT 3, "Id_Permiso", 1, now(), 'MigracionInicial'
+                FROM "Permisos"
+                WHERE "Id_Permiso" IN (6, 14, 30, 31, 78, 79)
+                ON CONFLICT ("Id_Rol", "Id_Permiso") DO NOTHING;
+
+                SELECT setval(pg_get_serial_sequence('"Roles"', 'Id_Rol'), COALESCE((SELECT MAX("Id_Rol") FROM "Roles"), 1), true);
+                SELECT setval(pg_get_serial_sequence('"Dominios"', 'Id_Dominio'), COALESCE((SELECT MAX("Id_Dominio") FROM "Dominios"), 1), true);
+                SELECT setval(pg_get_serial_sequence('"Menus"', 'Id_Menu'), COALESCE((SELECT MAX("Id_Menu") FROM "Menus"), 1), true);
+                SELECT setval(pg_get_serial_sequence('"SistemaVisualConfig"', 'Id_SistemaVisualConfig'), COALESCE((SELECT MAX("Id_SistemaVisualConfig") FROM "SistemaVisualConfig"), 1), true);
+                SELECT setval(pg_get_serial_sequence('"Permisos"', 'Id_Permiso'), COALESCE((SELECT MAX("Id_Permiso") FROM "Permisos"), 1), true);
+                SELECT setval(pg_get_serial_sequence('"Roles_Permisos"', 'Id_Rol_Permiso'), COALESCE((SELECT MAX("Id_Rol_Permiso") FROM "Roles_Permisos"), 1), true);
+                """);
+        }
+

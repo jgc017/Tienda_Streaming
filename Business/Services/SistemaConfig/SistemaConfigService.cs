@@ -62,9 +62,7 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "No fue posible leer SistemaVisualConfig. Se usaran imagenes por defecto.");
-                var result = ObtenerConfigDefault();
-                result.NombreSistema = ObtenerNombreSistema();
-                return result;
+                return ObtenerConfigDefault();
             }
         }
 
