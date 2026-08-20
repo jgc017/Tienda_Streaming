@@ -14,7 +14,6 @@ using Tienda_Streaming.Models.Administracion;
 using Tienda_Streaming.Models.Dto.Administracion.CodigosPlataformas;
 using Tienda_Streaming.Services.Email;
 using System.Net;
-using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -24,16 +23,16 @@ namespace Tienda_Streaming.Business.Services.CodigosPlataformas
     public class CodigosPlataformasService : ICodigosPlataformas
     {
         private readonly AppDbContext _context;
-        private readonly CodigosPlataformasMailSettings _settings;
+        private readonly IOptionsMonitor<CodigosPlataformasMailSettings> _settingsMonitor;
         private readonly ILogger<CodigosPlataformasService> _logger;
 
         public CodigosPlataformasService(
             AppDbContext context,
-            IOptions<CodigosPlataformasMailSettings> settings,
+            IOptionsMonitor<CodigosPlataformasMailSettings> settings,
             ILogger<CodigosPlataformasService> logger)
         {
             _context = context;
-            _settings = settings.Value;
+            _settingsMonitor = settings;
             _logger = logger;
         }
 
@@ -106,73 +105,80 @@ namespace Tienda_Streaming.Business.Services.CodigosPlataformas
 
             return correo == null
                 ? ServiceResult.Fail(StatusCodes.Status404NotFound, "Correo no encontrado para la busqueda realizada.")
-                : ServiceResult.Success(data: MapDetalle(correo));
+                // Solo expone el cuerpo al usuario público, sin metadatos (remitente, destinatario, fechas).
+                : ServiceResult.Success(data: MapDetallePublico(correo));
         }
 
         public async Task<int> SincronizarBuzon(CancellationToken cancellationToken)
         {
-            if (!ConfiguracionImapValida())
+            var config = _settingsMonitor.CurrentValue;
+
+            if (!ConfiguracionImapValida(config))
             {
                 return 0;
             }
 
             using var client = new ImapClient();
             await client.ConnectAsync(
-                _settings.Host,
-                _settings.Port,
-                _settings.UseSsl ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTlsWhenAvailable,
+                config.Host,
+                config.Port,
+                config.UseSsl ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTlsWhenAvailable,
                 cancellationToken);
 
-            await client.AuthenticateAsync(_settings.UserName, _settings.Password, cancellationToken);
+            await client.AuthenticateAsync(config.UserName, config.Password, cancellationToken);
 
-            var folder = string.Equals(_settings.Folder, "INBOX", StringComparison.OrdinalIgnoreCase)
+            var folder = string.Equals(config.Folder, "INBOX", StringComparison.OrdinalIgnoreCase)
                 ? client.Inbox
-                : await client.GetFolderAsync(_settings.Folder, cancellationToken);
+                : await client.GetFolderAsync(config.Folder, cancellationToken);
 
             if (folder == null)
             {
-                _logger.LogWarning("No se encontro la carpeta IMAP configurada para codigos de plataformas: {Folder}", _settings.Folder);
+                _logger.LogWarning("No se encontro la carpeta IMAP configurada para codigos de plataformas: {Folder}", config.Folder);
+                await client.DisconnectAsync(true, cancellationToken);
                 return 0;
             }
 
-            await folder.OpenAsync(FolderAccess.ReadWrite, cancellationToken);
-            var uids = await folder.SearchAsync(SearchQuery.All, cancellationToken);
-            var cantidadImportada = 0;
+            // ReadOnly: los correos permanecen en la bandeja de entrada del proveedor.
+            // El usuario los administra directamente desde su cliente de correo.
+            await folder.OpenAsync(FolderAccess.ReadOnly, cancellationToken);
 
-            foreach (var uid in uids.OrderByDescending(u => u.Id).Take(Math.Max(_settings.MaxMessagesPerSync, 1)))
+            // Solo trae correos no leídos para evitar re-procesar en cada ciclo.
+            var uids = await folder.SearchAsync(SearchQuery.NotSeen, cancellationToken);
+
+            var entidadesNuevas = new List<CorreosPlataforma>();
+
+            foreach (var uid in uids.OrderByDescending(u => u.Id).Take(Math.Max(config.MaxMessagesPerSync, 1)))
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var mensaje = await folder.GetMessageAsync(uid, cancellationToken);
                 var entity = ConstruirEntidad(mensaje);
+
+                // Verifica duplicado por hash antes de agregar al batch.
                 var existe = await _context.CorreosPlataforma
                     .AnyAsync(c => c.Hash_Mensaje == entity.Hash_Mensaje, cancellationToken);
 
                 if (!existe)
                 {
-                    _context.CorreosPlataforma.Add(entity);
-                    await _context.SaveChangesAsync(cancellationToken);
-                    cantidadImportada++;
-                }
-
-                if (_settings.DeleteFromMailboxAfterImport)
-                {
-                    await folder.AddFlagsAsync(uid, MessageFlags.Deleted, true, cancellationToken);
+                    entidadesNuevas.Add(entity);
                 }
             }
 
-            if (_settings.DeleteFromMailboxAfterImport)
+            // Batch insert único fuera del loop: un solo roundtrip a la base de datos.
+            if (entidadesNuevas.Count > 0)
             {
-                await folder.ExpungeAsync(cancellationToken);
+                _context.CorreosPlataforma.AddRange(entidadesNuevas);
+                await _context.SaveChangesAsync(cancellationToken);
             }
 
             await client.DisconnectAsync(true, cancellationToken);
-            return cantidadImportada;
+            return entidadesNuevas.Count;
         }
 
         public async Task<int> EliminarCorreosAntiguos(CancellationToken cancellationToken)
         {
-            var retentionHours = Math.Max(_settings.RetentionHours, 1);
+            var config = _settingsMonitor.CurrentValue;
+            var retentionHours = Math.Max(config.RetentionHours, 1);
             var fechaLimite = DateTime.UtcNow.AddHours(-retentionHours);
             var correos = await _context.CorreosPlataforma
                 .Where(c => c.Fecha_Registro < fechaLimite)
@@ -188,12 +194,12 @@ namespace Tienda_Streaming.Business.Services.CodigosPlataformas
             return correos.Count;
         }
 
-        private bool ConfiguracionImapValida()
+        private bool ConfiguracionImapValida(CodigosPlataformasMailSettings config)
         {
-            return _settings.Enabled &&
-                !string.IsNullOrWhiteSpace(_settings.Host) &&
-                !string.IsNullOrWhiteSpace(_settings.UserName) &&
-                !string.IsNullOrWhiteSpace(_settings.Password);
+            return config.Enabled &&
+                !string.IsNullOrWhiteSpace(config.Host) &&
+                !string.IsNullOrWhiteSpace(config.UserName) &&
+                !string.IsNullOrWhiteSpace(config.Password);
         }
 
         private static CorreosPlataforma ConstruirEntidad(MimeMessage mensaje)

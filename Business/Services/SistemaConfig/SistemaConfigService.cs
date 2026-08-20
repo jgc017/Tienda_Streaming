@@ -49,6 +49,7 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
                     .Select(c => new DtoSistemaVisualConfigItem
                     {
                         Id_SistemaVisualConfig = c.Id_SistemaVisualConfig,
+                        NombreSistema = c.NombreSistema,
                         LogoUrl = c.LogoUrl,
                         FaviconUrl = c.FaviconUrl,
                         LoginBackgroundUrl = c.LoginBackgroundUrl,
@@ -56,9 +57,7 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
                     })
                     .FirstOrDefaultAsync();
 
-                var result = config ?? ObtenerConfigDefault();
-                result.NombreSistema = ObtenerNombreSistema();
-                return result;
+                return config ?? ObtenerConfigDefault();
             }
             catch (Exception ex)
             {
@@ -102,6 +101,7 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
             {
                 config = new SistemaVisualConfig
                 {
+                    NombreSistema = nombreSistema,
                     LogoUrl = logo,
                     FaviconUrl = favicon,
                     LoginBackgroundUrl = loginBackground,
@@ -116,6 +116,7 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
             }
             else
             {
+                config.NombreSistema = nombreSistema;
                 config.LogoUrl = logo;
                 config.FaviconUrl = favicon;
                 config.LoginBackgroundUrl = loginBackground;
@@ -126,7 +127,6 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
             }
 
             await _context.SaveChangesAsync();
-            GuardarNombreSistema(nombreSistema);
 
             return ServiceResult.Success(
                 "Imagenes, videos y nombre del sistema actualizados correctamente.",
@@ -136,55 +136,16 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
 
         private DtoSistemaVisualConfigItem ObtenerConfigDefault()
         {
+            var nombreConfigurado = NormalizarNombreSistema(_configuration["Sistema:Nombre"]);
+            var nombreSistema = NombreSistemaValido(nombreConfigurado) ? nombreConfigurado : NombreSistemaDefault;
+
             return new DtoSistemaVisualConfigItem
             {
-                NombreSistema = ObtenerNombreSistema(),
+                NombreSistema = nombreSistema,
                 LogoUrl = LogoDefault,
                 FaviconUrl = FaviconDefault,
                 LoginBackgroundUrl = LoginBackgroundDefault
             };
-        }
-
-        private string ObtenerNombreSistema()
-        {
-            try
-            {
-                var path = ObtenerRutaNombreConfig();
-                if (File.Exists(path))
-                {
-                    var json = File.ReadAllText(path);
-                    var config = JsonSerializer.Deserialize<SistemaNombreConfig>(json);
-                    var nombreArchivo = NormalizarNombreSistema(config?.NombreSistema);
-                    if (NombreSistemaValido(nombreArchivo))
-                    {
-                        return nombreArchivo;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "No fue posible leer el nombre del sistema desde archivo. Se usara el valor configurado o por defecto.");
-            }
-
-            var nombreConfigurado = NormalizarNombreSistema(_configuration["Sistema:Nombre"]);
-            return NombreSistemaValido(nombreConfigurado) ? nombreConfigurado : NombreSistemaDefault;
-        }
-
-        private void GuardarNombreSistema(string nombreSistema)
-        {
-            var directorio = Path.Combine(_environment.ContentRootPath, "App_Data", "config");
-            Directory.CreateDirectory(directorio);
-
-            var json = JsonSerializer.Serialize(
-                new SistemaNombreConfig { NombreSistema = nombreSistema },
-                new JsonSerializerOptions { WriteIndented = true });
-
-            File.WriteAllText(ObtenerRutaNombreConfig(), json);
-        }
-
-        private string ObtenerRutaNombreConfig()
-        {
-            return Path.Combine(_environment.ContentRootPath, "App_Data", "config", NombreConfigFile);
         }
 
         private static bool NombreSistemaValido(string? nombre)
@@ -313,11 +274,6 @@ namespace Tienda_Streaming.Business.Services.SistemaConfig
 
             var id = value.Split('/', '?', '&', '#').FirstOrDefault() ?? string.Empty;
             return new string(id.Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '-').ToArray());
-        }
-
-        private sealed class SistemaNombreConfig
-        {
-            public string NombreSistema { get; set; } = NombreSistemaDefault;
         }
     }
 }

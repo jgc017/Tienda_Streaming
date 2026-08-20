@@ -13,6 +13,9 @@ namespace Tienda_Streaming.Services.Email
         public int MaxMessagesPerSync { get; set; } = 80;
         public int RetentionHours { get; set; } = 24;
         public int CleanupHourLocal { get; set; } = 3;
-        public bool DeleteFromMailboxAfterImport { get; set; } = true;
+        // Controla si el correo se elimina del buzón IMAP después de importarse.
+        // Se recomienda false: los correos permanecen en la bandeja de entrada y
+        // el usuario los administra directamente desde su cliente de correo.
+        public bool DeleteFromMailboxAfterImport { get; set; } = false;
     }
 }

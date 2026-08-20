@@ -4,6 +4,7 @@ using Tienda_Streaming.Business.Interfaces.General;
 using Tienda_Streaming.Business.Interfaces.RegistrarProductos;
 using Tienda_Streaming.Models.Dto.Administracion.RegistrarProductos;
 using Tienda_Streaming.Security;
+using Tienda_Streaming.Services.Storage;
 
 namespace Tienda_Streaming.Controllers.Api
 {
@@ -23,14 +24,17 @@ namespace Tienda_Streaming.Controllers.Api
         private const long ImagenMaximaBytes = 5 * 1024 * 1024;
         private readonly IRegistrarProductos _registrarProductos;
         private readonly IWebHostEnvironment _environment;
+        private readonly IAlmacenamientoArchivosSubidos _almacenamiento;
 
         public RegistrarCombosApiController(
             IRegistrarProductos registrarProductos,
             IGeneral general,
-            IWebHostEnvironment environment) : base(general)
+            IWebHostEnvironment environment,
+            IAlmacenamientoArchivosSubidos almacenamiento) : base(general)
         {
             _registrarProductos = registrarProductos;
             _environment = environment;
+            _almacenamiento = almacenamiento;
         }
 
         [HttpPost("P_InsCombo")]
@@ -115,6 +119,11 @@ namespace Tienda_Streaming.Controllers.Api
             {
                 await imagen.CopyToAsync(stream);
             }
+
+            using var ms = new MemoryStream();
+            await imagen.CopyToAsync(ms);
+            ms.Position = 0;
+            await _almacenamiento.GuardarAsync("combos", nombreArchivo, imagen.ContentType, ms);
 
             var rutaPublica = $"/uploads/combos/{nombreArchivo}";
             await RegistrarAuditoria("VwRegistrarCombos", "P_UploadImagenCombo", $"Carga de imagen combo {rutaPublica}");

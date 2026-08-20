@@ -65,7 +65,7 @@ services:
       CodigosPlataformas__MaxMessagesPerSync: ${CODIGOS_PLATAFORMAS_MAX_MESSAGES_PER_SYNC:-80}
       CodigosPlataformas__RetentionHours: ${CODIGOS_PLATAFORMAS_RETENTION_HOURS:-24}
       CodigosPlataformas__CleanupHourLocal: ${CODIGOS_PLATAFORMAS_CLEANUP_HOUR_LOCAL:-3}
-      CodigosPlataformas__DeleteFromMailboxAfterImport: ${CODIGOS_PLATAFORMAS_DELETE_FROM_MAILBOX_AFTER_IMPORT:-true}
+      CodigosPlataformas__DeleteFromMailboxAfterImport: ${CODIGOS_PLATAFORMAS_DELETE_FROM_MAILBOX_AFTER_IMPORT:-false}
     volumes:
       - app_dataprotection:/app/App_Data/DataProtectionKeys
       - app_config:/app/App_Data/config

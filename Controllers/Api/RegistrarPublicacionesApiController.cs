@@ -31,12 +31,18 @@ namespace Tienda_Streaming.Controllers.Api
         private readonly IRegistrarPublicaciones _inicioAdmin;
         private readonly IGeneral _general;
         private readonly IWebHostEnvironment _environment;
+        private readonly Tienda_Streaming.Services.Storage.IAlmacenamientoArchivosSubidos _almacenamiento;
 
-        public RegistrarPublicacionesApiController(IRegistrarPublicaciones inicioAdmin, IGeneral general, IWebHostEnvironment environment)
+        public RegistrarPublicacionesApiController(
+            IRegistrarPublicaciones inicioAdmin,
+            IGeneral general,
+            IWebHostEnvironment environment,
+            Tienda_Streaming.Services.Storage.IAlmacenamientoArchivosSubidos almacenamiento)
         {
             _inicioAdmin = inicioAdmin;
             _general = general;
             _environment = environment;
+            _almacenamiento = almacenamiento;
         }
 
         // POST: /api/RegistrarPublicacionesApi/P_InsInicioContenido
@@ -177,6 +183,9 @@ namespace Tienda_Streaming.Controllers.Api
             var rutaFisica = Path.Combine(carpetaDestino, nombreArchivo);
 
             await System.IO.File.WriteAllBytesAsync(rutaFisica, bytesImagen);
+
+            using var ms = new MemoryStream(bytesImagen);
+            await _almacenamiento.GuardarAsync("inicio", nombreArchivo, imagen.ContentType, ms);
 
             var rutaPublica = $"/uploads/inicio/{nombreArchivo}";
             await _general.RegistrarAuditoria(

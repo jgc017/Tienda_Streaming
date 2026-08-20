@@ -10,6 +10,11 @@ namespace Tienda_Streaming.Models.Administracion
         [Key]
         public int Id_SistemaVisualConfig { get; set; }
 
+        // Nombre del sistema (e.g. Tienda Streaming)
+        [Required]
+        [StringLength(120)]
+        public string NombreSistema { get; set; } = "Tienda Streaming";
+
         // Logo principal usado en login, loader, inicio publico y menu interno.
         [Required]
         [StringLength(500)]

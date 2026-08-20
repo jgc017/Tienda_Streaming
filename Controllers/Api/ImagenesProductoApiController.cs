@@ -6,6 +6,7 @@ using Tienda_Streaming.Business.Interfaces.ImagenesProducto;
 using Tienda_Streaming.Models.Dto.Administracion.ImagenesProducto;
 using Tienda_Streaming.Security;
 using System.Security.Claims;
+using Tienda_Streaming.Services.Storage;
 
 namespace Tienda_Streaming.Controllers.Api
 {
@@ -26,12 +27,18 @@ namespace Tienda_Streaming.Controllers.Api
         private readonly IImagenesProducto _imagenesProducto;
         private readonly IGeneral _general;
         private readonly IWebHostEnvironment _environment;
+        private readonly IAlmacenamientoArchivosSubidos _almacenamiento;
 
-        public ImagenesProductoApiController(IImagenesProducto imagenesProducto, IGeneral general, IWebHostEnvironment environment)
+        public ImagenesProductoApiController(
+            IImagenesProducto imagenesProducto,
+            IGeneral general,
+            IWebHostEnvironment environment,
+            IAlmacenamientoArchivosSubidos almacenamiento)
         {
             _imagenesProducto = imagenesProducto;
             _general = general;
             _environment = environment;
+            _almacenamiento = almacenamiento;
         }
 
         [HttpPost("P_InsImagenProducto")]
@@ -128,6 +135,12 @@ namespace Tienda_Streaming.Controllers.Api
             {
                 await imagen.CopyToAsync(stream);
             }
+
+            // Tambien guardar en la base de datos para recuperar despues de reinicio en Render
+            using var ms = new MemoryStream();
+            await imagen.CopyToAsync(ms);
+            ms.Position = 0;
+            await _almacenamiento.GuardarAsync("productos", nombreArchivo, imagen.ContentType, ms);
 
             var rutaPublica = $"/uploads/productos/{nombreArchivo}";
             await _general.RegistrarAuditoria(GetAuditContext(), "VwImagenesProducto", "P_UploadImagenProducto", $"Carga de imagen producto {rutaPublica}");
